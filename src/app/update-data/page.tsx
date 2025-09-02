@@ -358,7 +358,7 @@ export default function UpdateDataPage() {
                                             </div>
                                             <div>
                                                 <Label htmlFor={`item-progress-${pIndex}-${sIndex}`}>
-                                                YTD Progress (%)
+                                                YTD Progress
                                                 </Label>
                                                 <Input
                                                 id={`item-progress-${pIndex}-${sIndex}`}
@@ -371,7 +371,7 @@ export default function UpdateDataPage() {
                                             </div>
                                              <div>
                                                 <Label htmlFor={`item-target-${pIndex}-${sIndex}`}>
-                                                Annual Target (%)
+                                                Annual Target
                                                 </Label>
                                                 <Input
                                                 id={`item-target-${pIndex}-${sIndex}`}
