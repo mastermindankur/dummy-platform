@@ -223,24 +223,22 @@ export default function HackathonsDetailsPage() {
                                     </div>
                                 )}
                                 {individualLobtDistributions[hackathon.id] && individualLobtDistributions[hackathon.id].length > 0 && (
-                                     <Card>
-                                        <CardHeader>
-                                            <CardTitle className="text-base">LOBT-wise Distribution</CardTitle>
-                                        </CardHeader>
-                                        <CardContent className="p-2">
-                                            <ChartContainer config={{}} className="min-h-[100px] w-full">
-                                                <ResponsiveContainer width="100%" height={100}>
-                                                <BarChart data={individualLobtDistributions[hackathon.id]} layout="vertical" margin={{ right: 20 }}>
-                                                    <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                                                    <XAxis type="number" allowDecimals={false} domain={[0, 'dataMax + 1']} />
-                                                    <YAxis dataKey="name" type="category" width={60} tick={{ fontSize: 10 }} />
-                                                    <ChartTooltip content={<ChartTooltipContent />} />
-                                                    <Bar dataKey="value" fill="hsl(var(--chart-2))" radius={[0, 4, 4, 0]} />
-                                                </BarChart>
+                                     <div>
+                                        <h4 className="font-medium mb-2">LOBT-wise Distribution</h4>
+                                        <div className="border rounded-md p-2">
+                                            <ChartContainer config={{}} className="h-[120px] w-full">
+                                                <ResponsiveContainer width="100%" height="100%">
+                                                    <BarChart data={individualLobtDistributions[hackathon.id]} layout="vertical" margin={{ left: 10, right: 20, top: 5, bottom: 5 }}>
+                                                        <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                                                        <XAxis type="number" allowDecimals={false} domain={[0, 'dataMax + 1']} />
+                                                        <YAxis dataKey="name" type="category" width={60} tick={{ fontSize: 10 }} />
+                                                        <ChartTooltip content={<ChartTooltipContent />} />
+                                                        <Bar dataKey="value" fill="hsl(var(--chart-2))" radius={[0, 4, 4, 0]} />
+                                                    </BarChart>
                                                 </ResponsiveContainer>
                                             </ChartContainer>
-                                        </CardContent>
-                                     </Card>
+                                        </div>
+                                     </div>
                                 )}
                                 {hackathon.winners && hackathon.winners.length > 0 && (
                                     <div>
@@ -273,5 +271,3 @@ export default function HackathonsDetailsPage() {
     </div>
   );
 }
-
-    
