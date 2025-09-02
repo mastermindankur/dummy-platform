@@ -86,7 +86,10 @@ function TeamUploader({ hackathon, onTeamsUpload }: { hackathon: Hackathon, onTe
     
     return (
         <div className="space-y-4">
-            <h4 className="font-medium">Upload Teams</h4>
+            <h4 className="font-medium">Upload Top Teams</h4>
+            <p className="text-sm text-muted-foreground">
+                Upload an Excel file with the top teams in a tabular format.
+            </p>
             <div className="flex gap-2">
               <Input
                 id={`excel-upload-${hackathon.id}`}
