@@ -68,12 +68,11 @@ export default function JiraAssistantAdoptionPage() {
     loadData();
   }, []);
 
- const { reportData, sortedMonths, summaryMetrics } = useMemo(() => {
+ const { reportData, sortedMonths } = useMemo(() => {
     if (!monthlyData) {
-      return { reportData: [], sortedMonths: [], summaryMetrics: { totalUsers: 0, teamsOnboarded: 0, averageAdoption: '0.00' } };
+      return { reportData: [], sortedMonths: [] };
     }
 
-    // --- Start: Logic from old user-adoption-report page ---
     const platformData = new Map<string, {
         totalUserIds: Set<string>;
         activeUserIds: Set<string>;
@@ -137,27 +136,10 @@ export default function JiraAssistantAdoptionPage() {
 
     const reportDataSorted = finalReportData.sort((a, b) => a.platform.localeCompare(b.platform));
     const sortedMonthLabels = allMonths.map(m => new Date(m).toLocaleString('default', { month: 'short', year: '2-digit' }));
-    // --- End: Logic from old user-adoption-report page ---
-
-
-    // --- Start: Logic for summary cards ---
-    const allRows = Object.values(monthlyData).flatMap(monthData => monthData.rows);
-    const uniqueUsers = new Set(allRows.map(r => r['1bankid'])).size;
-    const uniqueTeams = new Set(allRows.map(r => r['Team'])).size;
-    const overallAdoption = allRows.reduce((acc, row) => acc + (Number(row['is_created_via_JA']) || 0), 0);
-    const averageAdoption = allRows.length > 0 ? ((overallAdoption / allRows.length) * 100).toFixed(2) : '0.00';
-    
-    const summaryMetricsData = { 
-        totalUsers: uniqueUsers, 
-        teamsOnboarded: uniqueTeams, 
-        averageAdoption 
-    };
-    // --- End: Logic for summary cards ---
 
     return {
       reportData: reportDataSorted,
       sortedMonths: sortedMonthLabels,
-      summaryMetrics: summaryMetricsData
     };
   }, [monthlyData]);
 
@@ -196,36 +178,6 @@ export default function JiraAssistantAdoptionPage() {
 
             {!isLoading && monthlyData && Object.keys(monthlyData).length > 0 && (
                 <div className="space-y-8">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between pb-2">
-                                <CardTitle className="text-sm font-medium">Total Unique Users</CardTitle>
-                                <Users className="h-4 w-4 text-muted-foreground" />
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold">{summaryMetrics.totalUsers}</div>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between pb-2">
-                                <CardTitle className="text-sm font-medium">Teams Onboarded</CardTitle>
-                                <CheckCircle className="h-4 w-4 text-muted-foreground" />
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold">{summaryMetrics.teamsOnboarded}</div>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between pb-2">
-                                <CardTitle className="text-sm font-medium">Average Story Adoption</CardTitle>
-                                <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold">{summaryMetrics.averageAdoption}%</div>
-                            </CardContent>
-                        </Card>
-                    </div>
-                    
                     <div className="border rounded-lg overflow-x-auto">
                         <Table>
                             <TableHeader>
