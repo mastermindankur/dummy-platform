@@ -84,24 +84,35 @@ export default function SquadOnboardingPage() {
     loadData();
   }, []);
   
-  const { categoryDistributionData } = useMemo(() => {
-    if (!excelData?.rows) return { categoryDistributionData: [] };
+  const { categoryDistributionData, lobtDistributionData } = useMemo(() => {
+    if (!excelData?.rows) return { categoryDistributionData: [], lobtDistributionData: [] };
 
     const categoryCounts: { [key: string]: number } = {};
+    const lobtCounts: { [key: string]: number } = {};
     
     excelData.rows.forEach((row: ExcelRow) => {
         const category = row['Category'] as string;
         if (category) {
             categoryCounts[category] = (categoryCounts[category] || 0) + 1;
         }
+
+        const lobt = row['LOBT'] as string;
+        if (lobt) {
+            lobtCounts[lobt] = (lobtCounts[lobt] || 0) + 1;
+        }
     });
 
-    const data = Object.entries(categoryCounts).map(([name, value]) => ({
+    const categoryData = Object.entries(categoryCounts).map(([name, value]) => ({
       name,
       value,
     }));
+
+    const lobtData = Object.entries(lobtCounts).map(([name, value]) => ({
+        name,
+        value
+    }));
     
-    return { categoryDistributionData: data };
+    return { categoryDistributionData: categoryData, lobtDistributionData: lobtData };
   }, [excelData]);
 
 
@@ -145,7 +156,7 @@ export default function SquadOnboardingPage() {
 
             {excelData && (
                 <div className="space-y-8">
-                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <Card>
                         <CardHeader>
                             <CardTitle>Overall Progress</CardTitle>
@@ -175,6 +186,25 @@ export default function SquadOnboardingPage() {
                                 <YAxis dataKey="name" type="category" width={80} tick={{ fontSize: 12 }} />
                                 <ChartTooltip content={<ChartTooltipContent />} />
                                 <Bar dataKey="value" fill="hsl(var(--chart-1))" radius={[0, 4, 4, 0]} />
+                              </BarChart>
+                            </ResponsiveContainer>
+                          </ChartContainer>
+                        </CardContent>
+                      </Card>
+                      <Card>
+                        <CardHeader>
+                            <CardTitle>LOBT-wise Distribution</CardTitle>
+                            <CardDescription>Number of applications onboarded by each Line of Business Technology.</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                          <ChartContainer config={{}} className="min-h-[200px] w-full">
+                            <ResponsiveContainer width="100%" height={300}>
+                              <BarChart data={lobtDistributionData} margin={{ right: 20 }}>
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="name" tick={{ fontSize: 12 }} angle={-45} textAnchor="end" height={60} />
+                                <YAxis allowDecimals={false} />
+                                <ChartTooltip content={<ChartTooltipContent />} />
+                                <Bar dataKey="value" fill="hsl(var(--chart-2))" radius={[4, 4, 0, 0]} />
                               </BarChart>
                             </ResponsiveContainer>
                           </ChartContainer>

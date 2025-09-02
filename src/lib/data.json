@@ -111,10 +111,10 @@
         "owner": "Architecture Guild",
         "lastUpdate": "2024-07-25",
         "comments": "Load tests show we can handle 2x traffic.",
-        "percentageComplete": 100,
-        "annualTarget": 100,
+        "percentageComplete": 313,
+        "annualTarget": 313,
         "metricName": "Onboarding",
-        "metricUnit": "%"
+        "metricUnit": "Apps"
       },
       {
         "id": "disaster-recovery",
