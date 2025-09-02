@@ -13,10 +13,15 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "@/hooks/use-toast";
 import { getActionRecommendations } from "@/ai/flows/action-recommendations";
-import type { Pillar } from "@/types";
+import type { SubItem } from "@/types";
 import { Lightbulb, Loader2 } from "lucide-react";
 
-export function ActionRecommendations({ pillar }: { pillar: Pillar }) {
+type ActionRecommendationsProps = {
+  pillarName: string;
+  pillarSubItems: Pick<SubItem, 'name' | 'status'>[];
+};
+
+export function ActionRecommendations({ pillarName, pillarSubItems }: ActionRecommendationsProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [recommendations, setRecommendations] = useState<string[]>([]);
@@ -25,16 +30,16 @@ export function ActionRecommendations({ pillar }: { pillar: Pillar }) {
     setIsLoading(true);
     setRecommendations([]);
     try {
-      const pillarStatus = pillar.subItems.some((s) => s.status === "Red")
+      const pillarStatus = pillarSubItems.some((s) => s.status === "Red")
         ? "Red"
-        : pillar.subItems.some((s) => s.status === "Amber")
+        : pillarSubItems.some((s) => s.status === "Amber")
         ? "Amber"
         : "Green";
 
       const result = await getActionRecommendations({
-        pillarName: pillar.name,
+        pillarName: pillarName,
         pillarStatus: pillarStatus,
-        subItems: pillar.subItems.map((s) => ({
+        subItems: pillarSubItems.map((s) => ({
           name: s.name,
           status: s.status,
         })),
@@ -64,7 +69,7 @@ export function ActionRecommendations({ pillar }: { pillar: Pillar }) {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[625px]">
         <DialogHeader>
-          <DialogTitle>Action Recommendations for {pillar.name}</DialogTitle>
+          <DialogTitle>Action Recommendations for {pillarName}</DialogTitle>
           <DialogDescription>
             AI-generated actions to improve pillar health.
           </DialogDescription>

@@ -73,7 +73,7 @@ export default function PillarPage({ params }: { params: { id: string } }) {
                 </div>
                 {status !== "Green" && (
                   <Suspense fallback={<Skeleton className="h-10 w-52" />}>
-                    <ActionRecommendations pillar={pillar} />
+                    <ActionRecommendations pillarName={pillar.name} pillarSubItems={pillar.subItems} />
                   </Suspense>
                 )}
               </div>
