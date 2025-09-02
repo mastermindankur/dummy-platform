@@ -18,11 +18,13 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { ArrowLeft, Loader2, Trophy, Users, Swords } from 'lucide-react';
+import { ArrowLeft, Loader2, Trophy, Users, Swords, Building2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
-import type { Hackathon } from '@/types';
+import type { Hackathon, ExcelRow } from '@/types';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer } from 'recharts';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 
 const fetchHackathonsData = async (): Promise<Hackathon[]> => {
   const res = await fetch('/api/data?key=hackathons');
@@ -56,17 +58,43 @@ export default function HackathonsDetailsPage() {
     loadData();
   }, []);
 
-  const { totalHackathons, totalParticipants, totalTeams } = useMemo(() => {
+  const { totalHackathons, totalParticipants, totalTeams, cumulativeLobtDistribution, individualLobtDistributions } = useMemo(() => {
     let participants = 0;
     let teams = 0;
+    const cumulativeLobtCounts: { [key: string]: number } = {};
+    const individualLobtCounts: { [hackathonId: string]: { name: string; value: number }[] } = {};
+
     hackathons.forEach(h => {
         participants += h.participants;
         teams += h.teams?.length || 0;
+        
+        const hackathonLobtCounts: { [key: string]: number } = {};
+
+        (h.teams || []).forEach(team => {
+            const lobt = team.data?.['LOBT'] as string;
+            if (lobt) {
+                cumulativeLobtCounts[lobt] = (cumulativeLobtCounts[lobt] || 0) + 1;
+                hackathonLobtCounts[lobt] = (hackathonLobtCounts[lobt] || 0) + 1;
+            }
+        });
+
+        individualLobtCounts[h.id] = Object.entries(hackathonLobtCounts).map(([name, value]) => ({
+            name,
+            value,
+        }));
     });
+
+    const cumulativeLobtDistribution = Object.entries(cumulativeLobtCounts).map(([name, value]) => ({
+        name,
+        value,
+    }));
+
     return {
         totalHackathons: hackathons.length,
         totalParticipants: participants,
-        totalTeams: teams
+        totalTeams: teams,
+        cumulativeLobtDistribution,
+        individualLobtDistributions: individualLobtCounts,
     };
   }, [hackathons]);
 
@@ -109,7 +137,7 @@ export default function HackathonsDetailsPage() {
             
             {!isLoading && hackathons.length > 0 && (
               <div className="space-y-8">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between pb-2">
                             <CardTitle className="text-sm font-medium">Total Hackathons</CardTitle>
@@ -135,6 +163,24 @@ export default function HackathonsDetailsPage() {
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">{totalTeams}</div>
+                        </CardContent>
+                    </Card>
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between pb-2">
+                            <CardTitle className="text-sm font-medium">Cumulative LOBT Distribution</CardTitle>
+                            <Building2 className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                             <ChartContainer config={{}} className="h-[100px] w-full">
+                                <ResponsiveContainer width="100%" height={100}>
+                                <BarChart data={cumulativeLobtDistribution} layout="vertical" margin={{ right: 0, top: 10, left: 10, bottom: 0 }}>
+                                    <XAxis type="number" hide />
+                                    <YAxis dataKey="name" type="category" hide />
+                                    <ChartTooltip content={<ChartTooltipContent />} />
+                                    <Bar dataKey="value" fill="hsl(var(--chart-1))" radius={[0, 4, 4, 0]} />
+                                </BarChart>
+                                </ResponsiveContainer>
+                            </ChartContainer>
                         </CardContent>
                     </Card>
                 </div>
@@ -176,6 +222,26 @@ export default function HackathonsDetailsPage() {
                                         </div>
                                     </div>
                                 )}
+                                {individualLobtDistributions[hackathon.id] && individualLobtDistributions[hackathon.id].length > 0 && (
+                                     <Card>
+                                        <CardHeader>
+                                            <CardTitle className="text-base">LOBT-wise Distribution</CardTitle>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <ChartContainer config={{}} className="min-h-[150px] w-full">
+                                                <ResponsiveContainer width="100%" height={150}>
+                                                <BarChart data={individualLobtDistributions[hackathon.id]} layout="vertical" margin={{ right: 20 }}>
+                                                    <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                                                    <XAxis type="number" allowDecimals={false} />
+                                                    <YAxis dataKey="name" type="category" width={60} tick={{ fontSize: 12 }} />
+                                                    <ChartTooltip content={<ChartTooltipContent />} />
+                                                    <Bar dataKey="value" fill="hsl(var(--chart-2))" radius={[0, 4, 4, 0]} />
+                                                </BarChart>
+                                                </ResponsiveContainer>
+                                            </ChartContainer>
+                                        </CardContent>
+                                     </Card>
+                                )}
                                 {hackathon.winners && hackathon.winners.length > 0 && (
                                     <div>
                                         <h4 className="font-medium mb-2">Winners</h4>
@@ -207,3 +273,5 @@ export default function HackathonsDetailsPage() {
     </div>
   );
 }
+
+    
