@@ -16,7 +16,7 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/use-toast';
-import type { Pillar, SubItem, Status, ExcelData } from '@/types';
+import type { Pillar, SubItem, Status, ExcelData, Hackathon } from '@/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Loader2, Plus, Trash2, Upload } from 'lucide-react';
@@ -133,6 +133,84 @@ function ExcelUploadSection({
   );
 }
 
+function HackathonManagement({
+  hackathons,
+  onAdd,
+  onRemove,
+}: {
+  hackathons: Hackathon[];
+  onAdd: (name: string, date: string) => void;
+  onRemove: (id: string) => void;
+}) {
+  const [newName, setNewName] = useState('');
+  const [newDate, setNewDate] = useState('');
+
+  const handleAdd = () => {
+    if (newName && newDate) {
+      onAdd(newName, newDate);
+      setNewName('');
+      setNewDate('');
+    } else {
+      toast({
+        title: 'Missing information',
+        description: 'Please provide both a name and a date for the hackathon.',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  return (
+    <Card className="bg-secondary/30 mt-6">
+      <CardHeader>
+        <CardTitle className="text-xl">Hackathons</CardTitle>
+        <CardDescription>
+          Add or remove hackathons manually. The total count will be reflected on the dashboard.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          <div className="flex gap-2">
+            <Input
+              placeholder="Hackathon Name"
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+            />
+            <Input
+              type="date"
+              value={newDate}
+              onChange={(e) => setNewDate(e.target.value)}
+            />
+            <Button onClick={handleAdd}>
+              <Plus className="mr-2 h-4 w-4" /> Add
+            </Button>
+          </div>
+          <div className="space-y-2">
+            {hackathons.length > 0 ? (
+              hackathons.map((hackathon) => (
+                <div key={hackathon.id} className="flex items-center justify-between p-2 bg-background rounded-md">
+                  <div>
+                    <p className="font-medium">{hackathon.name}</p>
+                    <p className="text-sm text-muted-foreground">{hackathon.date}</p>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onRemove(hackathon.id)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))
+            ) : (
+              <p className="text-sm text-muted-foreground text-center py-4">No hackathons added yet.</p>
+            )}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 
 export default function UpdateDataPage() {
   const [data, setData] = useState<Pillar[] | null>(null);
@@ -141,6 +219,7 @@ export default function UpdateDataPage() {
       'dti-tech-blogs': null,
       'tech-sphere-sessions': null
   });
+  const [hackathons, setHackathons] = useState<Hackathon[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
@@ -155,6 +234,13 @@ export default function UpdateDataPage() {
       if (jsonData.length > 0) {
           setActiveTab(jsonData[0].id);
       }
+
+      const hackathonRes = await fetch('/api/data?key=hackathons');
+      if(hackathonRes.ok) {
+        const hackathonJson = await hackathonRes.json();
+        setHackathons(hackathonJson);
+      }
+
     } catch (error) {
       console.error(error);
       toast({
@@ -229,14 +315,40 @@ export default function UpdateDataPage() {
     await fetchData();
   };
 
+  const handleAddHackathon = (name: string, date: string) => {
+    const newHackathon: Hackathon = {
+      id: `hackathon-${Date.now()}`,
+      name,
+      date,
+    };
+    const updatedHackathons = [...hackathons, newHackathon];
+    setHackathons(updatedHackathons);
+    // Refetch data to update the count on the main page
+    setTimeout(fetchData, 100); 
+  };
+
+  const handleRemoveHackathon = (id: string) => {
+    const updatedHackathons = hackathons.filter(h => h.id !== id);
+    setHackathons(updatedHackathons);
+     // Refetch data to update the count on the main page
+    setTimeout(fetchData, 100);
+  };
+
 
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      const payload = {
+      const payload: {
+        pillars: Pillar[] | null;
+        excelData: Record<string, any>;
+      } = {
         pillars: data,
-        excelData: excelData
+        excelData: {
+          ...excelData,
+          hackathons: hackathons
+        }
       };
+      
       const res = await fetch('/api/data', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -327,6 +439,7 @@ export default function UpdateDataPage() {
                                     {pillar.subItems.map((item, sIndex) => {
                                       const isResiliencyProgram = item.id === 'explore-resiliency-program';
                                       const isBlogs = item.id === 'blogs-open-source';
+                                      const isHackathons = item.id === 'hackathons';
                                       return (
                                         <div key={item.id} className="border rounded-md p-4 bg-secondary/50 relative">
                                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -377,7 +490,7 @@ export default function UpdateDataPage() {
                                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                                               <div>
                                                   <Label htmlFor={`item-progress-${pIndex}-${sIndex}`}>
-                                                    Current Value {(isResiliencyProgram || isBlogs) && '(Auto-calculated)'}
+                                                    Current Value {(isResiliencyProgram || isBlogs || isHackathons) && '(Auto-calculated)'}
                                                   </Label>
                                                   <Input
                                                   id={`item-progress-${pIndex}-${sIndex}`}
@@ -386,7 +499,7 @@ export default function UpdateDataPage() {
                                                   onChange={(e) =>
                                                       handleSubItemChange(pIndex, sIndex, 'percentageComplete', parseInt(e.target.value, 10) || 0)
                                                   }
-                                                  disabled={isResiliencyProgram || isBlogs}
+                                                  disabled={isResiliencyProgram || isBlogs || isHackathons}
                                                   />
                                               </div>
                                               <div>
@@ -447,6 +560,11 @@ export default function UpdateDataPage() {
 
                                     {pillar.id === 'adopting-emerging-technologies' && (
                                         <>
+                                            <HackathonManagement
+                                                hackathons={hackathons}
+                                                onAdd={handleAddHackathon}
+                                                onRemove={handleRemoveHackathon}
+                                            />
                                             <ExcelUploadSection
                                                 title="Explore Resiliency Program"
                                                 description="Upload the Excel sheet for the Resiliency Program."

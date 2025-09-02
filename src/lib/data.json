@@ -160,14 +160,14 @@
         "owner": "Innovation Team",
         "lastUpdate": "2024-07-28",
         "comments": "Awaiting budget approval for new initiatives.",
-        "percentageComplete": 5,
+        "percentageComplete": 4,
         "annualTarget": 25,
         "metricName": "YTD Progress",
         "metricUnit": "App Assessment Completion"
       },
       {
         "id": "hackathons",
-        "name": "Use Case Discovery (Hackathons)",
+        "name": "Hackathons (Use Case Discovery)",
         "status": "Green",
         "description": "Discover new use cases through hackathons and innovation challenges.",
         "trend": "up",

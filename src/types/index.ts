@@ -35,3 +35,9 @@ export type ExcelData = {
   headers: string[];
   rows: ExcelRow[];
 };
+
+export type Hackathon = {
+  id: string;
+  name: string;
+  date: string;
+};

@@ -77,6 +77,22 @@ async function readData(): Promise<Pillar[]> {
         });
     }
 
+    // Attach hackathons count
+    const hackathonsData = await readExcelData('hackathons');
+    if (hackathonsData && hackathonsData.rows.length > 0) {
+        const hackathonsCount = hackathonsData.rows.length;
+        jsonData = jsonData.map(pillar => {
+            if (pillar.id === 'adopting-emerging-technologies') {
+                pillar.subItems = pillar.subItems.map(subItem => {
+                    if (subItem.id === 'hackathons') {
+                        return { ...subItem, percentageComplete: hackathonsCount };
+                    }
+                    return subItem;
+                })
+            }
+            return pillar;
+        });
+    }
 
     // Attach icons back to the data
     return jsonData.map(pillar => ({
@@ -125,13 +141,23 @@ export async function writeData(data: Pillar[]) {
 export async function readExcelData(fileKey: string): Promise<ExcelData | null> {
     try {
         const fileContent = await fs.readFile(dataFilePath(`${fileKey}.json`), 'utf-8');
+        // A bit of a hack: if it's hackathons.json, it's not ExcelData format but Hackathon[]
+        if (fileKey === 'hackathons') {
+          const hackathons = JSON.parse(fileContent);
+          return { headers: ['id', 'name', 'date'], rows: hackathons };
+        }
         return JSON.parse(fileContent);
     } catch (error) {
         // It's okay if the file doesn't exist, it just means no data has been uploaded yet.
         if (error instanceof Error && (error as NodeJS.ErrnoException).code === 'ENOENT') {
             try {
                 // If the file doesn't exist, create it with empty data
-                await fs.writeFile(dataFilePath(`${fileKey}.json`), JSON.stringify({ headers: [], rows: [] }, null, 2), 'utf-8');
+                const emptyContent = fileKey === 'hackathons' ? '[]' : JSON.stringify({ headers: [], rows: [] }, null, 2);
+                await fs.writeFile(dataFilePath(`${fileKey}.json`), emptyContent, 'utf-8');
+
+                if (fileKey === 'hackathons') {
+                    return { headers: ['id', 'name', 'date'], rows: [] };
+                }
                 return { headers: [], rows: [] };
             } catch (writeError) {
                 console.error(`Could not create ${fileKey}.json:`, writeError);
@@ -144,9 +170,11 @@ export async function readExcelData(fileKey: string): Promise<ExcelData | null> 
 }
 
 
-export async function writeExcelData(fileKey: string, data: ExcelData) {
+export async function writeExcelData(fileKey: string, data: any) {
     try {
-        await fs.writeFile(dataFilePath(`${fileKey}.json`), JSON.stringify(data, null, 2), 'utf-8');
+        // A bit of a hack for hackathons data
+        const dataToWrite = fileKey === 'hackathons' ? data : data;
+        await fs.writeFile(dataFilePath(`${fileKey}.json`), JSON.stringify(dataToWrite, null, 2), 'utf-8');
     } catch (error) {
         console.error(`Could not write to ${fileKey}.json:`, error);
         throw new Error(`Failed to save ${fileKey} data.`);

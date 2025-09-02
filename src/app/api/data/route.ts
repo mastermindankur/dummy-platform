@@ -9,6 +9,11 @@ export async function GET(request: Request) {
 
   if (fileKey) {
      try {
+        if (fileKey === 'hackathons') {
+            const data = await readExcelData('hackathons');
+            // hackathons are not in ExcelData format, they are just an array in the `rows` property
+            return NextResponse.json(data?.rows ?? []); 
+        }
         const data = await readExcelData(fileKey);
         if (data) {
             return NextResponse.json(data);
@@ -37,14 +42,22 @@ export async function POST(request: Request) {
     }
     if (body.excelData) {
         for (const key in body.excelData) {
-            if (body.excelData[key]) {
-                 await writeExcelData(key, body.excelData[key]);
+            if (Object.prototype.hasOwnProperty.call(body.excelData, key)) {
+                 if (body.excelData[key]) {
+                    // special handling for hackathons since they are just an array
+                    if (key === 'hackathons') {
+                      await writeExcelData(key, body.excelData[key]);
+                    } else {
+                      await writeExcelData(key, body.excelData[key]);
+                    }
+                 }
             }
         }
     }
 
     return new NextResponse('Data saved successfully', { status: 200 });
   } catch (error) {
+    console.error('Save Error:', error);
     return new NextResponse('Internal Server Error', { status: 500 });
   }
 }
