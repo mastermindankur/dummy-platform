@@ -1,3 +1,4 @@
+
 import type { LucideIcon } from "lucide-react";
 
 export type Status = "Green" | "Amber" | "Red";
@@ -17,6 +18,7 @@ export type SubItem = {
   annualTarget: number;
   metricName: string;
   metricUnit: string;
+  totalParticipants?: number;
 };
 
 export type Pillar = {

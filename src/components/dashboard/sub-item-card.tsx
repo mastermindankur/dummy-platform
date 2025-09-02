@@ -41,6 +41,12 @@ export function SubItemCard({ item, pillarName }: Props) {
             <span className="text-sm font-bold">{item.percentageComplete} / {item.annualTarget} {item.metricUnit}</span>
         </div>
         <Progress value={progressValue} className="h-2" />
+        {isTechSphere && (
+          <div className="flex items-center justify-between mt-2">
+            <span className="text-sm font-medium">Total Participants</span>
+            <span className="text-sm font-bold">{item.totalParticipants}</span>
+          </div>
+        )}
       </CardContent>
       <CardFooter className="flex justify-between items-center">
         <StatusIndicator status={item.status} />

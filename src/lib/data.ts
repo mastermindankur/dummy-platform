@@ -24,7 +24,25 @@ const dataFilePath = (filename: string) => path.join(process.cwd(), 'src', 'lib'
 async function readData(): Promise<Pillar[]> {
   try {
     const fileContent = await fs.readFile(dataFilePath('data.json'), 'utf-8');
-    const jsonData: Omit<Pillar, 'icon'>[] = JSON.parse(fileContent);
+    let jsonData: Omit<Pillar, 'icon'>[] = JSON.parse(fileContent);
+
+    // Attach total participants for tech sphere sessions
+    const techSessionsData = await readExcelData('tech-sphere-sessions');
+    if (techSessionsData && techSessionsData.rows.length > 0) {
+      const totalParticipants = techSessionsData.rows.reduce((sum, row) => sum + (Number(row['Participation']) || 0), 0);
+      jsonData = jsonData.map(pillar => {
+        if (pillar.id === 'adopting-emerging-technologies') {
+          pillar.subItems = pillar.subItems.map(subItem => {
+            if (subItem.id === 'tech-sphere-sessions') {
+              return { ...subItem, totalParticipants };
+            }
+            return subItem;
+          });
+        }
+        return pillar;
+      });
+    }
+
     // Attach icons back to the data
     return jsonData.map(pillar => ({
       ...pillar,
@@ -57,8 +75,11 @@ export function getPillarStatus(pillar: Pillar): Status {
 
 export async function writeData(data: Pillar[]) {
     try {
-        // We need to remove the icon before writing to JSON
-        const dataToWrite = data.map(({ icon, ...rest }) => rest);
+        // We need to remove the icon and other dynamic properties before writing to JSON
+        const dataToWrite = data.map(({ icon, ...rest }) => {
+          rest.subItems = rest.subItems.map(({ totalParticipants, ...subRest }) => subRest);
+          return rest;
+        });
         await fs.writeFile(dataFilePath('data.json'), JSON.stringify(dataToWrite, null, 2), 'utf-8');
     } catch (error) {
         console.error("Could not write to data.json:", error);
