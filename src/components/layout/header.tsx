@@ -1,7 +1,8 @@
+
 import Link from "next/link";
 import { WceLogo } from "@/components/icons";
 import { Button } from "../ui/button";
-import { PenSquare, Trophy } from "lucide-react";
+import { PenSquare } from "lucide-react";
 
 export function Header({ children }: { children?: React.ReactNode }) {
   return (
@@ -17,7 +18,7 @@ export function Header({ children }: { children?: React.ReactNode }) {
         <div className="ml-auto flex items-center gap-4">
           {children}
            <Button asChild variant="outline" size="sm">
-              <Link href="/update-data">
+              <Link href="/update-data" target="_blank">
                   <PenSquare className="mr-2 h-4 w-4" />
                   Update Data
               </Link>
