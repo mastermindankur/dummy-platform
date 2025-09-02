@@ -16,7 +16,7 @@ export function PillarCard({ pillar }: { pillar: Pillar }) {
 
   return (
     <Link href={`/pillar/${pillar.id}`} className="block hover:shadow-lg transition-shadow duration-300 rounded-lg">
-      <Card className="flex flex-col justify-between h-full transition-colors hover:border-accent">
+      <Card className="flex flex-col justify-between h-full transition-colors hover:border-accent bg-card">
         <CardHeader>
           <div className="mb-4">
             <pillar.icon className="h-8 w-8 text-accent" />
