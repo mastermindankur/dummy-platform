@@ -38,12 +38,21 @@ const fetchAdoptionData = async (): Promise<MonthlyExcelData | null> => {
   return data;
 };
 
-type PlatformAdoptionData = {
-    platform: string;
+type MonthlyStats = {
     totalUsers: number;
     activeUsers: number;
-    monthlyAdoption: { [month: string]: number };
+    adoption: number;
 };
+
+type PlatformAdoptionData = {
+    platform: string;
+    monthlyData: { [month: string]: MonthlyStats };
+};
+
+type ReportTotal = {
+    platform: string;
+    monthlyData: { [month: string]: MonthlyStats };
+}
 
 export default function JiraAssistantAdoptionPage() {
   const [isLoading, setIsLoading] = useState(true);
@@ -74,102 +83,73 @@ export default function JiraAssistantAdoptionPage() {
       return { reportData: [], sortedMonths: [], totalRow: null };
     }
 
-    const platformData = new Map<string, {
-        totalUserIds: Set<string>;
-        activeUserIds: Set<string>;
-        monthlyStats: Map<string, { total: Set<string>; active: Set<string> }>;
-    }>();
-
+    const platformMonthlyData = new Map<string, Map<string, { totalUsers: Set<string>; activeUsers: Set<string> }>>();
     const allMonths = Object.keys(monthlyData).sort();
+    const sortedMonthLabels = allMonths.map(m => new Date(m).toLocaleString('default', { month: 'short', year: '2-digit' }));
 
     for (const month of allMonths) {
-        const monthRows = monthlyData[month].rows;
         const monthLabel = new Date(month).toLocaleString('default', { month: 'short', year: '2-digit' });
+        const monthRows = monthlyData[month].rows;
 
         for (const row of monthRows) {
             const platform = (row['Platforms'] as string) || 'Unknown';
             const userId = row['1bankid'] as string;
             const isAdopted = row['is_created_via_JA'] === 1;
 
-            if (!platformData.has(platform)) {
-                platformData.set(platform, {
-                    totalUserIds: new Set(),
-                    activeUserIds: new Set(),
-                    monthlyStats: new Map(),
-                });
+            if (!platformMonthlyData.has(platform)) {
+                platformMonthlyData.set(platform, new Map());
             }
-            const data = platformData.get(platform)!;
-            data.totalUserIds.add(userId);
-
-            if (!data.monthlyStats.has(monthLabel)) {
-                data.monthlyStats.set(monthLabel, { total: new Set(), active: new Set() });
+            const platformData = platformMonthlyData.get(platform)!;
+            
+            if (!platformData.has(monthLabel)) {
+                platformData.set(monthLabel, { totalUsers: new Set(), activeUsers: new Set() });
             }
-            const monthStats = data.monthlyStats.get(monthLabel)!;
-            monthStats.total.add(userId);
+            const monthStats = platformData.get(monthLabel)!;
 
+            monthStats.totalUsers.add(userId);
             if (isAdopted) {
-                data.activeUserIds.add(userId);
-                monthStats.active.add(userId);
+                monthStats.activeUsers.add(userId);
             }
         }
     }
     
     const finalReportData: PlatformAdoptionData[] = [];
-    for (const [platform, data] of platformData.entries()) {
-        const monthlyAdoption: { [month: string]: number } = {};
-        for(const month of allMonths) {
-            const monthLabel = new Date(month).toLocaleString('default', { month: 'short', year: '2-digit' });
-            const stats = data.monthlyStats.get(monthLabel);
-            if (stats && stats.total.size > 0) {
-                monthlyAdoption[monthLabel] = (stats.active.size / stats.total.size) * 100;
-            } else {
-                monthlyAdoption[monthLabel] = 0;
-            }
+    for (const [platform, monthMap] of platformMonthlyData.entries()) {
+        const monthlyAdoption: { [month: string]: MonthlyStats } = {};
+
+        for(const monthLabel of sortedMonthLabels) {
+            const stats = monthMap.get(monthLabel);
+            const totalUsers = stats?.totalUsers.size || 0;
+            const activeUsers = stats?.activeUsers.size || 0;
+            const adoption = totalUsers > 0 ? (activeUsers / totalUsers) * 100 : 0;
+            monthlyAdoption[monthLabel] = { totalUsers, activeUsers, adoption };
         }
 
-        finalReportData.push({
-            platform,
-            totalUsers: data.totalUserIds.size,
-            activeUsers: data.activeUserIds.size,
-            monthlyAdoption
-        });
+        finalReportData.push({ platform, monthlyData: monthlyAdoption });
     }
 
     const reportDataSorted = finalReportData.sort((a, b) => a.platform.localeCompare(b.platform));
-    const sortedMonthLabels = allMonths.map(m => new Date(m).toLocaleString('default', { month: 'short', year: '2-digit' }));
 
-    const grandTotal = {
+    const grandTotal: ReportTotal = {
       platform: 'Total',
-      totalUsers: 0,
-      activeUsers: 0,
-      monthlyAdoption: {} as { [month: string]: number }
+      monthlyData: {}
     };
 
-    const monthlyTotals: { [month: string]: { total: Set<string>, active: Set<string> } } = {};
-
-    reportDataSorted.forEach(item => {
-      grandTotal.totalUsers += item.totalUsers;
-      grandTotal.activeUsers += item.activeUsers;
-    });
-
-    for(const [platform, data] of platformData.entries()) {
-        for(const [monthLabel, stats] of data.monthlyStats.entries()) {
-            if(!monthlyTotals[monthLabel]) {
-                monthlyTotals[monthLabel] = { total: new Set(), active: new Set() };
-            }
-            stats.total.forEach(u => monthlyTotals[monthLabel].total.add(u));
-            stats.active.forEach(u => monthlyTotals[monthLabel].active.add(u));
-        }
+    for(const monthLabel of sortedMonthLabels) {
+        let totalUsersForMonth = 0;
+        let activeUsersForMonth = 0;
+        reportDataSorted.forEach(p => {
+            totalUsersForMonth += p.monthlyData[monthLabel]?.totalUsers || 0;
+            activeUsersForMonth += p.monthlyData[monthLabel]?.activeUsers || 0;
+        });
+        
+        const adoption = totalUsersForMonth > 0 ? (activeUsersForMonth / totalUsersForMonth) * 100 : 0;
+        grandTotal.monthlyData[monthLabel] = {
+            totalUsers: totalUsersForMonth,
+            activeUsers: activeUsersForMonth,
+            adoption: adoption
+        };
     }
-    
-    sortedMonthLabels.forEach(monthLabel => {
-        const monthStat = monthlyTotals[monthLabel];
-        if (monthStat && monthStat.total.size > 0) {
-            grandTotal.monthlyAdoption[monthLabel] = (monthStat.active.size / monthStat.total.size) * 100;
-        } else {
-            grandTotal.monthlyAdoption[monthLabel] = 0;
-        }
-    });
 
     return {
       reportData: reportDataSorted,
@@ -200,7 +180,7 @@ export default function JiraAssistantAdoptionPage() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <Card>
+                <Card className="lg:col-span-1">
                     <CardHeader>
                         <CardTitle>User Adoption</CardTitle>
                     </CardHeader>
@@ -223,13 +203,20 @@ export default function JiraAssistantAdoptionPage() {
                                     <Table>
                                         <TableHeader>
                                             <TableRow>
-                                                <TableHead className="min-w-[150px] sticky left-0 bg-secondary">Platform</TableHead>
-                                                <TableHead className="text-right">Total Users</TableHead>
-                                                <TableHead className="text-right">Active Users</TableHead>
+                                                <TableHead className="min-w-[150px] sticky left-0 bg-secondary" rowSpan={2}>Platform</TableHead>
                                                 {sortedMonths.map(month => (
-                                                    <TableHead key={month} className="text-right min-w-[120px]">
-                                                        Adoption % ({month})
+                                                    <TableHead key={month} className="text-center min-w-[300px] border-l" colSpan={3}>
+                                                        {month}
                                                     </TableHead>
+                                                ))}
+                                            </TableRow>
+                                             <TableRow>
+                                                {sortedMonths.map(month => (
+                                                    <React.Fragment key={`${month}-sub`}>
+                                                        <TableHead className="text-right border-l">Total Users</TableHead>
+                                                        <TableHead className="text-right">Active Users</TableHead>
+                                                        <TableHead className="text-right">Adoption %</TableHead>
+                                                    </React.Fragment>
                                                 ))}
                                             </TableRow>
                                         </TableHeader>
@@ -237,25 +224,31 @@ export default function JiraAssistantAdoptionPage() {
                                             {reportData.map((item) => (
                                                 <TableRow key={item.platform}>
                                                     <TableCell className="font-medium sticky left-0 bg-background">{item.platform}</TableCell>
-                                                    <TableCell className="text-right">{item.totalUsers}</TableCell>
-                                                    <TableCell className="text-right">{item.activeUsers}</TableCell>
-                                                    {sortedMonths.map(month => (
-                                                        <TableCell key={`${item.platform}-${month}`} className="text-right">
-                                                            {item.monthlyAdoption[month] !== undefined ? `${item.monthlyAdoption[month].toFixed(2)}%` : 'N/A'}
-                                                        </TableCell>
-                                                    ))}
+                                                    {sortedMonths.map(month => {
+                                                        const monthData = item.monthlyData[month];
+                                                        return (
+                                                           <React.Fragment key={`${item.platform}-${month}`}>
+                                                                <TableCell className="text-right border-l">{monthData?.totalUsers ?? 'N/A'}</TableCell>
+                                                                <TableCell className="text-right">{monthData?.activeUsers ?? 'N/A'}</TableCell>
+                                                                <TableCell className="text-right">{monthData?.adoption !== undefined ? `${monthData.adoption.toFixed(2)}%` : 'N/A'}</TableCell>
+                                                           </React.Fragment>
+                                                        )
+                                                    })}
                                                 </TableRow>
                                             ))}
                                             {totalRow && (
                                                 <TableRow className="font-bold bg-secondary hover:bg-secondary/80">
                                                     <TableCell className="sticky left-0 bg-secondary">{totalRow.platform}</TableCell>
-                                                    <TableCell className="text-right">{totalRow.totalUsers}</TableCell>
-                                                    <TableCell className="text-right">{totalRow.activeUsers}</TableCell>
-                                                    {sortedMonths.map(month => (
-                                                        <TableCell key={`total-${month}`} className="text-right">
-                                                          {totalRow.monthlyAdoption[month] !== undefined ? `${totalRow.monthlyAdoption[month].toFixed(2)}%` : 'N/A'}
-                                                        </TableCell>
-                                                    ))}
+                                                    {sortedMonths.map(month => {
+                                                        const monthData = totalRow.monthlyData[month];
+                                                        return (
+                                                           <React.Fragment key={`total-${month}`}>
+                                                                <TableCell className="text-right border-l">{monthData?.totalUsers ?? 'N/A'}</TableCell>
+                                                                <TableCell className="text-right">{monthData?.activeUsers ?? 'N/A'}</TableCell>
+                                                                <TableCell className="text-right">{monthData?.adoption !== undefined ? `${monthData.adoption.toFixed(2)}%` : 'N/A'}</TableCell>
+                                                           </React.Fragment>
+                                                        )
+                                                    })}
                                                 </TableRow>
                                             )}
                                         </TableBody>
@@ -265,7 +258,7 @@ export default function JiraAssistantAdoptionPage() {
                         )}
                     </CardContent>
                 </Card>
-                <Card>
+                <Card className="lg:col-span-1">
                     <CardHeader>
                         <CardTitle>Jira Assist Test Cases Adoption</CardTitle>
                     </CardHeader>
