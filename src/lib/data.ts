@@ -256,6 +256,7 @@ export async function readMonthlyData(dir: string, month?: string | null): Promi
             const fileName = `${month}.json`;
             if (files.includes(fileName)) {
                 const fileContent = await fs.readFile(path.join(dirPath, fileName), 'utf-8');
+                if (fileContent.trim() === '') return { [month]: { headers: [], rows: [] } };
                 return { [month]: JSON.parse(fileContent) };
             }
             return null;
@@ -266,7 +267,11 @@ export async function readMonthlyData(dir: string, month?: string | null): Promi
             if (path.extname(file) === '.json') {
                 const monthKey = path.basename(file, '.json');
                 const fileContent = await fs.readFile(path.join(dirPath, file), 'utf-8');
-                allData[monthKey] = JSON.parse(fileContent);
+                if (fileContent.trim() === '') {
+                    allData[monthKey] = { headers: [], rows: [] };
+                } else {
+                    allData[monthKey] = JSON.parse(fileContent);
+                }
             }
         }
         return allData;
