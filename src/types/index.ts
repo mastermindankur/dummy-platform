@@ -22,7 +22,7 @@ export type SubItem = {
 };
 
 export type Pillar = {
-  id: string;
+  id:string;
   name: string;
   description: string;
   icon: LucideIcon;
@@ -36,8 +36,22 @@ export type ExcelData = {
   rows: ExcelRow[];
 };
 
+export type HackathonTeam = {
+  id: string;
+  name: string;
+};
+
+export type HackathonWinner = {
+  teamId: string;
+  rank: 1 | 2 | 3;
+};
+
 export type Hackathon = {
   id: string;
   name: string;
-  date: string;
+  startMonth: string;
+  endMonth: string;
+  participants: number;
+  teams: HackathonTeam[];
+  winners: HackathonWinner[];
 };
