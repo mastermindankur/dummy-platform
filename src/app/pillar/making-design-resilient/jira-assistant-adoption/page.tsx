@@ -262,35 +262,7 @@ export default function JiraAssistantAdoptionPage() {
                                         </ChartContainer>
                                     </CardContent>
                                 </Card>
-                                <div className="grid grid-cols-2 gap-4">
-                                     <Card>
-                                        <CardHeader>
-                                            <CardTitle>Total Unique Users</CardTitle>
-                                            <CardDescription>All users across all time.</CardDescription>
-                                        </CardHeader>
-                                        <CardContent>
-                                            <div className="text-4xl font-bold">{totalUsers}</div>
-                                        </CardContent>
-                                    </Card>
-                                    <Card>
-                                        <CardHeader>
-                                            <CardTitle>Active Users</CardTitle>
-                                            <CardDescription>Users with at least one adoption event.</CardDescription>
-                                        </CardHeader>
-                                        <CardContent>
-                                            <div className="text-4xl font-bold">{activeUsers}</div>
-                                        </CardContent>
-                                    </Card>
-                                    <Card className="col-span-2">
-                                        <CardHeader>
-                                            <CardTitle>Overall Adoption Rate</CardTitle>
-                                            <CardDescription>Percentage of active users from the total user base.</CardDescription>
-                                        </CardHeader>
-                                        <CardContent>
-                                             <div className="text-4xl font-bold">{totalUsers > 0 ? ((activeUsers / totalUsers) * 100).toFixed(2) : 0}%</div>
-                                        </CardContent>
-                                    </Card>
-                                </div>
+                                <div />
                              </div>
 
                             <div className="border rounded-lg overflow-x-auto">
