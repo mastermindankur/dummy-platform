@@ -93,7 +93,9 @@ export default function JiraAssistantAdoptionPage() {
     chartData,
     platformKeys,
     testCaseReportData,
-    testCaseTotalRow
+    testCaseTotalRow,
+    testCaseChartData,
+    testCasePlatformKeys
 } = useMemo(() => {
     if (!monthlyData) {
         return {
@@ -104,6 +106,8 @@ export default function JiraAssistantAdoptionPage() {
             platformKeys: [],
             testCaseReportData: [],
             testCaseTotalRow: null,
+            testCaseChartData: [],
+            testCasePlatformKeys: [],
         };
     }
 
@@ -235,6 +239,15 @@ export default function JiraAssistantAdoptionPage() {
         testCaseGrandTotalRow.monthlyData[monthLabel] = { totalCases: totalCasesForMonth, jaCases: jaCasesForMonth, adoption };
     }
 
+    const testCaseChartDataFormatted = sortedMonthLabels.map(month => {
+        const monthEntry: {[key: string]: any} = { name: month };
+        testCaseReportDataSorted.forEach(platformData => {
+            monthEntry[platformData.platform] = platformData.monthlyData[month]?.adoption.toFixed(2);
+        });
+        monthEntry['Total'] = testCaseGrandTotalRow.monthlyData[month]?.adoption.toFixed(2);
+        return monthEntry;
+    });
+
     return {
       reportData: reportDataSorted,
       sortedMonths: sortedMonthLabels,
@@ -242,7 +255,9 @@ export default function JiraAssistantAdoptionPage() {
       chartData: chartDataFormatted,
       platformKeys: allPlatformKeys,
       testCaseReportData: testCaseReportDataSorted,
-      testCaseTotalRow: testCaseGrandTotalRow
+      testCaseTotalRow: testCaseGrandTotalRow,
+      testCaseChartData: testCaseChartDataFormatted,
+      testCasePlatformKeys: allTestCasePlatformKeys,
     };
   }, [monthlyData]);
 
@@ -313,7 +328,49 @@ export default function JiraAssistantAdoptionPage() {
                         )}
                     </CardContent>
                 </Card>
-                <div />
+                <Card>
+                    <CardHeader>
+                        <CardTitle>JA Test Cases Adoption Trend</CardTitle>
+                        <CardDescription>Month-on-month test case adoption percentage.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        {isLoading && (
+                            <div className="flex items-center justify-center p-8 h-[400px]">
+                                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                            </div>
+                        )}
+                        {!isLoading && testCaseChartData.length > 0 && (
+                            <ChartContainer config={{}} className="h-[400px] w-full">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <LineChart data={testCaseChartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                                        <CartesianGrid strokeDasharray="3 3" />
+                                        <XAxis dataKey="name" />
+                                        <YAxis label={{ value: 'Adoption %', angle: -90, position: 'insideLeft' }} domain={[0, 100]}/>
+                                        <Tooltip content={<ChartTooltipContent indicator="dot" />} />
+                                        <ChartLegend />
+                                        <Line type="monotone" dataKey="Total" stroke="#ff7300" strokeWidth={3} name="Total Adoption" dot={false} />
+                                        {testCasePlatformKeys.map((key, index) => (
+                                            <Line 
+                                                key={key} 
+                                                type="monotone" 
+                                                dataKey={key} 
+                                                stroke={chartColors[index % chartColors.length]} 
+                                                strokeWidth={2}
+                                                name={key}
+                                                dot={false}
+                                            />
+                                        ))}
+                                    </LineChart>
+                                </ResponsiveContainer>
+                            </ChartContainer>
+                        )}
+                        {!isLoading && testCaseChartData.length === 0 && (
+                             <div className="flex items-center justify-center h-[400px] text-muted-foreground">
+                                No data available to display chart.
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
             </div>
 
             <Card>
@@ -476,4 +533,3 @@ export default function JiraAssistantAdoptionPage() {
     </div>
   );
 }
-
