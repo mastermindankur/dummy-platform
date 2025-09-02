@@ -22,6 +22,7 @@ import { ActionRecommendations } from "@/components/dashboard/action-recommendat
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Metadata } from 'next'
+import { SubItemCard } from "@/components/dashboard/sub-item-card";
  
 type Props = {
   params: { id: string }
@@ -49,6 +50,8 @@ export default function PillarPage({ params }: { params: { id: string } }) {
   }
 
   const status = getPillarStatus(pillar.id);
+
+  const isEmergingTech = pillar.id === 'adopting-emerging-technologies';
 
   return (
     <div className="flex min-h-screen w-full flex-col">
@@ -81,38 +84,46 @@ export default function PillarPage({ params }: { params: { id: string } }) {
           </CardHeader>
           <CardContent>
             <h3 className="text-xl font-semibold mb-4">Sub-Item Health</h3>
-            <div className="border rounded-lg">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[30%]">Sub-Item</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Description</TableHead>
-                  <TableHead className="text-right">AI Tools</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {pillar.subItems.map((item) => (
-                  <TableRow key={item.id}>
-                    <TableCell className="font-medium">{item.name}</TableCell>
-                    <TableCell>
-                      <StatusIndicator status={item.status} />
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {item.description}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {item.status !== "Green" && (
-                        <Suspense fallback={<Skeleton className="h-9 w-44 ml-auto" />}>
-                           <RootCauseAnalysis subItem={item} pillarName={pillar.name} />
-                        </Suspense>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-            </div>
+            {isEmergingTech ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {pillar.subItems.map((item) => (
+                        <SubItemCard key={item.id} item={item} pillarName={pillar.name} />
+                    ))}
+                </div>
+            ) : (
+                <div className="border rounded-lg">
+                <Table>
+                <TableHeader>
+                    <TableRow>
+                    <TableHead className="w-[30%]">Sub-Item</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Description</TableHead>
+                    <TableHead className="text-right">AI Tools</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {pillar.subItems.map((item) => (
+                    <TableRow key={item.id}>
+                        <TableCell className="font-medium">{item.name}</TableCell>
+                        <TableCell>
+                        <StatusIndicator status={item.status} />
+                        </TableCell>
+                        <TableCell className="text-muted-foreground">
+                        {item.description}
+                        </TableCell>
+                        <TableCell className="text-right">
+                        {item.status !== "Green" && (
+                            <Suspense fallback={<Skeleton className="h-9 w-44 ml-auto" />}>
+                            <RootCauseAnalysis subItem={item} pillarName={pillar.name} />
+                            </Suspense>
+                        )}
+                        </TableCell>
+                    </TableRow>
+                    ))}
+                </TableBody>
+                </Table>
+                </div>
+            )}
           </CardContent>
         </Card>
       </main>
