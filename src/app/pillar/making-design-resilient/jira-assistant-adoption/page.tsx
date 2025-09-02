@@ -305,7 +305,7 @@ export default function JiraAssistantAdoptionPage() {
                                         <YAxis label={{ value: 'Adoption %', angle: -90, position: 'insideLeft' }} domain={[0, 100]}/>
                                         <Tooltip content={<ChartTooltipContent indicator="dot" />} />
                                         <ChartLegend />
-                                        <Line type="monotone" dataKey="Total" stroke="#ff7300" strokeWidth={3} name="Total Adoption" dot={false} />
+                                        <Line type="monotone" dataKey="Total" stroke="#ff7300" strokeWidth={3} name="Total Adoption" />
                                         {platformKeys.map((key, index) => (
                                             <Line 
                                                 key={key} 
@@ -314,7 +314,6 @@ export default function JiraAssistantAdoptionPage() {
                                                 stroke={chartColors[index % chartColors.length]} 
                                                 strokeWidth={2}
                                                 name={key}
-                                                dot={false}
                                             />
                                         ))}
                                     </LineChart>
@@ -348,7 +347,7 @@ export default function JiraAssistantAdoptionPage() {
                                         <YAxis label={{ value: 'Adoption %', angle: -90, position: 'insideLeft' }} domain={[0, 100]}/>
                                         <Tooltip content={<ChartTooltipContent indicator="dot" />} />
                                         <ChartLegend />
-                                        <Line type="monotone" dataKey="Total" stroke="#ff7300" strokeWidth={3} name="Total Adoption" dot={false} />
+                                        <Line type="monotone" dataKey="Total" stroke="#ff7300" strokeWidth={3} name="Total Adoption" />
                                         {testCasePlatformKeys.map((key, index) => (
                                             <Line 
                                                 key={key} 
@@ -357,7 +356,6 @@ export default function JiraAssistantAdoptionPage() {
                                                 stroke={chartColors[index % chartColors.length]} 
                                                 strokeWidth={2}
                                                 name={key}
-                                                dot={false}
                                             />
                                         ))}
                                     </LineChart>
