@@ -1,5 +1,250 @@
-
 {
-  "headers": [],
-  "rows": []
+  "headers": [
+    "#",
+    "Blog Title",
+    "LOBT",
+    "Author"
+  ],
+  "rows": [
+    {
+      "#": 1,
+      "Blog Title": "Managing Spring Batch Executions using Shed-lock",
+      "LOBT": "MOT",
+      "Author": "Vidya Viswanath Kataruvulapalli"
+    },
+    {
+      "#": 2,
+      "Blog Title": "Building Simulated Humanistic Agent Colonies for Hyper Personalized Marketing Campaigns",
+      "LOBT": "IBGT",
+      "Author": "Srihari Kodam"
+    },
+    {
+      "#": 3,
+      "Blog Title": "Top Five Emerging Technologies to look for in 2025",
+      "LOBT": "CBGT",
+      "Author": "Sai Priya Kandukuri"
+    },
+    {
+      "#": 4,
+      "Blog Title": "Modernizing Banking with Kubernetes, Argo CD and GCP",
+      "LOBT": "CE-Data",
+      "Author": "Abhik Das"
+    },
+    {
+      "#": 5,
+      "Blog Title": "Leveraging RAG for Java code generation",
+      "LOBT": "FR",
+      "Author": "Raghupathi Nagalingappa"
+    },
+    {
+      "#": 6,
+      "Blog Title": "AI-Powered Real-Time Log Analyzer",
+      "LOBT": "MOT",
+      "Author": "Amit Kumar Sahoo"
+    },
+    {
+      "#": 7,
+      "Blog Title": "RPD Knowledge Chatbot",
+      "LOBT": "RPD",
+      "Author": "Ranjith Kumar Mohan"
+    },
+    {
+      "#": 8,
+      "Blog Title": "Common services across organization using KISS pattern",
+      "LOBT": "MOT",
+      "Author": "Ravi Ranjan"
+    },
+    {
+      "#": 9,
+      "Blog Title": "Automated Deployment Status Monitoring with Teams Notification",
+      "LOBT": "FRT",
+      "Author": "Krishnasree Mathi"
+    },
+    {
+      "#": 10,
+      "Blog Title": "Generative Chaos Engineering (GCE): Re-engineering Banking Resilience",
+      "LOBT": "CBT",
+      "Author": "Neha Anjum Siddiqui"
+    },
+    {
+      "#": 11,
+      "Blog Title": "Dynamic SSL Renewal",
+      "LOBT": "CBGT",
+      "Author": "Srinivasarao Boyina"
+    },
+    {
+      "#": 12,
+      "Blog Title": "Personalized Phonetic Multi AI Agent Orchestration for Customer Acquisition and Engagement",
+      "LOBT": "GSTAR",
+      "Author": "Nitya Pydipati"
+    },
+    {
+      "#": 13,
+      "Blog Title": "Agent IO: Your Intelligent Financial Reference Data Assistant",
+      "LOBT": "MOT",
+      "Author": "Lakshmi Prasanna K"
+    },
+    {
+      "#": 14,
+      "Blog Title": "Agile Bot: AI-Powered Scrum Assistant",
+      "LOBT": "GFMT",
+      "Author": "Praneeth Paisia"
+    },
+    {
+      "#": 15,
+      "Blog Title": "Tool to validate Production release Artifacts",
+      "LOBT": "FRT",
+      "Author": "Sreekar Basetty"
+    },
+    {
+      "#": 16,
+      "Blog Title": "No-Code MongoDB Data Integration: Simplifying Bulk Operations through YAML Configuration",
+      "LOBT": "CBT",
+      "Author": "Rama Krishna Kuramsetti"
+    },
+    {
+      "#": 17,
+      "Blog Title": "Develop selenium Test Automation using UFT quickly reducing time and effort",
+      "LOBT": "CBT",
+      "Author": "Sandeep Deshpande"
+    },
+    {
+      "#": 18,
+      "Blog Title": "Deep Trace: Revolutionizing Information Traceability with Generative AI",
+      "LOBT": "MOT",
+      "Author": "Manas Kumar Puthal"
+    },
+    {
+      "#": 19,
+      "Blog Title": "Feature Flag Management Application with maker & checker",
+      "LOBT": "CBGT",
+      "Author": "Bala Chander Digumarthi"
+    },
+    {
+      "#": 20,
+      "Blog Title": "Automated JUnit Test Case Generation using LLM",
+      "LOBT": "IBGT",
+      "Author": "Sreeman Karre"
+    },
+    {
+      "#": 21,
+      "Blog Title": "API Rate Limiting in Microservices",
+      "LOBT": "GFMT",
+      "Author": "Sai Nath Rathod Nenavath"
+    },
+    {
+      "#": 22,
+      "Blog Title": "Seven simple strategies to boost your API performance",
+      "LOBT": "GFMT",
+      "Author": "Hariharan Thirumeni"
+    },
+    {
+      "#": 23,
+      "Blog Title": "Managing Clouds - Leader Election in Multi-Cluster using Kafka",
+      "LOBT": "GFMT",
+      "Author": "Venkata Bharath Kumar Garre"
+    },
+    {
+      "#": 24,
+      "Blog Title": "From Transcript to Task List: Automating Meeting Minutes with Gemini 1.5 Flash on Vertex AI",
+      "LOBT": "GFMT",
+      "Author": "Madhavi M Rao"
+    },
+    {
+      "#": 25,
+      "Blog Title": "Testing Enterprise Machine Learning Applications",
+      "LOBT": "T&O-CE-Data",
+      "Author": "Harikishore Vasa"
+    },
+    {
+      "#": 26,
+      "Blog Title": "FeatureMart Observability and Exploratory Data Analysis",
+      "LOBT": "T&O-CE-Data",
+      "Author": "Anshul Sharma"
+    },
+    {
+      "#": 27,
+      "Blog Title": "AI Accountability: the importance of Model Governance",
+      "LOBT": "T&O-CE-Data",
+      "Author": "Suresh Murapaka"
+    },
+    {
+      "#": 28,
+      "Blog Title": "Unlocking the Power of Data Transformation and Enterprise Feature Marts",
+      "LOBT": "T&O-CE-Data",
+      "Author": "Satish Adla"
+    },
+    {
+      "#": 29,
+      "Blog Title": "Next-Level Microservices: Scalability, Flexibility and Resilience",
+      "LOBT": "FR",
+      "Author": "Vipin Kumar Singh"
+    },
+    {
+      "#": 30,
+      "Blog Title": "AI Agents for Stock Analysis, Revolutionize Investment Strategies",
+      "LOBT": "T&O-CBGT",
+      "Author": "Venkateswarulu K"
+    },
+    {
+      "#": 31,
+      "Blog Title": "Migration Guide: Camunda to Activiti BPMN",
+      "LOBT": "FR",
+      "Author": "Rajesh Dasari"
+    },
+    {
+      "#": 32,
+      "Blog Title": "Smart Sheet ANG - A comprehensive Angular 18 component for Spreadsheet requirements",
+      "LOBT": "IBGT",
+      "Author": "Koushik Kandi"
+    },
+    {
+      "#": 33,
+      "Blog Title": "Understanding Generative AI & its landscape",
+      "LOBT": "T&O-CE-Data",
+      "Author": "Dheeraj Chitlangi"
+    },
+    {
+      "#": 34,
+      "Blog Title": "Survival Guide to Vibe Coding with Reusable Prompts",
+      "LOBT": "COO",
+      "Author": "Ankur Khera"
+    },
+    {
+      "#": 35,
+      "Blog Title": "The Power of Prompt Templates as 'Prompt APIs'",
+      "LOBT": "FR",
+      "Author": "Ishaan Mathur"
+    },
+    {
+      "#": 36,
+      "Blog Title": "DBS Bank's AI-Powered Live Verification Automation",
+      "LOBT": "MOT",
+      "Author": "Pawan Kumar Pandey"
+    },
+    {
+      "#": 37,
+      "Blog Title": "From Endless Debugging Calls to Self-Healing Systems: How AI Agents Transform Production Support",
+      "LOBT": "FR",
+      "Author": "Navya Renuka Ankam"
+    },
+    {
+      "#": 38,
+      "Blog Title": "Build Anomaly and Performance Issues Dashboard from application logs",
+      "LOBT": "CBGT",
+      "Author": "Pramod Reddy Ginuga"
+    },
+    {
+      "#": 39,
+      "Blog Title": "Spring Boot Retry: The Unsung Hero that saves you from 3 AM Pager Alerts",
+      "LOBT": "MOT",
+      "Author": "Mahesh Bonagiri"
+    },
+    {
+      "#": 40,
+      "Blog Title": "Prompt Engineering from Zero to Hero",
+      "LOBT": "FR",
+      "Author": "Vineeth Kumar Talapalli"
+    }
+  ]
 }
