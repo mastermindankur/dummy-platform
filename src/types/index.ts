@@ -61,7 +61,9 @@ export type Hackathon = {
 export type IndustryEvent = {
     id: string;
     name: string;
-    date: string;
+    startDate: string;
+    endDate?: string;
     location: string;
     description: string;
+    type: 'internal' | 'external';
 };

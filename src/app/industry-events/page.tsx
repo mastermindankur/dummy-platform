@@ -12,6 +12,8 @@ import type { IndustryEvent } from '@/types';
 import { Loader2, Plus, Trash2, Calendar, MapPin } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
 
 export default function IndustryEventsPage() {
   const [events, setEvents] = useState<IndustryEvent[]>([]);
@@ -20,9 +22,11 @@ export default function IndustryEventsPage() {
   
   // New Event form state
   const [newName, setNewName] = useState('');
-  const [newDate, setNewDate] = useState('');
+  const [newStartDate, setNewStartDate] = useState('');
+  const [newEndDate, setNewEndDate] = useState('');
   const [newLocation, setNewLocation] = useState('');
   const [newDescription, setNewDescription] = useState('');
+  const [newType, setNewType] = useState<'internal' | 'external'>('external');
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -48,23 +52,27 @@ export default function IndustryEventsPage() {
   }, []);
 
   const handleAddEvent = () => {
-    if (newName && newDate && newLocation && newDescription) {
+    if (newName && newStartDate && newLocation && newDescription) {
       const newEvent: IndustryEvent = {
         id: `event-${Date.now()}`,
         name: newName,
-        date: newDate,
+        startDate: newStartDate,
+        endDate: newEndDate || undefined,
         location: newLocation,
         description: newDescription,
+        type: newType,
       };
       setEvents([...events, newEvent]);
       setNewName('');
-      setNewDate('');
+      setNewStartDate('');
+      setNewEndDate('');
       setNewLocation('');
       setNewDescription('');
+      setNewType('external');
     } else {
       toast({
         title: 'Missing information',
-        description: 'Please fill out all fields for the new event.',
+        description: 'Please fill out all required fields for the new event.',
         variant: 'destructive',
       });
     }
@@ -106,6 +114,15 @@ export default function IndustryEventsPage() {
       setIsSaving(false);
     }
   };
+  
+  const formatDateRange = (startDate: string, endDate?: string) => {
+    const start = new Date(startDate).toLocaleDateString(undefined, { timeZone: 'UTC' });
+    if (endDate) {
+      const end = new Date(endDate).toLocaleDateString(undefined, { timeZone: 'UTC' });
+      return `${start} - ${end}`;
+    }
+    return start;
+  }
 
   return (
     <div className="flex min-h-screen w-full flex-col">
@@ -144,15 +161,31 @@ export default function IndustryEventsPage() {
                            <Input id="event-location" placeholder="e.g., San Francisco, CA" value={newLocation} onChange={(e) => setNewLocation(e.target.value)} />
                         </div>
                     </div>
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
-                            <Label htmlFor="event-date">Date</Label>
-                            <Input id="event-date" type="date" value={newDate} onChange={(e) => setNewDate(e.target.value)} />
+                            <Label htmlFor="event-start-date">Start Date</Label>
+                            <Input id="event-start-date" type="date" value={newStartDate} onChange={(e) => setNewStartDate(e.target.value)} />
                         </div>
-                         <div className="md:col-span-1">
-                            <Label htmlFor="event-description">Description</Label>
-                            <Textarea id="event-description" placeholder="A brief description of the event." value={newDescription} onChange={(e) => setNewDescription(e.target.value)} />
+                        <div>
+                            <Label htmlFor="event-end-date">End Date (Optional)</Label>
+                            <Input id="event-end-date" type="date" value={newEndDate} onChange={(e) => setNewEndDate(e.target.value)} />
                         </div>
+                        <div>
+                            <Label htmlFor="event-type">Event Type</Label>
+                            <Select value={newType} onValueChange={(value: 'internal' | 'external') => setNewType(value)}>
+                                <SelectTrigger id="event-type">
+                                    <SelectValue placeholder="Select type" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="external">External</SelectItem>
+                                    <SelectItem value="internal">Internal</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </div>
+                    <div>
+                        <Label htmlFor="event-description">Description</Label>
+                        <Textarea id="event-description" placeholder="A brief description of the event." value={newDescription} onChange={(e) => setNewDescription(e.target.value)} />
                     </div>
                 </CardContent>
                 <CardFooter>
@@ -176,11 +209,16 @@ export default function IndustryEventsPage() {
                                 <Trash2 className="h-4 w-4" />
                             </Button>
                             <CardHeader>
-                                <CardTitle>{event.name}</CardTitle>
+                                <div className="flex items-start justify-between">
+                                    <CardTitle>{event.name}</CardTitle>
+                                    <Badge variant={event.type === 'internal' ? 'secondary' : 'outline'}>
+                                      {event.type.charAt(0).toUpperCase() + event.type.slice(1)}
+                                    </Badge>
+                                </div>
                                 <div className="flex items-center gap-4 text-sm text-muted-foreground pt-1">
                                     <div className="flex items-center gap-2">
                                         <Calendar className="h-4 w-4" />
-                                        <span>{new Date(event.date).toLocaleDateString()}</span>
+                                        <span>{formatDateRange(event.startDate, event.endDate)}</span>
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <MapPin className="h-4 w-4" />
