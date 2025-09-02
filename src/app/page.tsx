@@ -1,3 +1,4 @@
+
 import { Header } from "@/components/layout/header";
 import { getPillars } from "@/lib/data";
 import { Suspense } from "react";
@@ -57,7 +58,9 @@ export default async function Home() {
                     <CheckCircle2 className="h-4 w-4 text-green-500" />
                 </CardHeader>
                 <CardContent>
-                    <div className="text-2xl font-bold">{statusCounts.Green}</div>
+                    <div className="text-2xl font-bold">{statusCounts.Green}
+                        <span className="text-base text-muted-foreground">/{totalSubItems}</span>
+                    </div>
                 </CardContent>
             </Card>
             <Card>
@@ -66,7 +69,9 @@ export default async function Home() {
                     <AlertTriangle className="h-4 w-4 text-amber-500" />
                 </CardHeader>
                 <CardContent>
-                    <div className="text-2xl font-bold">{statusCounts.Amber}</div>
+                    <div className="text-2xl font-bold">{statusCounts.Amber}
+                        <span className="text-base text-muted-foreground">/{totalSubItems}</span>
+                    </div>
                 </CardContent>
             </Card>
             <Card>
@@ -75,7 +80,9 @@ export default async function Home() {
                     <XCircle className="h-4 w-4 text-red-500" />
                 </CardHeader>
                 <CardContent>
-                    <div className="text-2xl font-bold">{statusCounts.Red}</div>
+                    <div className="text-2xl font-bold">{statusCounts.Red}
+                        <span className="text-base text-muted-foreground">/{totalSubItems}</span>
+                    </div>
                 </CardContent>
             </Card>
         </div>
