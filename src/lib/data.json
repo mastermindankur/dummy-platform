@@ -205,7 +205,7 @@
         "percentageComplete": 40,
         "annualTarget": 60,
         "metricName": "YTD Progress",
-        "metricUnit": "Count of Tech Blogs Published"
+        "metricUnit": "Tech Blogs Published"
       },
       {
         "id": "tech-sphere-sessions",
