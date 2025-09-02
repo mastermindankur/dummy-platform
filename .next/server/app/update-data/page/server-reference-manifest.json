@@ -1,0 +1,16 @@
+{
+  "node": {
+    "40a70a002e8f4de023f15547f8c2e4edfd1264cac1": {
+      "workers": {
+        "app/update-data/page": {
+          "moduleId": "[project]/.next-internal/server/app/update-data/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/excel-utils.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/update-data/page": "action-browser"
+      }
+    }
+  },
+  "edge": {}
+}
