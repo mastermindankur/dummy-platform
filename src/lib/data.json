@@ -1,4 +1,3 @@
-
 [
   {
     "id": "improving-productivity",
@@ -161,10 +160,10 @@
         "owner": "Innovation Team",
         "lastUpdate": "2024-07-28",
         "comments": "Awaiting budget approval for new initiatives.",
-        "percentageComplete": 40,
-        "annualTarget": 100,
+        "percentageComplete": 19,
+        "annualTarget": 25,
         "metricName": "YTD Progress",
-        "metricUnit": "%"
+        "metricUnit": "App Assessment Count"
       },
       {
         "id": "hackathons",
@@ -175,10 +174,10 @@
         "owner": "DevRel",
         "lastUpdate": "2024-07-20",
         "comments": "Last hackathon produced 3 viable project ideas.",
-        "percentageComplete": 100,
-        "annualTarget": 100,
+        "percentageComplete": 3,
+        "annualTarget": 2,
         "metricName": "YTD Progress",
-        "metricUnit": "%"
+        "metricUnit": "# of Hackathons"
       },
       {
         "id": "industry-events",
@@ -189,10 +188,10 @@
         "owner": "Marketing",
         "lastUpdate": "2024-07-15",
         "comments": "Upcoming conference in Q4.",
-        "percentageComplete": 70,
-        "annualTarget": 100,
+        "percentageComplete": 4,
+        "annualTarget": 5,
         "metricName": "YTD Progress",
-        "metricUnit": "%"
+        "metricUnit": "No of Industry Events"
       },
       {
         "id": "blogs-open-source",
@@ -203,22 +202,22 @@
         "owner": "Engineering Team",
         "lastUpdate": "2024-07-29",
         "comments": "New blog post on our open-source library was published.",
-        "percentageComplete": 1,
-        "annualTarget": 100,
+        "percentageComplete": 40,
+        "annualTarget": 60,
         "metricName": "YTD Progress",
-        "metricUnit": "%"
+        "metricUnit": "Count of Tech Blogs Published"
       },
       {
         "id": "tech-sphere-sessions",
         "name": "Tech Sphere Sessions",
         "status": "Green",
-        "description": "Increase participation and audience coverage for Tech Sphere Sessions.",
+        "description": "Increase participation and audience coverage for Tech Sphere Sessions at DTI.",
         "trend": "up",
         "owner": "Internal Comms",
         "lastUpdate": "2024-07-25",
         "comments": "Record attendance at the last session.",
-        "percentageComplete": 100,
-        "annualTarget": 100,
+        "percentageComplete": 41,
+        "annualTarget": 40,
         "metricName": "YTD Progress",
         "metricUnit": "%"
       },
@@ -231,10 +230,10 @@
         "owner": "HR",
         "lastUpdate": "2024-07-22",
         "comments": "Successfully matched 10 new pairs.",
-        "percentageComplete": 90,
-        "annualTarget": 100,
+        "percentageComplete": 1,
+        "annualTarget": 1,
         "metricName": "YTD Progress",
-        "metricUnit": "%"
+        "metricUnit": "# of Mentorship Connects"
       }
     ]
   },

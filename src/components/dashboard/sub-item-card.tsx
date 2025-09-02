@@ -36,7 +36,7 @@ export function SubItemCard({ item, pillarName }: Props) {
       <CardContent className="flex-grow">
         <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium">{item.metricName}</span>
-            <span className="text-sm font-bold">{item.percentageComplete}{item.metricUnit} / {item.annualTarget}{item.metricUnit}</span>
+            <span className="text-sm font-bold">{item.percentageComplete} / {item.annualTarget} {item.metricUnit}</span>
         </div>
         <Progress value={progressValue} className="h-2" />
       </CardContent>
