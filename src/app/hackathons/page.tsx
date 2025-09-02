@@ -27,6 +27,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
 
 function TeamUploader({ hackathon, onTeamsUpload }: { hackathon: Hackathon, onTeamsUpload: (hackathonId: string, teams: HackathonTeam[]) => void }) {
@@ -146,12 +153,22 @@ function WinnerSelector({ hackathon, onWinnerChange }: { hackathon: Hackathon, o
     
     const handleSelect = (rank: 1 | 2 | 3, teamId: string) => {
         const otherWinners = hackathon.winners.filter(w => w.rank !== rank);
-        const newWinner: HackathonWinner = { teamId, rank };
-        onWinnerChange(hackathon.id, [...otherWinners, newWinner]);
+        const rankWinners = hackathon.winners.filter(w => w.rank === rank);
+        
+        const isAlreadyWinner = rankWinners.some(w => w.teamId === teamId);
+
+        let newRankWinners;
+        if (isAlreadyWinner) {
+            newRankWinners = rankWinners.filter(w => w.teamId !== teamId);
+        } else {
+            newRankWinners = [...rankWinners, { teamId, rank }];
+        }
+        
+        onWinnerChange(hackathon.id, [...otherWinners, ...newRankWinners]);
     };
 
-    const getWinnerId = (rank: 1 | 2 | 3) => {
-        return hackathon.winners.find(w => w.rank === rank)?.teamId || '';
+    const getWinnerIds = (rank: 1 | 2 | 3): string[] => {
+        return hackathon.winners.filter(w => w.rank === rank).map(w => w.teamId);
     };
 
     if (!hackathon.teams || hackathon.teams.length === 0) {
@@ -164,21 +181,34 @@ function WinnerSelector({ hackathon, onWinnerChange }: { hackathon: Hackathon, o
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {(['First Place', 'Second Place', 'Third Place'] as const).map((place, index) => {
                     const rank = (index + 1) as (1 | 2 | 3);
+                    const selectedTeamIds = getWinnerIds(rank);
+                    const buttonText = selectedTeamIds.length > 0 ? `${selectedTeamIds.length} team(s) selected` : "Select team(s)";
                     return (
                         <div key={rank} className="space-y-2">
                              <Label>{place}</Label>
-                             <Select onValueChange={(teamId) => handleSelect(rank, teamId)} value={getWinnerId(rank)}>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select a team" />
-                                </SelectTrigger>
-                                <SelectContent>
+                             <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="outline" className="w-full justify-start">
+                                        {buttonText}
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent className="w-64">
                                     {hackathon.teams.map(team => (
-                                        <SelectItem key={team.id} value={team.id}>
-                                            {team.name}
-                                        </SelectItem>
+                                        <DropdownMenuItem key={team.id} onSelect={(e) => e.preventDefault()}>
+                                            <div className="flex items-center space-x-2" onClick={() => handleSelect(rank, team.id)}>
+                                                <Checkbox
+                                                    id={`team-${rank}-${team.id}`}
+                                                    checked={selectedTeamIds.includes(team.id)}
+                                                    onCheckedChange={() => handleSelect(rank, team.id)}
+                                                />
+                                                <Label htmlFor={`team-${rank}-${team.id}`} className="flex-1 cursor-pointer">
+                                                    {team.name}
+                                                </Label>
+                                            </div>
+                                        </DropdownMenuItem>
                                     ))}
-                                </SelectContent>
-                             </Select>
+                                </DropdownMenuContent>
+                             </DropdownMenu>
                         </div>
                     );
                 })}
@@ -414,7 +444,7 @@ export default function HackathonsPage() {
                                          <h4 className="font-medium mb-2">Winning Teams</h4>
                                          <ul className="space-y-1">
                                             {hackathon.winners.sort((a,b) => a.rank - b.rank).map(winner => (
-                                                <li key={winner.rank} className="flex items-center gap-2">
+                                                <li key={`${winner.rank}-${winner.teamId}`} className="flex items-center gap-2">
                                                     <Trophy className={`h-5 w-5 ${winner.rank === 1 ? 'text-yellow-500' : winner.rank === 2 ? 'text-gray-400' : 'text-yellow-700'}`} />
                                                     <span className="font-semibold">{winner.rank}.</span>
                                                     <span>{getTeamName(winner.teamId)}</span>

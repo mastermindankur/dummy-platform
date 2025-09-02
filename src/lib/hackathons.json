@@ -5,7 +5,81 @@
     "startMonth": "2025-01",
     "endMonth": "2025-06",
     "participants": 177,
-    "teams": [],
-    "winners": []
+    "teams": [
+      {
+        "id": "team-hackathon-1756818317690-0",
+        "name": "AI-Powered Real-Time Log Analyzer"
+      },
+      {
+        "id": "team-hackathon-1756818317690-1",
+        "name": "RPD Knowledge Chatbot"
+      },
+      {
+        "id": "team-hackathon-1756818317690-2",
+        "name": "Common services across organization using KISS pattern"
+      },
+      {
+        "id": "team-hackathon-1756818317690-3",
+        "name": "Automated Deployment Status Monitoring with Teams Notification"
+      },
+      {
+        "id": "team-hackathon-1756818317690-4",
+        "name": "Generative Chaos Engineering (GCE): Re-engineering Banking Resilience"
+      },
+      {
+        "id": "team-hackathon-1756818317690-5",
+        "name": "Dynamic SSL Renewal"
+      },
+      {
+        "id": "team-hackathon-1756818317690-6",
+        "name": "Personalized Phonetic Multi AI Agent Orchestration for Customer Acquisition and Engagement"
+      },
+      {
+        "id": "team-hackathon-1756818317690-7",
+        "name": "Agent IO: Your Intelligent Financial Reference Data Assistant"
+      },
+      {
+        "id": "team-hackathon-1756818317690-8",
+        "name": "Agile Bot: AI-Powered Scrum Assistant"
+      },
+      {
+        "id": "team-hackathon-1756818317690-9",
+        "name": "Tool to validate Production release Artifacts"
+      },
+      {
+        "id": "team-hackathon-1756818317690-10",
+        "name": "No-Code MongoDB Data Integration: Simplifying Bulk Operations through YAML Configuration"
+      },
+      {
+        "id": "team-hackathon-1756818317690-11",
+        "name": "Develop selenium Test Automation using UFT utility quickly reducing time and effort"
+      },
+      {
+        "id": "team-hackathon-1756818317690-12",
+        "name": "Deep Trace: Revolutionizing Information Traceability with Generative AI"
+      },
+      {
+        "id": "team-hackathon-1756818317690-13",
+        "name": "Feature Flag Management Application with maker & checker"
+      },
+      {
+        "id": "team-hackathon-1756818317690-14",
+        "name": "Automated JUnit Test Case Generation Using LLM"
+      }
+    ],
+    "winners": [
+      {
+        "teamId": "team-hackathon-1756818317690-0",
+        "rank": 1
+      },
+      {
+        "teamId": "team-hackathon-1756818317690-6",
+        "rank": 2
+      },
+      {
+        "teamId": "team-hackathon-1756818317690-7",
+        "rank": 3
+      }
+    ]
   }
 ]
