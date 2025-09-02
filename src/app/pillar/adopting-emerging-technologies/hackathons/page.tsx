@@ -227,13 +227,13 @@ export default function HackathonsDetailsPage() {
                                         <CardHeader>
                                             <CardTitle className="text-base">LOBT-wise Distribution</CardTitle>
                                         </CardHeader>
-                                        <CardContent>
-                                            <ChartContainer config={{}} className="min-h-[150px] w-full">
-                                                <ResponsiveContainer width="100%" height={150}>
+                                        <CardContent className="p-2">
+                                            <ChartContainer config={{}} className="min-h-[100px] w-full">
+                                                <ResponsiveContainer width="100%" height={100}>
                                                 <BarChart data={individualLobtDistributions[hackathon.id]} layout="vertical" margin={{ right: 20 }}>
                                                     <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                                                    <XAxis type="number" allowDecimals={false} />
-                                                    <YAxis dataKey="name" type="category" width={60} tick={{ fontSize: 12 }} />
+                                                    <XAxis type="number" allowDecimals={false} domain={[0, 'dataMax + 1']} />
+                                                    <YAxis dataKey="name" type="category" width={60} tick={{ fontSize: 10 }} />
                                                     <ChartTooltip content={<ChartTooltipContent />} />
                                                     <Bar dataKey="value" fill="hsl(var(--chart-2))" radius={[0, 4, 4, 0]} />
                                                 </BarChart>
