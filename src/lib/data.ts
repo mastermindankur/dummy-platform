@@ -1,3 +1,4 @@
+
 import {
   TrendingUp,
   ShieldCheck,
@@ -72,7 +73,14 @@ export async function readExcelData(fileKey: string): Promise<ExcelData | null> 
     } catch (error) {
         // It's okay if the file doesn't exist, it just means no data has been uploaded yet.
         if (error instanceof Error && (error as NodeJS.ErrnoException).code === 'ENOENT') {
-            return null;
+            try {
+                // If the file doesn't exist, create it with empty data
+                await fs.writeFile(dataFilePath(`${fileKey}.json`), JSON.stringify({ headers: [], rows: [] }, null, 2), 'utf-8');
+                return { headers: [], rows: [] };
+            } catch (writeError) {
+                console.error(`Could not create ${fileKey}.json:`, writeError);
+                return null;
+            }
         }
         console.error(`Could not read or parse ${fileKey}.json:`, error);
         return null;

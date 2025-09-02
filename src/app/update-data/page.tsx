@@ -140,7 +140,8 @@ export default function UpdateDataPage() {
   const [data, setData] = useState<Pillar[] | null>(null);
   const [excelData, setExcelData] = useState<Record<string, ExcelData | null>>({
       'explore-resiliency-program': null,
-      'dti-tech-blogs': null
+      'dti-tech-blogs': null,
+      'tech-sphere-sessions': null
   });
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -450,6 +451,12 @@ export default function UpdateDataPage() {
                                                 title="DTI Tech Blogs"
                                                 description="Upload the Excel sheet for Blogs, URLs, and LOBTs."
                                                 fileKey="dti-tech-blogs"
+                                                onDataProcessed={handleExcelDataProcessed}
+                                            />
+                                            <ExcelUploadSection
+                                                title="Tech Sphere Sessions"
+                                                description="Upload the Excel sheet for Tech Sphere sessions."
+                                                fileKey="tech-sphere-sessions"
                                                 onDataProcessed={handleExcelDataProcessed}
                                             />
                                         </>

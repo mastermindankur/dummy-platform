@@ -1,3 +1,4 @@
+
 import type { SubItem } from "@/types";
 import {
   Card,
@@ -24,6 +25,7 @@ type Props = {
 export function SubItemCard({ item, pillarName }: Props) {
   const isExploreResiliency = item.id === "explore-resiliency-program";
   const isBlogsOpenSource = item.id === "blogs-open-source";
+  const isTechSphere = item.id === "tech-sphere-sessions";
 
   const progressValue = item.annualTarget > 0 ? (item.percentageComplete / item.annualTarget) * 100 : 0;
 
@@ -43,7 +45,7 @@ export function SubItemCard({ item, pillarName }: Props) {
       <CardFooter className="flex justify-between items-center">
         <StatusIndicator status={item.status} />
         <div className="flex items-center gap-2">
-          {item.status !== "Green" && !isExploreResiliency && !isBlogsOpenSource && (
+          {item.status !== "Green" && !isExploreResiliency && !isBlogsOpenSource && !isTechSphere && (
               <Suspense fallback={<Skeleton className="h-8 w-36" />}>
                   <RootCauseAnalysis subItem={item} pillarName={pillarName} />
               </Suspense>
@@ -59,6 +61,14 @@ export function SubItemCard({ item, pillarName }: Props) {
           {isBlogsOpenSource && (
             <Button asChild variant="outline" size="sm">
               <Link href="/pillar/adopting-emerging-technologies/blogs-and-open-source">
+                View Details
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          )}
+           {isTechSphere && (
+            <Button asChild variant="outline" size="sm">
+              <Link href="/pillar/adopting-emerging-technologies/tech-sphere-sessions">
                 View Details
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
