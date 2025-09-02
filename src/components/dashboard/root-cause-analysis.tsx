@@ -13,15 +13,15 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "@/hooks/use-toast";
 import { analyzeRootCause } from "@/ai/flows/root-cause-analysis";
-import type { SubItem, Pillar } from "@/types";
+import type { SubItem } from "@/types";
 import { Search, Loader2 } from "lucide-react";
 
 type Props = {
   subItem: SubItem;
-  pillar: Pillar;
+  pillarName: string;
 };
 
-export function RootCauseAnalysis({ subItem, pillar }: Props) {
+export function RootCauseAnalysis({ subItem, pillarName }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [rootCauses, setRootCauses] = useState<string[]>([]);
@@ -31,7 +31,7 @@ export function RootCauseAnalysis({ subItem, pillar }: Props) {
     setRootCauses([]);
     try {
       const result = await analyzeRootCause({
-        pillarName: pillar.name,
+        pillarName: pillarName,
         statusDescription: `The sub-item '${subItem.name}' has a status of ${subItem.status}. This item tracks: ${subItem.description}.`,
       });
       setRootCauses(result.rootCauses);

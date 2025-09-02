@@ -73,7 +73,7 @@ export default function PillarPage({ params }: { params: { id: string } }) {
                 </div>
                 {status !== "Green" && (
                   <Suspense fallback={<Skeleton className="h-10 w-52" />}>
-                    <ActionRecommendations pillarName={pillar.name} pillarSubItems={pillar.subItems} />
+                    <ActionRecommendations pillarName={pillar.name} pillarSubItems={pillar.subItems.map(({name, status}) => ({name, status}))} />
                   </Suspense>
                 )}
               </div>
@@ -104,7 +104,7 @@ export default function PillarPage({ params }: { params: { id: string } }) {
                     <TableCell className="text-right">
                       {item.status !== "Green" && (
                         <Suspense fallback={<Skeleton className="h-9 w-44 ml-auto" />}>
-                           <RootCauseAnalysis subItem={item} pillar={pillar} />
+                           <RootCauseAnalysis subItem={item} pillarName={pillar.name} />
                         </Suspense>
                       )}
                     </TableCell>
