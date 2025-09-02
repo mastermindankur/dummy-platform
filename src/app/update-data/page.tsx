@@ -141,6 +141,7 @@ export default function UpdateDataPage() {
       'dti-tech-blogs': null,
       'tech-sphere-sessions': null,
       'squad-onboarding': null,
+      'arc-trainings': null,
   });
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -337,7 +338,8 @@ export default function UpdateDataPage() {
                                         'blogs-open-source', 
                                         'hackathons', 
                                         'industry-events',
-                                        'system-scalability'
+                                        'system-scalability',
+                                        'arc-trainings'
                                       ].includes(item.id);
 
                                       return (
@@ -464,6 +466,12 @@ export default function UpdateDataPage() {
                                                 title="SQUAD Onboarding"
                                                 description="Upload the Excel sheet for CAT1/CAT2 app onboarding to SQUAD."
                                                 fileKey="squad-onboarding"
+                                                onDataProcessed={handleExcelDataProcessed}
+                                            />
+                                            <ExcelUploadSection
+                                                title="ARC Trainings"
+                                                description="Upload the Excel sheet for ARC Training sessions."
+                                                fileKey="arc-trainings"
                                                 onDataProcessed={handleExcelDataProcessed}
                                             />
                                         </>

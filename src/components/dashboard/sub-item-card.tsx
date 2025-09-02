@@ -26,6 +26,7 @@ export function SubItemCard({ item, pillarName }: Props) {
   const isHackathons = item.id === "hackathons";
   const isIndustryEvents = item.id === "industry-events";
   const isSquadOnboarding = item.id === 'system-scalability';
+  const isArcTrainings = item.id === 'arc-trainings';
 
   const progressValue = item.annualTarget > 0 ? (item.percentageComplete / item.annualTarget) * 100 : 0;
 
@@ -47,6 +48,12 @@ export function SubItemCard({ item, pillarName }: Props) {
             <span className="text-sm font-bold">{item.totalParticipants}</span>
           </div>
         )}
+         {isArcTrainings && (
+          <div className="flex items-center justify-between mt-2">
+            <span className="text-sm font-medium">Total Participants</span>
+            <span className="text-sm font-bold">{item.totalParticipants}</span>
+          </div>
+        )}
       </CardContent>
       <CardFooter className="flex justify-between items-center">
         <StatusIndicator status={item.status} />
@@ -54,6 +61,14 @@ export function SubItemCard({ item, pillarName }: Props) {
            {isSquadOnboarding && (
              <Button asChild variant="outline" size="sm">
                 <Link href="/pillar/making-design-resilient/squad-onboarding">
+                    View Details
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+             </Button>
+          )}
+          {isArcTrainings && (
+             <Button asChild variant="outline" size="sm">
+                <Link href="/pillar/making-design-resilient/arc-trainings">
                     View Details
                     <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>

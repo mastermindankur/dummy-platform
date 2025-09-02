@@ -1,3 +1,4 @@
+
 [
   {
     "id": "improving-productivity",
@@ -131,7 +132,7 @@
         "metricUnit": "%"
       },
       {
-        "id": "dependency-management",
+        "id": "arc-trainings",
         "name": "ARC Trainings",
         "status": "Green",
         "description": "Clarity and resilience of inter-service dependencies.",

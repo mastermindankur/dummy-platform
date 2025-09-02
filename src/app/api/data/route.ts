@@ -22,6 +22,10 @@ export async function GET(request: Request) {
             const data = await readExcelData('squad-onboarding');
             return NextResponse.json(data);
         }
+         if (fileKey === 'arc-trainings') {
+            const data = await readExcelData('arc-trainings');
+            return NextResponse.json(data);
+        }
         const data = await readExcelData(fileKey);
         if (data) {
             return NextResponse.json(data);

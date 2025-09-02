@@ -42,6 +42,24 @@ async function readData(): Promise<Pillar[]> {
         return pillar;
       });
     }
+
+    // Attach total participants and session count for ARC trainings
+    const arcTrainingsData = await readExcelData('arc-trainings');
+    if (arcTrainingsData && arcTrainingsData.rows.length > 0) {
+        const totalParticipants = arcTrainingsData.rows.reduce((sum, row) => sum + (Number(row['Participation']) || 0), 0);
+        const sessionsCount = arcTrainingsData.rows.length;
+        jsonData = jsonData.map(pillar => {
+            if (pillar.id === 'making-design-resilient') {
+                pillar.subItems = pillar.subItems.map(subItem => {
+                    if (subItem.id === 'arc-trainings') {
+                        return { ...subItem, totalParticipants, percentageComplete: sessionsCount };
+                    }
+                    return subItem;
+                });
+            }
+            return pillar;
+        });
+    }
     
     // Attach completed assessment count for Explore Resiliency Program
     const resiliencyData = await readExcelData('explore-resiliency-program');
