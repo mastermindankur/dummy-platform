@@ -18,7 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { ArrowLeft, Loader2 } from 'lucide-react';
+import { ArrowLeft, Loader2, Users } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import type { ExcelData, Pillar, SubItem, ExcelRow } from '@/types';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
@@ -155,7 +155,7 @@ export default function TechSphereSessionsPage() {
 
             {excelData && (
                 <div className="space-y-8">
-                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <Card>
                         <CardHeader>
                             <CardTitle>Overall Progress</CardTitle>
@@ -170,6 +170,18 @@ export default function TechSphereSessionsPage() {
                                </div>
                             </div>
                         </CardContent>
+                    </Card>
+                    <Card>
+                      <CardHeader className="flex flex-row items-center justify-between pb-2">
+                        <CardTitle className="text-base font-medium">Total Participants</CardTitle>
+                        <Users className="h-5 w-5 text-muted-foreground" />
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-4xl font-bold">{totalAttendees}</div>
+                        <p className="text-xs text-muted-foreground">
+                          across all {totalSessions} sessions
+                        </p>
+                      </CardContent>
                     </Card>
                      <Card>
                         <CardHeader>
