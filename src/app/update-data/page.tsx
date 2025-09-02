@@ -13,13 +13,132 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/use-toast';
 import type { Pillar, SubItem, Status } from '@/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, Trash2 } from 'lucide-react';
+import { Loader2, Plus, Trash2, Upload } from 'lucide-react';
+import {
+  processExcelFile,
+  type ExcelRow,
+} from '@/ai/flows/process-excel-file';
+
+function ExcelUploadSection({
+  title,
+  description,
+}: {
+  title: string;
+  description: string;
+}) {
+  const [file, setFile] = useState<File | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [excelData, setExcelData] = useState<{
+    headers: string[];
+    rows: ExcelRow[];
+  } | null>(null);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      setFile(files[0]);
+    }
+  };
+
+  const handleFileUpload = async () => {
+    if (!file) {
+      toast({
+        title: 'No file selected',
+        description: 'Please select an Excel file to upload.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    setExcelData(null);
+
+    try {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = async () => {
+        const fileAsDataUri = reader.result as string;
+        try {
+          // Here you would typically send this data to your backend to be stored.
+          // For this demo, we'll just process and display it.
+          const result = await processExcelFile({ fileAsDataUri });
+          setExcelData(result);
+           toast({
+             title: `"${file.name}" processed`,
+             description: 'Data loaded from Excel. Remember to save all changes.',
+           });
+        } catch (error) {
+          console.error('Error processing file:', error);
+          toast({
+            title: 'Error',
+            description:
+              'Failed to process the Excel file. Please ensure it is a valid .xlsx or .xls file.',
+            variant: 'destructive',
+          });
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      reader.onerror = (error) => {
+        console.error('Error reading file:', error);
+        toast({
+          title: 'Error',
+          description: 'Failed to read the selected file.',
+          variant: 'destructive',
+        });
+        setIsLoading(false);
+      };
+    } catch (error) {
+      console.error('File upload error:', error);
+      toast({
+        title: 'Error',
+        description: 'An unexpected error occurred during file upload.',
+        variant: 'destructive',
+      });
+      setIsLoading(false);
+    }
+  };
+
+  return (
+      <Card className="bg-secondary/30 mt-6">
+        <CardHeader>
+          <CardTitle className="text-xl">{title}</CardTitle>
+          <CardDescription>{description}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid w-full max-w-sm items-center gap-2">
+            <Label htmlFor={`excel-upload-${title.replace(/\s+/g, '-')}`}>{`Upload ${title} Data`}</Label>
+            <div className="flex gap-2">
+              <Input
+                id={`excel-upload-${title.replace(/\s+/g, '-')}`}
+                type="file"
+                accept=".xlsx, .xls"
+                onChange={handleFileChange}
+                className="flex-grow"
+              />
+              <Button onClick={handleFileUpload} disabled={isLoading || !file}>
+                {isLoading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Upload className="mr-2 h-4 w-4" />
+                )}
+                Process
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground">Process the file here, then click the main 'Save Changes' button to update the dashboard.</p>
+          </div>
+
+        </CardContent>
+      </Card>
+  );
+}
+
 
 export default function UpdateDataPage() {
   const [data, setData] = useState<Pillar[] | null>(null);
@@ -105,6 +224,9 @@ export default function UpdateDataPage() {
   const handleSave = async () => {
     setIsSaving(true);
     try {
+      // NOTE: In a real application, you would also handle the uploaded Excel data here,
+      // likely sending it to a separate endpoint or embedding it if it's small.
+      // For this example, we only save the manually edited data.
       const res = await fetch('/api/data', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -272,6 +394,19 @@ export default function UpdateDataPage() {
                                             <Plus className="mr-2 h-4 w-4" /> Add Sub-Item
                                         </Button>
                                     </div>
+
+                                    {pillar.id === 'adopting-emerging-technologies' && (
+                                        <>
+                                            <ExcelUploadSection
+                                                title="Explore Resiliency Program"
+                                                description="Upload the Excel sheet for the Resiliency Program."
+                                            />
+                                            <ExcelUploadSection
+                                                title="DTI Tech Blogs"
+                                                description="Upload the Excel sheet for Blogs, URLs, and LOBTs."
+                                            />
+                                        </>
+                                    )}
                                 </div>
                             </div>
                         </TabsContent>

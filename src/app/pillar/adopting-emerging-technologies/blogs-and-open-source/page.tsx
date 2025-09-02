@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Header } from '@/components/layout/header';
 import {
   Card,
@@ -18,82 +18,50 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Loader2, Upload } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
-import {
-  processExcelFile,
-  type ExcelRow,
-} from '@/ai/flows/process-excel-file';
-import { Label } from '@/components/ui/label';
+
+// This is a placeholder for where you might fetch your data from
+const fetchBlogsData = async () => {
+  // Simulate fetching data
+  await new Promise(resolve => setTimeout(resolve, 1000));
+
+  // Return mock data since we don't have a backend to store the uploaded file
+  return {
+    headers: ['Title', 'URL', 'LOBT', 'Author'],
+    rows: [
+      { Title: 'Intro to GenAI on Firebase', URL: 'https://example.com/blog1', LOBT: 'Finance', Author: 'Jane Doe' },
+      { Title: 'Building Resilient Systems', URL: 'https://example.com/blog2', LOBT: 'Retail', Author: 'John Smith' },
+    ],
+  };
+};
 
 export default function BlogsAndOpenSourcePage() {
-  const [file, setFile] = useState<File | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [excelData, setExcelData] = useState<{
     headers: string[];
-    rows: ExcelRow[];
+    rows: Record<string, any>[];
   } | null>(null);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files && files.length > 0) {
-      setFile(files[0]);
-    }
-  };
-
-  const handleFileUpload = async () => {
-    if (!file) {
-      toast({
-        title: 'No file selected',
-        description: 'Please select an Excel file to upload.',
-        variant: 'destructive',
-      });
-      return;
-    }
-
-    setIsLoading(true);
-    setExcelData(null);
-
-    try {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = async () => {
-        const fileAsDataUri = reader.result as string;
-        try {
-          const result = await processExcelFile({ fileAsDataUri });
-          setExcelData(result);
-        } catch (error) {
-           console.error('Error processing file:', error);
-           toast({
-             title: 'Error',
-             description: 'Failed to process the Excel file. Please ensure it is a valid .xlsx or .xls file.',
-             variant: 'destructive',
-           });
-        } finally {
-          setIsLoading(false);
-        }
-      };
-      reader.onerror = (error) => {
-        console.error('Error reading file:', error);
+  useEffect(() => {
+    const loadData = async () => {
+      setIsLoading(true);
+      try {
+        const data = await fetchBlogsData();
+        setExcelData(data);
+      } catch (error) {
+        console.error('Failed to load blogs data', error);
         toast({
           title: 'Error',
-          description: 'Failed to read the selected file.',
+          description: 'Could not load the blogs and open source data.',
           variant: 'destructive',
-        });
+        })
+      } finally {
         setIsLoading(false);
-      };
-    } catch (error) {
-      console.error('File upload error:', error);
-      toast({
-        title: 'Error',
-        description: 'An unexpected error occurred during file upload.',
-        variant: 'destructive',
-      });
-      setIsLoading(false);
-    }
-  };
+      }
+    };
+    loadData();
+  }, []);
 
   return (
     <div className="flex min-h-screen w-full flex-col">
@@ -105,36 +73,10 @@ export default function BlogsAndOpenSourcePage() {
               Blogs and Open Source
             </CardTitle>
             <CardDescription>
-              Upload and view data from your Excel spreadsheet for blogs, URLs, links, and LOBTs.
+              This page displays the current data for blogs and open source contributions. To update this data, please use the Excel upload feature on the &quot;Update Data&quot; page.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="mb-8 max-w-2xl">
-              <div className="grid w-full items-center gap-2">
-                <Label htmlFor="excel-file">Upload Excel File</Label>
-                <div className="flex gap-2">
-                  <Input
-                    id="excel-file"
-                    type="file"
-                    accept=".xlsx, .xls"
-                    onChange={handleFileChange}
-                    className="flex-grow"
-                  />
-                  <Button
-                    onClick={handleFileUpload}
-                    disabled={isLoading || !file}
-                  >
-                    {isLoading ? (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    ) : (
-                      <Upload className="mr-2 h-4 w-4" />
-                    )}
-                    Upload
-                  </Button>
-                </div>
-              </div>
-            </div>
-
             {isLoading && (
               <div className="flex items-center justify-center p-8">
                 <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -170,6 +112,11 @@ export default function BlogsAndOpenSourcePage() {
                 </div>
               </div>
             )}
+             {!isLoading && !excelData && (
+                <div className="text-center text-muted-foreground p-8">
+                    No data has been uploaded for this section yet.
+                </div>
+             )}
           </CardContent>
         </Card>
       </main>
