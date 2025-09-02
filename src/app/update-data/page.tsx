@@ -208,6 +208,7 @@ export default function UpdateDataPage() {
       lastUpdate: new Date().toISOString().split('T')[0],
       comments: '',
       percentageComplete: 0,
+      annualTarget: 100,
     };
     newData[pillarIndex].subItems.push(newSubItem);
     setData(newData);
@@ -321,7 +322,7 @@ export default function UpdateDataPage() {
                                     <div className="space-y-4">
                                     {pillar.subItems.map((item, sIndex) => (
                                         <div key={item.id} className="border rounded-md p-4 bg-secondary/50 relative">
-                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                                             <div>
                                                 <Label htmlFor={`item-name-${pIndex}-${sIndex}`}>Name</Label>
                                                 <Input
@@ -364,7 +365,20 @@ export default function UpdateDataPage() {
                                                 type="number"
                                                 value={item.percentageComplete}
                                                 onChange={(e) =>
-                                                    handleSubItemChange(pIndex, sIndex, 'percentageComplete', parseInt(e.target.value, 10))
+                                                    handleSubItemChange(pIndex, sIndex, 'percentageComplete', parseInt(e.target.value, 10) || 0)
+                                                }
+                                                />
+                                            </div>
+                                             <div>
+                                                <Label htmlFor={`item-target-${pIndex}-${sIndex}`}>
+                                                Annual Target (%)
+                                                </Label>
+                                                <Input
+                                                id={`item-target-${pIndex}-${sIndex}`}
+                                                type="number"
+                                                value={item.annualTarget}
+                                                onChange={(e) =>
+                                                    handleSubItemChange(pIndex, sIndex, 'annualTarget', parseInt(e.target.value, 10) || 0)
                                                 }
                                                 />
                                             </div>

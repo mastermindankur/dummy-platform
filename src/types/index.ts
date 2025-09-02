@@ -14,6 +14,7 @@ export type SubItem = {
   lastUpdate: string;
   comments: string;
   percentageComplete: number;
+  annualTarget: number;
 };
 
 export type Pillar = {

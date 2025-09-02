@@ -1,3 +1,4 @@
+
 [
   {
     "id": "improving-productivity",
@@ -13,7 +14,8 @@
         "owner": "Engineering Team",
         "lastUpdate": "2024-07-28",
         "comments": "Recent improvements are showing positive results.",
-        "percentageComplete": 90
+        "percentageComplete": 90,
+        "annualTarget": 100
       },
       {
         "id": "ci-cd-pipeline",
@@ -24,7 +26,8 @@
         "owner": "DevOps Team",
         "lastUpdate": "2024-07-27",
         "comments": "Blocked by infrastructure upgrade.",
-        "percentageComplete": 60
+        "percentageComplete": 60,
+        "annualTarget": 100
       },
       {
         "id": "eng-docs",
@@ -35,7 +38,8 @@
         "owner": "Tech Writers",
         "lastUpdate": "2024-07-29",
         "comments": "New documentation portal launched.",
-        "percentageComplete": 85
+        "percentageComplete": 85,
+        "annualTarget": 100
       }
     ]
   },
@@ -53,7 +57,8 @@
         "owner": "SRE Team",
         "lastUpdate": "2024-07-30",
         "comments": "Exceeding SLO targets for 3 consecutive months.",
-        "percentageComplete": 99
+        "percentageComplete": 99,
+        "annualTarget": 100
       },
       {
         "id": "error-rate",
@@ -64,7 +69,8 @@
         "owner": "Backend Team",
         "lastUpdate": "2024-07-29",
         "comments": "Spike in errors after recent deployment. Actively investigating.",
-        "percentageComplete": 30
+        "percentageComplete": 30,
+        "annualTarget": 100
       },
       {
         "id": "perf-testing",
@@ -75,7 +81,8 @@
         "owner": "QA Team",
         "lastUpdate": "2024-07-26",
         "comments": "Need to expand test coverage for new services.",
-        "percentageComplete": 50
+        "percentageComplete": 50,
+        "annualTarget": 100
       }
     ]
   },
@@ -93,7 +100,8 @@
         "owner": "Architecture Guild",
         "lastUpdate": "2024-07-25",
         "comments": "Load tests show we can handle 2x traffic.",
-        "percentageComplete": 95
+        "percentageComplete": 95,
+        "annualTarget": 100
       },
       {
         "id": "disaster-recovery",
@@ -104,7 +112,8 @@
         "owner": "SRE Team",
         "lastUpdate": "2024-07-22",
         "comments": "Last DR drill was successful with zero data loss.",
-        "percentageComplete": 90
+        "percentageComplete": 90,
+        "annualTarget": 100
       },
       {
         "id": "dependency-management",
@@ -115,7 +124,8 @@
         "owner": "Platform Team",
         "lastUpdate": "2024-07-28",
         "comments": "Service map needs updating.",
-        "percentageComplete": 65
+        "percentageComplete": 65,
+        "annualTarget": 100
       }
     ]
   },
@@ -133,7 +143,8 @@
         "owner": "Innovation Team",
         "lastUpdate": "2024-07-28",
         "comments": "Awaiting budget approval for new initiatives.",
-        "percentageComplete": 40
+        "percentageComplete": 40,
+        "annualTarget": 100
       },
       {
         "id": "hackathons",
@@ -144,7 +155,8 @@
         "owner": "DevRel",
         "lastUpdate": "2024-07-20",
         "comments": "Last hackathon produced 3 viable project ideas.",
-        "percentageComplete": 100
+        "percentageComplete": 100,
+        "annualTarget": 100
       },
       {
         "id": "industry-events",
@@ -155,7 +167,8 @@
         "owner": "Marketing",
         "lastUpdate": "2024-07-15",
         "comments": "Upcoming conference in Q4.",
-        "percentageComplete": 70
+        "percentageComplete": 70,
+        "annualTarget": 100
       },
       {
         "id": "blogs-open-source",
@@ -166,7 +179,8 @@
         "owner": "Engineering Team",
         "lastUpdate": "2024-07-29",
         "comments": "New blog post on our open-source library was published.",
-        "percentageComplete": 1
+        "percentageComplete": 1,
+        "annualTarget": 100
       },
       {
         "id": "tech-sphere-sessions",
@@ -177,7 +191,8 @@
         "owner": "Internal Comms",
         "lastUpdate": "2024-07-25",
         "comments": "Record attendance at the last session.",
-        "percentageComplete": 100
+        "percentageComplete": 100,
+        "annualTarget": 100
       },
       {
         "id": "mentorship-program",
@@ -188,7 +203,8 @@
         "owner": "HR",
         "lastUpdate": "2024-07-22",
         "comments": "Successfully matched 10 new pairs.",
-        "percentageComplete": 90
+        "percentageComplete": 90,
+        "annualTarget": 100
       }
     ]
   },
@@ -206,7 +222,8 @@
         "owner": "Security Team",
         "lastUpdate": "2024-07-30",
         "comments": "SOC 2 Type II audit completed successfully.",
-        "percentageComplete": 100
+        "percentageComplete": 100,
+        "annualTarget": 100
       },
       {
         "id": "incident-management",
@@ -217,7 +234,8 @@
         "owner": "SRE Team",
         "lastUpdate": "2024-07-27",
         "comments": "Mean Time to Resolution (MTTR) is down by 15%.",
-        "percentageComplete": 85
+        "percentageComplete": 85,
+        "annualTarget": 100
       },
       {
         "id": "access-control",
@@ -228,7 +246,8 @@
         "owner": "Security Team",
         "lastUpdate": "2024-07-28",
         "comments": "Quarterly access review is overdue.",
-        "percentageComplete": 50
+        "percentageComplete": 50,
+        "annualTarget": 100
       }
     ]
   }
