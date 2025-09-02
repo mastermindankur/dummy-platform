@@ -196,46 +196,6 @@ export default function HackathonsDetailsPage() {
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-6">
-                                {hackathon.teams && hackathon.teams.length > 0 && (
-                                    <div>
-                                        <h4 className="font-medium mb-2">Top Teams ({hackathon.teams.length})</h4>
-                                        <div className="border rounded-md max-h-96 overflow-auto">
-                                            <Table>
-                                                <TableHeader className="sticky top-0 bg-secondary">
-                                                    <TableRow>
-                                                        {(hackathon.teamDataHeaders || []).map(header => (
-                                                            <TableHead key={header}>{header}</TableHead>
-                                                        ))}
-                                                    </TableRow>
-                                                </TableHeader>
-                                                <TableBody>
-                                                    {hackathon.teams.map(team => (
-                                                        <TableRow key={team.id}>
-                                                            {(hackathon.teamDataHeaders || []).map(header => (
-                                                                <TableCell key={`${team.id}-${header}`}>
-                                                                    {header === 'Hyperlink to Submission' && team.data[header] ? (
-                                                                        <a
-                                                                            href={String(team.data[header])}
-                                                                            target="_blank"
-                                                                            rel="noopener noreferrer"
-                                                                            className="text-primary hover:underline flex items-center gap-1"
-                                                                        >
-                                                                            <LinkIcon className="h-3 w-3" />
-                                                                            View Submission
-                                                                        </a>
-                                                                    ) : (
-                                                                        String(team.data[header] ?? '')
-                                                                    )}
-                                                                </TableCell>
-                                                            ))}
-                                                        </TableRow>
-                                                    ))}
-                                                </TableBody>
-                                            </Table>
-                                        </div>
-                                    </div>
-                                )}
-                                
                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                      {hackathon.winners && hackathon.winners.length > 0 && (
                                         <div>
@@ -272,6 +232,45 @@ export default function HackathonsDetailsPage() {
                                         </div>
                                     )}
                                 </div>
+                                {hackathon.teams && hackathon.teams.length > 0 && (
+                                    <div>
+                                        <h4 className="font-medium mb-2 mt-6">Top Teams ({hackathon.teams.length})</h4>
+                                        <div className="border rounded-md max-h-96 overflow-auto">
+                                            <Table>
+                                                <TableHeader className="sticky top-0 bg-secondary">
+                                                    <TableRow>
+                                                        {(hackathon.teamDataHeaders || []).map(header => (
+                                                            <TableHead key={header}>{header}</TableHead>
+                                                        ))}
+                                                    </TableRow>
+                                                </TableHeader>
+                                                <TableBody>
+                                                    {hackathon.teams.map(team => (
+                                                        <TableRow key={team.id}>
+                                                            {(hackathon.teamDataHeaders || []).map(header => (
+                                                                <TableCell key={`${team.id}-${header}`}>
+                                                                    {header === 'Hyperlink to Submission' && team.data[header] ? (
+                                                                        <a
+                                                                            href={String(team.data[header])}
+                                                                            target="_blank"
+                                                                            rel="noopener noreferrer"
+                                                                            className="text-primary hover:underline flex items-center gap-1"
+                                                                        >
+                                                                            <LinkIcon className="h-3 w-3" />
+                                                                            View Submission
+                                                                        </a>
+                                                                    ) : (
+                                                                        String(team.data[header] ?? '')
+                                                                    )}
+                                                                </TableCell>
+                                                            ))}
+                                                        </TableRow>
+                                                    ))}
+                                                </TableBody>
+                                            </Table>
+                                        </div>
+                                    </div>
+                                )}
 
                                 {(!hackathon.teams || hackathon.teams.length === 0) && (
                                     <div className="h-full flex items-center justify-center text-muted-foreground p-8 border-dashed border-2 rounded-md">
