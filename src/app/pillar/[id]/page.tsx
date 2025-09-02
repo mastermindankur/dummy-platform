@@ -50,7 +50,7 @@ export default async function PillarPage({ params }: { params: { id: string } })
     notFound();
   }
 
-  const isEmergingTech = pillar.id === 'adopting-emerging-technologies';
+  const useCardLayout = pillar.id === 'adopting-emerging-technologies' || pillar.id === 'making-design-resilient';
 
   return (
     <div className="flex min-h-screen w-full flex-col">
@@ -80,7 +80,7 @@ export default async function PillarPage({ params }: { params: { id: string } })
           </CardHeader>
           <CardContent>
             <h3 className="text-xl font-semibold mb-4">Sub-Item Health</h3>
-            {isEmergingTech ? (
+            {useCardLayout ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {pillar.subItems.map((item) => (
                         <SubItemCard key={item.id} item={item} pillarName={pillar.name} />
