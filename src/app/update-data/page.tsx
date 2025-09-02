@@ -145,29 +145,29 @@ export default function UpdateDataPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
 
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      const res = await fetch('/api/data');
+      if (!res.ok) throw new Error('Failed to fetch data');
+      const jsonData = await res.json();
+      setData(jsonData);
+      if (jsonData.length > 0) {
+          setActiveTab(jsonData[0].id);
+      }
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: 'Error',
+        description: 'Could not load dashboard data.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const res = await fetch('/api/data');
-        if (!res.ok) throw new Error('Failed to fetch data');
-        const jsonData = await res.json();
-        setData(jsonData);
-        if (jsonData.length > 0) {
-            setActiveTab(jsonData[0].id);
-        }
-      } catch (error) {
-        console.error(error);
-        toast({
-          title: 'Error',
-          description: 'Could not load dashboard data.',
-          variant: 'destructive',
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
     fetchData();
   }, []);
 
@@ -222,8 +222,11 @@ export default function UpdateDataPage() {
     setData(newData);
   };
 
-  const handleExcelDataProcessed = (key: string, processedData: ExcelData) => {
+  const handleExcelDataProcessed = async (key: string, processedData: ExcelData) => {
     setExcelData(prev => ({ ...prev, [key]: processedData }));
+    
+    // After processing, immediately refetch the main data to reflect calculations
+    await fetchData();
   };
 
 
