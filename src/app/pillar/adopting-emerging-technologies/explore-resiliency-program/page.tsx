@@ -83,8 +83,8 @@ export default function ExploreResiliencyProgramPage() {
     loadData();
   }, []);
 
-  const { overallStatusData, lobtDistributionData, statusColors } = useMemo(() => {
-    if (!excelData?.rows) return { overallStatusData: [], lobtDistributionData: [], statusColors: {} };
+  const { overallStatusData, lobtDistributionData, statusColors, statusList } = useMemo(() => {
+    if (!excelData?.rows) return { overallStatusData: [], lobtDistributionData: [], statusColors: {}, statusList: [] };
 
     const statusCounts: { [key: string]: number } = {};
     const lobtStatusCounts: { [lobt: string]: { [status: string]: number } } = {};
@@ -224,8 +224,8 @@ export default function ExploreResiliencyProgramPage() {
                                 <YAxis />
                                 <ChartTooltip content={<ChartTooltipContent />} />
                                 <ChartLegend />
-                                {Object.entries(statusColors).map(([status, color]) => (
-                                    <Bar key={status} dataKey={status} stackId="a" fill={color} />
+                                {statusList.map((status) => (
+                                    <Bar key={status} dataKey={status} stackId="a" fill={statusColors[status]} />
                                 ))}
                             </BarChart>
                          </ResponsiveContainer>
@@ -240,7 +240,6 @@ export default function ExploreResiliencyProgramPage() {
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead>S.No.</TableHead>
                           {excelData.headers.map((header) => (
                             <TableHead key={header}>{header}</TableHead>
                           ))}
@@ -249,7 +248,6 @@ export default function ExploreResiliencyProgramPage() {
                       <TableBody>
                         {excelData.rows.map((row, rowIndex) => (
                           <TableRow key={rowIndex}>
-                            <TableCell>{rowIndex + 1}</TableCell>
                             {excelData.headers.map((header) => (
                               <TableCell key={header}>
                                 {String(row[header] ?? '')}

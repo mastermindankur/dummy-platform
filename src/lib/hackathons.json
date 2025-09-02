@@ -1,89 +1,98 @@
 [
   {
-    "id": "hackathon-1756818317690",
+    "id": "hackathon-1756820215361",
     "name": "DTI CEO CHALLENGE",
     "startMonth": "2025-01",
     "endMonth": "2025-06",
     "participants": 177,
     "teams": [
       {
-        "id": "team-hackathon-1756818317690-0",
+        "id": "team-hackathon-1756820215361-0",
         "name": "AI-Powered Real-Time Log Analyzer"
       },
       {
-        "id": "team-hackathon-1756818317690-1",
+        "id": "team-hackathon-1756820215361-1",
         "name": "RPD Knowledge Chatbot"
       },
       {
-        "id": "team-hackathon-1756818317690-2",
+        "id": "team-hackathon-1756820215361-2",
         "name": "Common services across organization using KISS pattern"
       },
       {
-        "id": "team-hackathon-1756818317690-3",
+        "id": "team-hackathon-1756820215361-3",
         "name": "Automated Deployment Status Monitoring with Teams Notification"
       },
       {
-        "id": "team-hackathon-1756818317690-4",
+        "id": "team-hackathon-1756820215361-4",
         "name": "Generative Chaos Engineering (GCE): Re-engineering Banking Resilience"
       },
       {
-        "id": "team-hackathon-1756818317690-5",
+        "id": "team-hackathon-1756820215361-5",
         "name": "Dynamic SSL Renewal"
       },
       {
-        "id": "team-hackathon-1756818317690-6",
+        "id": "team-hackathon-1756820215361-6",
         "name": "Personalized Phonetic Multi AI Agent Orchestration for Customer Acquisition and Engagement"
       },
       {
-        "id": "team-hackathon-1756818317690-7",
+        "id": "team-hackathon-1756820215361-7",
         "name": "Agent IO: Your Intelligent Financial Reference Data Assistant"
       },
       {
-        "id": "team-hackathon-1756818317690-8",
+        "id": "team-hackathon-1756820215361-8",
         "name": "Agile Bot: AI-Powered Scrum Assistant"
       },
       {
-        "id": "team-hackathon-1756818317690-9",
+        "id": "team-hackathon-1756820215361-9",
         "name": "Tool to validate Production release Artifacts"
       },
       {
-        "id": "team-hackathon-1756818317690-10",
+        "id": "team-hackathon-1756820215361-10",
         "name": "No-Code MongoDB Data Integration: Simplifying Bulk Operations through YAML Configuration"
       },
       {
-        "id": "team-hackathon-1756818317690-11",
+        "id": "team-hackathon-1756820215361-11",
         "name": "Develop selenium Test Automation using UFT utility quickly reducing time and effort"
       },
       {
-        "id": "team-hackathon-1756818317690-12",
+        "id": "team-hackathon-1756820215361-12",
         "name": "Deep Trace: Revolutionizing Information Traceability with Generative AI"
       },
       {
-        "id": "team-hackathon-1756818317690-13",
+        "id": "team-hackathon-1756820215361-13",
         "name": "Feature Flag Management Application with maker & checker"
       },
       {
-        "id": "team-hackathon-1756818317690-14",
+        "id": "team-hackathon-1756820215361-14",
         "name": "Automated JUnit Test Case Generation Using LLM"
       }
     ],
     "winners": [
       {
-        "teamId": "team-hackathon-1756818317690-0",
+        "teamId": "team-hackathon-1756820215361-8",
         "rank": 1
       },
       {
-        "teamId": "team-hackathon-1756818317690-6",
+        "teamId": "team-hackathon-1756820215361-12",
         "rank": 2
       },
       {
-        "teamId": "team-hackathon-1756818317690-7",
+        "teamId": "team-hackathon-1756820215361-13",
         "rank": 3
       },
       {
-        "teamId": "team-hackathon-1756818317690-8",
+        "teamId": "team-hackathon-1756820215361-12",
         "rank": 3
       }
     ]
+  },
+  {
+    "id": "hackathon-1756820235095",
+    "name": "Prompt-a-thon",
+    "startMonth": "2025-08",
+    "endMonth": "2025-08",
+    "participants": 70,
+    "teams": [],
+    "winners": []
   }
 ]
