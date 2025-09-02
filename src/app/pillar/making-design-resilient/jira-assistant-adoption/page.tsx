@@ -23,7 +23,6 @@ import { toast } from '@/hooks/use-toast';
 import type { MonthlyExcelData } from '@/types';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { Badge } from '@/components/ui/badge';
 
 const fetchAdoptionData = async (): Promise<MonthlyExcelData | null> => {
   const res = await fetch('/api/data?key=jira-assistant-adoption');
@@ -47,7 +46,7 @@ type MonthlyStats = {
 type PlatformAdoptionData = {
     platform: string;
     monthlyData: { [month: string]: MonthlyStats };
-};
+}
 
 type ReportTotal = {
     platform: string;
@@ -178,97 +177,95 @@ export default function JiraAssistantAdoptionPage() {
                 Month-on-month adoption breakdown for Jira Assistant features.
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <Card className="lg:col-span-1">
-                    <CardHeader>
-                        <CardTitle>User Adoption</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        {isLoading && (
-                        <div className="flex items-center justify-center p-8">
-                            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                        </div>
-                        )}
+          <CardContent className="space-y-8">
+            <Card>
+                <CardHeader>
+                    <CardTitle>User Adoption</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    {isLoading && (
+                    <div className="flex items-center justify-center p-8">
+                        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                    </div>
+                    )}
 
-                        {!isLoading && (!monthlyData || Object.keys(monthlyData).length === 0) && (
-                        <div className="text-center text-muted-foreground p-8">
-                            No data has been uploaded for this section yet.
-                        </div>
-                        )}
+                    {!isLoading && (!monthlyData || Object.keys(monthlyData).length === 0) && (
+                    <div className="text-center text-muted-foreground p-8">
+                        No data has been uploaded for this section yet.
+                    </div>
+                    )}
 
-                        {!isLoading && monthlyData && Object.keys(monthlyData).length > 0 && (
-                            <div className="space-y-8">
-                                <div className="border rounded-lg overflow-x-auto">
-                                    <Table>
-                                        <TableHeader>
-                                            <TableRow>
-                                                <TableHead className="min-w-[150px] sticky left-0 bg-secondary" rowSpan={2}>Platform</TableHead>
-                                                {sortedMonths.map(month => (
-                                                    <TableHead key={month} className="text-center min-w-[300px] border-l" colSpan={3}>
-                                                        {month}
-                                                    </TableHead>
-                                                ))}
-                                            </TableRow>
-                                             <TableRow>
-                                                {sortedMonths.map(month => (
-                                                    <React.Fragment key={`${month}-sub`}>
-                                                        <TableHead className="text-right border-l">Total Users</TableHead>
-                                                        <TableHead className="text-right">Active Users</TableHead>
-                                                        <TableHead className="text-right">Adoption %</TableHead>
-                                                    </React.Fragment>
-                                                ))}
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {reportData.map((item) => (
-                                                <TableRow key={item.platform}>
-                                                    <TableCell className="font-medium sticky left-0 bg-background">{item.platform}</TableCell>
-                                                    {sortedMonths.map(month => {
-                                                        const monthData = item.monthlyData[month];
-                                                        return (
-                                                           <React.Fragment key={`${item.platform}-${month}`}>
-                                                                <TableCell className="text-right border-l">{monthData?.totalUsers ?? 'N/A'}</TableCell>
-                                                                <TableCell className="text-right">{monthData?.activeUsers ?? 'N/A'}</TableCell>
-                                                                <TableCell className="text-right">{monthData?.adoption !== undefined ? `${monthData.adoption.toFixed(2)}%` : 'N/A'}</TableCell>
-                                                           </React.Fragment>
-                                                        )
-                                                    })}
-                                                </TableRow>
+                    {!isLoading && monthlyData && Object.keys(monthlyData).length > 0 && (
+                        <div className="space-y-8">
+                            <div className="border rounded-lg overflow-x-auto">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead className="min-w-[150px] sticky left-0 bg-secondary" rowSpan={2}>Platform</TableHead>
+                                            {sortedMonths.map(month => (
+                                                <TableHead key={month} className="text-center min-w-[300px] border-l" colSpan={3}>
+                                                    {month}
+                                                </TableHead>
                                             ))}
-                                            {totalRow && (
-                                                <TableRow className="font-bold bg-secondary hover:bg-secondary/80">
-                                                    <TableCell className="sticky left-0 bg-secondary">{totalRow.platform}</TableCell>
-                                                    {sortedMonths.map(month => {
-                                                        const monthData = totalRow.monthlyData[month];
-                                                        return (
-                                                           <React.Fragment key={`total-${month}`}>
-                                                                <TableCell className="text-right border-l">{monthData?.totalUsers ?? 'N/A'}</TableCell>
-                                                                <TableCell className="text-right">{monthData?.activeUsers ?? 'N/A'}</TableCell>
-                                                                <TableCell className="text-right">{monthData?.adoption !== undefined ? `${monthData.adoption.toFixed(2)}%` : 'N/A'}</TableCell>
-                                                           </React.Fragment>
-                                                        )
-                                                    })}
-                                                </TableRow>
-                                            )}
-                                        </TableBody>
-                                    </Table>
-                                </div>
-                        </div>
-                        )}
-                    </CardContent>
-                </Card>
-                <Card className="lg:col-span-1">
-                    <CardHeader>
-                        <CardTitle>Jira Assist Test Cases Adoption</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="flex items-center justify-center h-full text-muted-foreground">
-                            <p>This section is under construction.</p>
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
+                                        </TableRow>
+                                         <TableRow>
+                                            {sortedMonths.map(month => (
+                                                <React.Fragment key={`${month}-sub`}>
+                                                    <TableHead className="text-right border-l">Total Users</TableHead>
+                                                    <TableHead className="text-right">Active Users</TableHead>
+                                                    <TableHead className="text-right">Adoption %</TableHead>
+                                                </React.Fragment>
+                                            ))}
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {reportData.map((item) => (
+                                            <TableRow key={item.platform}>
+                                                <TableCell className="font-medium sticky left-0 bg-background">{item.platform}</TableCell>
+                                                {sortedMonths.map(month => {
+                                                    const monthData = item.monthlyData[month];
+                                                    return (
+                                                       <React.Fragment key={`${item.platform}-${month}`}>
+                                                            <TableCell className="text-right border-l">{monthData?.totalUsers ?? 'N/A'}</TableCell>
+                                                            <TableCell className="text-right">{monthData?.activeUsers ?? 'N/A'}</TableCell>
+                                                            <TableCell className="text-right">{monthData?.adoption !== undefined ? `${monthData.adoption.toFixed(2)}%` : 'N/A'}</TableCell>
+                                                       </React.Fragment>
+                                                    )
+                                                })}
+                                            </TableRow>
+                                        ))}
+                                        {totalRow && (
+                                            <TableRow className="font-bold bg-secondary hover:bg-secondary/80">
+                                                <TableCell className="sticky left-0 bg-secondary">{totalRow.platform}</TableCell>
+                                                {sortedMonths.map(month => {
+                                                    const monthData = totalRow.monthlyData[month];
+                                                    return (
+                                                       <React.Fragment key={`total-${month}`}>
+                                                            <TableCell className="text-right border-l">{monthData?.totalUsers ?? 'N/A'}</TableCell>
+                                                            <TableCell className="text-right">{monthData?.activeUsers ?? 'N/A'}</TableCell>
+                                                            <TableCell className="text-right">{monthData?.adoption !== undefined ? `${monthData.adoption.toFixed(2)}%` : 'N/A'}</TableCell>
+                                                       </React.Fragment>
+                                                    )
+                                                })}
+                                            </TableRow>
+                                        )}
+                                    </TableBody>
+                                </Table>
+                            </div>
+                    </div>
+                    )}
+                </CardContent>
+            </Card>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Jira Assist Test Cases Adoption</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="flex items-center justify-center h-full text-muted-foreground p-8">
+                        <p>This section is under construction.</p>
+                    </div>
+                </CardContent>
+            </Card>
           </CardContent>
         </Card>
       </main>
