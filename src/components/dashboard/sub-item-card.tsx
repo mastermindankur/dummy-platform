@@ -24,6 +24,7 @@ export function SubItemCard({ item, pillarName }: Props) {
   const isBlogsOpenSource = item.id === "blogs-open-source";
   const isTechSphere = item.id === "tech-sphere-sessions";
   const isHackathons = item.id === "hackathons";
+  const isIndustryEvents = item.id === "industry-events";
 
   const progressValue = item.annualTarget > 0 ? (item.percentageComplete / item.annualTarget) * 100 : 0;
 
@@ -76,6 +77,14 @@ export function SubItemCard({ item, pillarName }: Props) {
            {isHackathons && (
             <Button asChild variant="outline" size="sm">
                 <Link href="/pillar/adopting-emerging-technologies/hackathons">
+                    View Details
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+            </Button>
+          )}
+           {isIndustryEvents && (
+            <Button asChild variant="outline" size="sm">
+                <Link href="/pillar/adopting-emerging-technologies/industry-events">
                     View Details
                     <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
