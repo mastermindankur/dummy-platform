@@ -21,7 +21,7 @@
       {
         "id": "ci-cd-pipeline",
         "name": "CI/CD Pipeline Optimization",
-        "status": "Amber",
+        "status": "Green",
         "description": "Efficiency and speed of the integration and deployment pipeline.",
         "trend": "flat",
         "owner": "DevOps Team",
@@ -154,7 +154,7 @@
       {
         "id": "explore-resiliency-program",
         "name": "Explore Resiliency Program",
-        "status": "Green",
+        "status": "Amber",
         "description": "Explore Resiliency program to cover the Design & cloud adoption.",
         "trend": "flat",
         "owner": "Innovation Team",
@@ -174,7 +174,7 @@
         "owner": "DevRel",
         "lastUpdate": "2024-07-20",
         "comments": "Last hackathon produced 3 viable project ideas.",
-        "percentageComplete": 3,
+        "percentageComplete": 2,
         "annualTarget": 2,
         "metricName": "YTD Progress",
         "metricUnit": "# of Hackathons"
@@ -182,13 +182,13 @@
       {
         "id": "industry-events",
         "name": "Industry Events",
-        "status": "Amber",
+        "status": "Green",
         "description": "Demonstrate DTI Emerging Tech in industry events to foster innovation.",
         "trend": "flat",
         "owner": "Marketing",
         "lastUpdate": "2024-07-15",
         "comments": "Upcoming conference in Q4.",
-        "percentageComplete": 4,
+        "percentageComplete": 2,
         "annualTarget": 5,
         "metricName": "YTD Progress",
         "metricUnit": "No of Industry Events"

@@ -1,14 +1,5 @@
 [
   {
-    "id": "event-1756823801913",
-    "name": "HYSEA EVENT Hyderabad 2025",
-    "startDate": "2025-04-01",
-    "endDate": "2025-04-02",
-    "location": "Hyderabad",
-    "description": "HYSEA Annual Summit & Awards 2025 – Hyderabad\nThe HYSEA Annual Summit & Awards 2025 is set to be the premier gathering of technology leaders, innovators, and policymakers in Hyderabad. This flagship event celebrates excellence in the IT and ITeS industry, featuring thought-provoking keynotes, panel discussions, and live showcases of cutting-edge innovations.\n\nThis year’s theme, “Empowering Innovation, Accelerating Growth,” highlights how emerging technologies like Generative AI, Quantum Computing, and Industry 4.0 are reshaping businesses and creating opportunities for India’s tech ecosystem.",
-    "type": "external"
-  },
-  {
     "id": "event-1756823844509",
     "name": "Gen AI Carnival",
     "startDate": "2025-08-04",
