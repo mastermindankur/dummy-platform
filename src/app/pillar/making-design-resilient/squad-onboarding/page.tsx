@@ -156,65 +156,64 @@ export default function SquadOnboardingPage() {
 
             {excelData && (
                 <div className="space-y-8">
-                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div className="space-y-8">
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Overall Progress</CardTitle>
-                                <CardDescription>Total applications onboarded against the annual target.</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="flex items-center justify-center h-full">
-                                <div className="text-center">
-                                        <p className="text-5xl font-bold">{totalOnboarded}</p>
-                                        <p className="text-lg text-muted-foreground">out of {annualTarget} applications</p>
-                                        <Progress value={progressPercentage} className="mt-4 h-3" />
-                                </div>
-                                </div>
-                            </CardContent>
-                        </Card>
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Overall Progress</CardTitle>
+                            <CardDescription>Total applications onboarded against the annual target.</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="flex items-center justify-center h-full">
+                            <div className="text-center">
+                                    <p className="text-5xl font-bold">{totalOnboarded}</p>
+                                    <p className="text-lg text-muted-foreground">out of {annualTarget} applications</p>
+                                    <Progress value={progressPercentage} className="mt-4 h-3" />
+                            </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         <Card>
                             <CardHeader>
                                 <CardTitle>Onboarding by Category</CardTitle>
-                                <CardDescription>Number of applications onboarded for each category.</CardDescription>
                             </CardHeader>
                             <CardContent>
-                            <ChartContainer config={{}} className="min-h-[200px] w-full">
-                                <ResponsiveContainer width="100%" height={200}>
-                                <BarChart data={categoryDistributionData} layout="vertical" margin={{ right: 20 }}>
+                            <ChartContainer config={{}} className="h-[400px] w-full">
+                                <ResponsiveContainer width="100%" height="100%">
+                                <BarChart data={categoryDistributionData} layout="vertical" margin={{ right: 30 }}>
                                     <CartesianGrid strokeDasharray="3 3" />
                                     <XAxis type="number" allowDecimals={false} />
                                     <YAxis dataKey="name" type="category" width={60} tick={{ fontSize: 12 }} />
                                     <ChartTooltip content={<ChartTooltipContent />} />
-                                    <Bar dataKey="value" fill="hsl(var(--chart-1))" radius={[0, 4, 4, 0]} />
+                                    <Bar dataKey="value" fill="hsl(var(--chart-1))" radius={[0, 4, 4, 0]}>
+                                       <LabelList dataKey="value" position="right" style={{ fill: 'hsl(var(--foreground))', fontSize: '12px' }} />
+                                    </Bar>
+                                </BarChart>
+                                </ResponsiveContainer>
+                            </ChartContainer>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>LOBT-wise Distribution</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                            <ChartContainer config={{}} className="h-[400px] w-full">
+                                <ResponsiveContainer width="100%" height="100%">
+                                <BarChart data={lobtDistributionData} layout="vertical" margin={{ left: 10, right: 30 }}>
+                                    <CartesianGrid strokeDasharray="3 3" />
+                                    <XAxis type="number" allowDecimals={false} />
+                                    <YAxis dataKey="name" type="category" width={60} tick={{ fontSize: 12 }} />
+                                    <ChartTooltip content={<ChartTooltipContent />} />
+                                    <Bar dataKey="value" fill="hsl(var(--chart-2))" radius={[0, 4, 4, 0]}>
+                                        <LabelList dataKey="value" position="right" style={{ fill: 'hsl(var(--foreground))', fontSize: '12px' }} />
+                                    </Bar>
                                 </BarChart>
                                 </ResponsiveContainer>
                             </ChartContainer>
                             </CardContent>
                         </Card>
                     </div>
-                      <Card>
-                        <CardHeader>
-                            <CardTitle>LOBT-wise Distribution</CardTitle>
-                            <CardDescription>Number of applications onboarded by each Line of Business Technology.</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                          <ChartContainer config={{}} className="h-[500px] w-full">
-                            <ResponsiveContainer width="100%" height="100%">
-                              <BarChart data={lobtDistributionData} layout="vertical" margin={{ left: 10, right: 30 }}>
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis type="number" allowDecimals={false} />
-                                <YAxis dataKey="name" type="category" width={60} tick={{ fontSize: 12 }} />
-                                <ChartTooltip content={<ChartTooltipContent />} />
-                                <Bar dataKey="value" fill="hsl(var(--chart-2))" radius={[0, 4, 4, 0]}>
-                                    <LabelList dataKey="value" position="right" style={{ fill: 'hsl(var(--foreground))', fontSize: '12px' }} />
-                                </Bar>
-                              </BarChart>
-                            </ResponsiveContainer>
-                          </ChartContainer>
-                        </CardContent>
-                      </Card>
-                 </div>
                  
                   <div>
                     <h3 className="text-xl font-semibold mb-4">
