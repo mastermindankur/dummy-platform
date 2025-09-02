@@ -16,28 +16,27 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/use-toast';
-import type { Pillar, SubItem, Status } from '@/types';
+import type { Pillar, SubItem, Status, ExcelData } from '@/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Loader2, Plus, Trash2, Upload } from 'lucide-react';
 import {
-  processExcelFile,
-  type ExcelRow,
+  processExcelFile
 } from '@/ai/flows/process-excel-file';
 
 function ExcelUploadSection({
   title,
   description,
+  fileKey,
+  onDataProcessed,
 }: {
   title: string;
   description: string;
+  fileKey: string;
+  onDataProcessed: (key: string, data: ExcelData) => void;
 }) {
   const [file, setFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [excelData, setExcelData] = useState<{
-    headers: string[];
-    rows: ExcelRow[];
-  } | null>(null);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -57,7 +56,6 @@ function ExcelUploadSection({
     }
 
     setIsLoading(true);
-    setExcelData(null);
 
     try {
       const reader = new FileReader();
@@ -65,10 +63,8 @@ function ExcelUploadSection({
       reader.onload = async () => {
         const fileAsDataUri = reader.result as string;
         try {
-          // Here you would typically send this data to your backend to be stored.
-          // For this demo, we'll just process and display it.
           const result = await processExcelFile({ fileAsDataUri });
-          setExcelData(result);
+          onDataProcessed(fileKey, result);
            toast({
              title: `"${file.name}" processed`,
              description: 'Data loaded from Excel. Remember to save all changes.',
@@ -113,10 +109,10 @@ function ExcelUploadSection({
         </CardHeader>
         <CardContent>
           <div className="grid w-full max-w-sm items-center gap-2">
-            <Label htmlFor={`excel-upload-${title.replace(/\s+/g, '-')}`}>{`Upload ${title} Data`}</Label>
+            <Label htmlFor={`excel-upload-${fileKey}`}>{`Upload ${title} Data`}</Label>
             <div className="flex gap-2">
               <Input
-                id={`excel-upload-${title.replace(/\s+/g, '-')}`}
+                id={`excel-upload-${fileKey}`}
                 type="file"
                 accept=".xlsx, .xls"
                 onChange={handleFileChange}
@@ -142,6 +138,10 @@ function ExcelUploadSection({
 
 export default function UpdateDataPage() {
   const [data, setData] = useState<Pillar[] | null>(null);
+  const [excelData, setExcelData] = useState<Record<string, ExcelData | null>>({
+      'explore-resiliency-program': null,
+      'dti-tech-blogs': null
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
@@ -220,17 +220,22 @@ export default function UpdateDataPage() {
     setData(newData);
   };
 
+  const handleExcelDataProcessed = (key: string, processedData: ExcelData) => {
+    setExcelData(prev => ({ ...prev, [key]: processedData }));
+  };
+
 
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      // NOTE: In a real application, you would also handle the uploaded Excel data here,
-      // likely sending it to a separate endpoint or embedding it if it's small.
-      // For this example, we only save the manually edited data.
+      const payload = {
+        pillars: data,
+        excelData: excelData
+      };
       const res = await fetch('/api/data', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify(payload),
       });
       if (!res.ok) throw new Error('Failed to save data');
       toast({
@@ -400,10 +405,14 @@ export default function UpdateDataPage() {
                                             <ExcelUploadSection
                                                 title="Explore Resiliency Program"
                                                 description="Upload the Excel sheet for the Resiliency Program."
+                                                fileKey="explore-resiliency-program"
+                                                onDataProcessed={handleExcelDataProcessed}
                                             />
                                             <ExcelUploadSection
                                                 title="DTI Tech Blogs"
                                                 description="Upload the Excel sheet for Blogs, URLs, and LOBTs."
+                                                fileKey="dti-tech-blogs"
+                                                onDataProcessed={handleExcelDataProcessed}
                                             />
                                         </>
                                     )}

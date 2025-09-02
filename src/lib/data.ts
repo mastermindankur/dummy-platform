@@ -5,7 +5,7 @@ import {
   Cpu,
   Landmark,
 } from "lucide-react";
-import type { Pillar, Status, SubItem } from "@/types";
+import type { Pillar, Status, SubItem, ExcelData } from "@/types";
 import { promises as fs } from 'fs';
 import path from 'path';
 
@@ -18,11 +18,11 @@ const pillarIcons: { [key: string]: Pillar['icon'] } = {
   'world-class-corporate-governance': Landmark,
 };
 
-const dataFilePath = path.join(process.cwd(), 'src', 'lib', 'data.json');
+const dataFilePath = (filename: string) => path.join(process.cwd(), 'src', 'lib', filename);
 
 async function readData(): Promise<Pillar[]> {
   try {
-    const fileContent = await fs.readFile(dataFilePath, 'utf-8');
+    const fileContent = await fs.readFile(dataFilePath('data.json'), 'utf-8');
     const jsonData: Omit<Pillar, 'icon'>[] = JSON.parse(fileContent);
     // Attach icons back to the data
     return jsonData.map(pillar => ({
@@ -58,9 +58,33 @@ export async function writeData(data: Pillar[]) {
     try {
         // We need to remove the icon before writing to JSON
         const dataToWrite = data.map(({ icon, ...rest }) => rest);
-        await fs.writeFile(dataFilePath, JSON.stringify(dataToWrite, null, 2), 'utf-8');
+        await fs.writeFile(dataFilePath('data.json'), JSON.stringify(dataToWrite, null, 2), 'utf-8');
     } catch (error) {
         console.error("Could not write to data.json:", error);
         throw new Error("Failed to save data.");
+    }
+}
+
+export async function readExcelData(fileKey: string): Promise<ExcelData | null> {
+    try {
+        const fileContent = await fs.readFile(dataFilePath(`${fileKey}.json`), 'utf-8');
+        return JSON.parse(fileContent);
+    } catch (error) {
+        // It's okay if the file doesn't exist, it just means no data has been uploaded yet.
+        if (error instanceof Error && (error as NodeJS.ErrnoException).code === 'ENOENT') {
+            return null;
+        }
+        console.error(`Could not read or parse ${fileKey}.json:`, error);
+        return null;
+    }
+}
+
+
+export async function writeExcelData(fileKey: string, data: ExcelData) {
+    try {
+        await fs.writeFile(dataFilePath(`${fileKey}.json`), JSON.stringify(data, null, 2), 'utf-8');
+    } catch (error) {
+        console.error(`Could not write to ${fileKey}.json:`, error);
+        throw new Error(`Failed to save ${fileKey} data.`);
     }
 }

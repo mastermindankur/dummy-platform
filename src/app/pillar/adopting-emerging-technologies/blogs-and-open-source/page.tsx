@@ -20,28 +20,22 @@ import {
 } from '@/components/ui/table';
 import { Loader2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import type { ExcelData } from '@/types';
 
-// This is a placeholder for where you might fetch your data from
-const fetchBlogsData = async () => {
-  // Simulate fetching data
-  await new Promise(resolve => setTimeout(resolve, 1000));
-
-  // Return mock data since we don't have a backend to store the uploaded file
-  return {
-    headers: ['Title', 'URL', 'LOBT', 'Author'],
-    rows: [
-      { Title: 'Intro to GenAI on Firebase', URL: 'https://example.com/blog1', LOBT: 'Finance', Author: 'Jane Doe' },
-      { Title: 'Building Resilient Systems', URL: 'https://example.com/blog2', LOBT: 'Retail', Author: 'John Smith' },
-    ],
-  };
+const fetchBlogsData = async (): Promise<ExcelData | null> => {
+  const res = await fetch('/api/data?key=dti-tech-blogs');
+  if (res.status === 404) {
+    return null; // No data uploaded yet
+  }
+  if (!res.ok) {
+    throw new Error('Failed to fetch blogs data');
+  }
+  return res.json();
 };
 
 export default function BlogsAndOpenSourcePage() {
   const [isLoading, setIsLoading] = useState(true);
-  const [excelData, setExcelData] = useState<{
-    headers: string[];
-    rows: Record<string, any>[];
-  } | null>(null);
+  const [excelData, setExcelData] = useState<ExcelData | null>(null);
 
   useEffect(() => {
     const loadData = async () => {

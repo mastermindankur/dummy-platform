@@ -20,32 +20,23 @@ import {
 } from '@/components/ui/table';
 import { Loader2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import type { ExcelData } from '@/types';
 
-// This is a placeholder for where you might fetch your data from
-// In a real app, this would likely be an API call that retrieves the processed
-// excel data which was uploaded on the "Update Data" page.
-const fetchProgramData = async () => {
-  // Simulate fetching data
-  await new Promise(resolve => setTimeout(resolve, 1000));
-
-  // Return mock data since we don't have a backend to store the uploaded file
-  return {
-    headers: ['ID', 'Task', 'Owner', 'Status', 'Due Date'],
-    rows: [
-      { ID: '1', Task: 'Review cloud architecture', Owner: 'Alice', Status: 'In Progress', 'Due Date': '2024-08-15' },
-      { ID: '2', Task: 'Update firewall rules', Owner: 'Bob', Status: 'Completed', 'Due Date': '2024-08-01' },
-      { ID: '3', Task: 'Conduct penetration test', Owner: 'Charlie', Status: 'Not Started', 'Due Date': '2024-09-01' },
-    ],
-  };
+const fetchProgramData = async (): Promise<ExcelData | null> => {
+  const res = await fetch('/api/data?key=explore-resiliency-program');
+  if (res.status === 404) {
+    return null; // No data uploaded yet
+  }
+  if (!res.ok) {
+    throw new Error('Failed to fetch program data');
+  }
+  return res.json();
 };
 
 
 export default function ExploreResiliencyProgramPage() {
   const [isLoading, setIsLoading] = useState(true);
-  const [excelData, setExcelData] = useState<{
-    headers: string[];
-    rows: Record<string, any>[];
-  } | null>(null);
+  const [excelData, setExcelData] = useState<ExcelData | null>(null);
 
   useEffect(() => {
     const loadData = async () => {

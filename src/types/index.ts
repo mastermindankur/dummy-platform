@@ -23,3 +23,10 @@ export type Pillar = {
   icon: LucideIcon;
   subItems: SubItem[];
 };
+
+export type ExcelRow = Record<string, any>;
+
+export type ExcelData = {
+  headers: string[];
+  rows: ExcelRow[];
+};
