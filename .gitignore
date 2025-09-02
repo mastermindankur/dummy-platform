@@ -9,3 +9,4 @@ src/lib/app-sherpas.json
 src/lib/jira-assistant-adoption/
 src/lib/tech-sphere-sessions.json
 src/lib/squad-onboarding.json
+node_modules
