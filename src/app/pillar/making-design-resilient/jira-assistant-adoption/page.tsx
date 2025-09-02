@@ -18,7 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { ArrowLeft, Loader2, TrendingUp, Users, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Loader2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import type { MonthlyExcelData } from '@/types';
 import { Button } from '@/components/ui/button';
@@ -160,59 +160,79 @@ export default function JiraAssistantAdoptionPage() {
           <CardHeader>
             <CardTitle className="text-3xl">Jira Assistant Adoption</CardTitle>
             <CardDescription>
-                Month-on-month user adoption breakdown by Platform.
+                Month-on-month adoption breakdown for Jira Assistant features.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {isLoading && (
-              <div className="flex items-center justify-center p-8">
-                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-              </div>
-            )}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>User Adoption</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        {isLoading && (
+                        <div className="flex items-center justify-center p-8">
+                            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                        </div>
+                        )}
 
-            {!isLoading && (!monthlyData || Object.keys(monthlyData).length === 0) && (
-              <div className="text-center text-muted-foreground p-8">
-                  No data has been uploaded for this section yet.
-              </div>
-            )}
+                        {!isLoading && (!monthlyData || Object.keys(monthlyData).length === 0) && (
+                        <div className="text-center text-muted-foreground p-8">
+                            No data has been uploaded for this section yet.
+                        </div>
+                        )}
 
-            {!isLoading && monthlyData && Object.keys(monthlyData).length > 0 && (
-                <div className="space-y-8">
-                    <div className="border rounded-lg overflow-x-auto">
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead className="min-w-[200px] sticky left-0 bg-secondary">Platform</TableHead>
-                                    <TableHead className="text-right">Total Users</TableHead>
-                                    <TableHead className="text-right">Active Users</TableHead>
-                                    {sortedMonths.map(month => (
-                                        <TableHead key={month} className="text-right min-w-[120px]">
-                                            Adoption % ({month})
-                                        </TableHead>
-                                    ))}
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {reportData.map((item) => (
-                                    <TableRow key={item.platform}>
-                                        <TableCell className="font-medium sticky left-0 bg-background">{item.platform}</TableCell>
-                                        <TableCell className="text-right">{item.totalUsers}</TableCell>
-                                        <TableCell className="text-right">{item.activeUsers}</TableCell>
-                                        {sortedMonths.map(month => (
-                                            <TableCell key={`${item.platform}-${month}`} className="text-right">
-                                                {item.monthlyAdoption[month] !== undefined ? `${item.monthlyAdoption[month].toFixed(2)}%` : 'N/A'}
-                                            </TableCell>
-                                        ))}
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </div>
-              </div>
-            )}
+                        {!isLoading && monthlyData && Object.keys(monthlyData).length > 0 && (
+                            <div className="space-y-8">
+                                <div className="border rounded-lg overflow-x-auto">
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow>
+                                                <TableHead className="min-w-[150px] sticky left-0 bg-secondary">Platform</TableHead>
+                                                <TableHead className="text-right">Total Users</TableHead>
+                                                <TableHead className="text-right">Active Users</TableHead>
+                                                {sortedMonths.map(month => (
+                                                    <TableHead key={month} className="text-right min-w-[120px]">
+                                                        Adoption % ({month})
+                                                    </TableHead>
+                                                ))}
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {reportData.map((item) => (
+                                                <TableRow key={item.platform}>
+                                                    <TableCell className="font-medium sticky left-0 bg-background">{item.platform}</TableCell>
+                                                    <TableCell className="text-right">{item.totalUsers}</TableCell>
+                                                    <TableCell className="text-right">{item.activeUsers}</TableCell>
+                                                    {sortedMonths.map(month => (
+                                                        <TableCell key={`${item.platform}-${month}`} className="text-right">
+                                                            {item.monthlyAdoption[month] !== undefined ? `${item.monthlyAdoption[month].toFixed(2)}%` : 'N/A'}
+                                                        </TableCell>
+                                                    ))}
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </div>
+                        </div>
+                        )}
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Jira Assist Test Cases Adoption</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="flex items-center justify-center h-full text-muted-foreground">
+                            <p>This section is under construction.</p>
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
           </CardContent>
         </Card>
       </main>
     </div>
   );
 }
+
