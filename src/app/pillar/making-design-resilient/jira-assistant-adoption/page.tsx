@@ -74,9 +74,9 @@ export default function JiraAssistantAdoptionPage() {
     loadData();
   }, []);
 
-  const { reportData, sortedMonths, totalRow, chartData, platformKeys, chartColors, latestMonthAdoption, totalUsers, activeUsers } = useMemo(() => {
+  const { reportData, sortedMonths, totalRow, chartData, platformKeys, totalUsers, activeUsers } = useMemo(() => {
     if (!monthlyData) {
-      return { reportData: [], sortedMonths: [], totalRow: null, chartData: [], platformKeys: [], chartColors: [], latestMonthAdoption: 0, totalUsers: 0, activeUsers: 0 };
+      return { reportData: [], sortedMonths: [], totalRow: null, chartData: [], platformKeys: [], totalUsers: 0, activeUsers: 0 };
     }
 
     const platformMonthlyStats = new Map<string, { [month: string]: { totalUsers: Set<string>; activeUsers: Set<string> } }>();
@@ -120,10 +120,10 @@ export default function JiraAssistantAdoptionPage() {
 
         for(const monthLabel of sortedMonthLabels) {
             const stats = monthMap[monthLabel];
-            const totalUsers = stats?.totalUsers.size || 0;
-            const activeUsers = stats?.activeUsers.size || 0;
-            const adoption = totalUsers > 0 ? (activeUsers / totalUsers) * 100 : 0;
-            platformAdoption.monthlyData[monthLabel] = { totalUsers, activeUsers, adoption };
+            const totalUsersCount = stats?.totalUsers.size || 0;
+            const activeUsersCount = stats?.activeUsers.size || 0;
+            const adoption = totalUsersCount > 0 ? (activeUsersCount / totalUsersCount) * 100 : 0;
+            platformAdoption.monthlyData[monthLabel] = { totalUsers: totalUsersCount, activeUsers: activeUsersCount, adoption };
         }
         finalReportData.push(platformAdoption);
     }
@@ -160,25 +160,13 @@ export default function JiraAssistantAdoptionPage() {
         return monthEntry;
     });
 
-    const definedChartColors = [
-        'hsl(var(--chart-1))',
-        'hsl(var(--chart-2))',
-        'hsl(var(--chart-3))',
-        'hsl(var(--chart-4))',
-        'hsl(var(--chart-5))',
-        '#82ca9d',
-        '#ffc658',
-    ];
-
-    const latestMonth = sortedMonthLabels[sortedMonthLabels.length - 1];
-    const latestMonthStats = grandTotalRow.monthlyData[latestMonth];
     const totalUserSet = new Set<string>();
     const activeUserSet = new Set<string>();
 
     allMonths.forEach(month => {
-      const monthLabel = new Date(month + '-02').toLocaleString('default', { month: 'short', year: '2-digit' });
       reportDataSorted.forEach(p => {
         const platformStats = platformMonthlyStats.get(p.platform);
+        const monthLabel = new Date(month + '-02').toLocaleString('default', { month: 'short', year: '2-digit' });
         platformStats?.[monthLabel]?.totalUsers.forEach(u => totalUserSet.add(u));
         platformStats?.[monthLabel]?.activeUsers.forEach(u => activeUserSet.add(u));
       })
@@ -191,12 +179,20 @@ export default function JiraAssistantAdoptionPage() {
       totalRow: grandTotalRow,
       chartData: chartDataFormatted,
       platformKeys: allPlatformKeys,
-      chartColors: definedChartColors,
-      latestMonthAdoption: latestMonthStats?.adoption || 0,
       totalUsers: totalUserSet.size,
       activeUsers: activeUserSet.size
     };
   }, [monthlyData]);
+
+  const chartColors = [
+      'hsl(var(--chart-1))',
+      'hsl(var(--chart-2))',
+      'hsl(var(--chart-3))',
+      'hsl(var(--chart-4))',
+      'hsl(var(--chart-5))',
+      '#82ca9d',
+      '#ffc658',
+  ];
 
 
   return (
@@ -234,10 +230,10 @@ export default function JiraAssistantAdoptionPage() {
 
                     {!isLoading && monthlyData && Object.keys(monthlyData).length > 0 && (
                         <div className="space-y-8">
-                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
                                 <Card>
                                     <CardHeader>
-                                        <CardTitle>Adoption Trend</CardTitle>
+                                        <CardTitle>User Adoption Trend</CardTitle>
                                         <CardDescription>Month-on-month adoption percentage.</CardDescription>
                                     </CardHeader>
                                     <CardContent>
@@ -372,4 +368,3 @@ export default function JiraAssistantAdoptionPage() {
     </div>
   );
 }
-
