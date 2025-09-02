@@ -18,7 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { ArrowLeft, Loader2, Trophy, Users, Swords, Building2 } from 'lucide-react';
+import { ArrowLeft, Loader2, Trophy, Users, Swords, Building2, Link as LinkIcon } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import type { Hackathon, ExcelRow } from '@/types';
 import { Button } from '@/components/ui/button';
@@ -213,7 +213,19 @@ export default function HackathonsDetailsPage() {
                                                         <TableRow key={team.id}>
                                                             {(hackathon.teamDataHeaders || []).map(header => (
                                                                 <TableCell key={`${team.id}-${header}`}>
-                                                                    {String(team.data[header] ?? '')}
+                                                                    {header === 'Hyperlink to Submission' && team.data[header] ? (
+                                                                        <a
+                                                                            href={String(team.data[header])}
+                                                                            target="_blank"
+                                                                            rel="noopener noreferrer"
+                                                                            className="text-primary hover:underline flex items-center gap-1"
+                                                                        >
+                                                                            <LinkIcon className="h-3 w-3" />
+                                                                            View Submission
+                                                                        </a>
+                                                                    ) : (
+                                                                        String(team.data[header] ?? '')
+                                                                    )}
                                                                 </TableCell>
                                                             ))}
                                                         </TableRow>
@@ -278,3 +290,4 @@ export default function HackathonsDetailsPage() {
     </div>
   );
 }
+
