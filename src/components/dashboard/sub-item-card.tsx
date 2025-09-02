@@ -12,6 +12,9 @@ import { StatusIndicator } from "./status-indicator";
 import { Suspense } from "react";
 import { Skeleton } from "../ui/skeleton";
 import { RootCauseAnalysis } from "./root-cause-analysis";
+import Link from "next/link";
+import { Button } from "../ui/button";
+import { ArrowRight } from "lucide-react";
 
 type Props = {
   item: SubItem;
@@ -19,6 +22,8 @@ type Props = {
 };
 
 export function SubItemCard({ item, pillarName }: Props) {
+  const isExploreResiliency = item.id === "explore-resiliency-program";
+
   return (
     <Card className="flex flex-col">
       <CardHeader>
@@ -34,11 +39,21 @@ export function SubItemCard({ item, pillarName }: Props) {
       </CardContent>
       <CardFooter className="flex justify-between items-center">
         <StatusIndicator status={item.status} />
-        {item.status !== "Green" && (
-            <Suspense fallback={<Skeleton className="h-8 w-36" />}>
-                <RootCauseAnalysis subItem={item} pillarName={pillarName} />
-            </Suspense>
-        )}
+        <div className="flex items-center gap-2">
+          {item.status !== "Green" && !isExploreResiliency && (
+              <Suspense fallback={<Skeleton className="h-8 w-36" />}>
+                  <RootCauseAnalysis subItem={item} pillarName={pillarName} />
+              </Suspense>
+          )}
+          {isExploreResiliency && (
+             <Button asChild variant="outline" size="sm">
+                <Link href="/pillar/adopting-emerging-technologies/explore-resiliency-program">
+                    View Details
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+             </Button>
+          )}
+        </div>
       </CardFooter>
     </Card>
   );
