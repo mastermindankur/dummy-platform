@@ -97,22 +97,46 @@ export const pillars: Pillar[] = [
     icon: Cpu,
     subItems: [
       {
-        id: "ai-ml-integration",
-        name: "AI/ML Integration",
-        status: "Green",
-        description: "Adoption of AI and machine learning in product features.",
-      },
-      {
-        id: "tech-research",
-        name: "Technology Research",
+        id: "explore-resiliency-program",
+        name: "Explore Resiliency Program",
         status: "Amber",
-        description: "Dedicated time and process for exploring new technologies.",
+        description:
+          "Explore Resiliency program to cover the Design & cloud adoption.",
       },
       {
-        id: "deprecation-strategy",
-        name: "Legacy System Deprecation",
-        status: "Red",
-        description: "Plan and execution for retiring outdated technologies.",
+        id: "hackathons",
+        name: "Use Case Discovery (Hackathons)",
+        status: "Green",
+        description:
+          "Discover new use cases through hackathons and innovation challenges.",
+      },
+      {
+        id: "industry-events",
+        name: "Industry Events",
+        status: "Amber",
+        description:
+          "Demonstrate DTI Emerging Tech in industry events to foster innovation.",
+      },
+      {
+        id: "blogs-open-source",
+        name: "Blogs and Open Source",
+        status: "Green",
+        description:
+          "Publish blogs and contribute to open source to share knowledge.",
+      },
+      {
+        id: "tech-sphere-sessions",
+        name: "Tech Sphere Sessions",
+        status: "Green",
+        description:
+          "Increase participation and audience coverage for Tech Sphere Sessions.",
+      },
+      {
+        id: "mentorship-program",
+        name: "Mentorship Program",
+        status: "Green",
+        description:
+          "Mentor & Mentee between Business and Technology.",
       },
     ],
   },
