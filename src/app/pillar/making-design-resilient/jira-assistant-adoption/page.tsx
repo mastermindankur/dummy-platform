@@ -20,9 +20,11 @@ import {
 } from '@/components/ui/table';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
-import type { MonthlyExcelData } from '@/types';
+import type { MonthlyExcelData, ExcelRow } from '@/types';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend } from '@/components/ui/chart';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from 'recharts';
 
 const fetchAdoptionData = async (): Promise<MonthlyExcelData | null> => {
   const res = await fetch('/api/data?key=jira-assistant-adoption');
@@ -77,54 +79,58 @@ export default function JiraAssistantAdoptionPage() {
     loadData();
   }, []);
 
- const { reportData, sortedMonths, totalRow } = useMemo(() => {
+  const { reportData, sortedMonths, totalRow, chartData, platformKeys } = useMemo(() => {
     if (!monthlyData) {
-      return { reportData: [], sortedMonths: [], totalRow: null };
+      return { reportData: [], sortedMonths: [], totalRow: null, chartData: [], platformKeys: [] };
     }
 
-    const platformMonthlyData = new Map<string, Map<string, { totalUsers: Set<string>; activeUsers: Set<string> }>>();
+    const platformMonthlyStats = new Map<string, { [month: string]: { totalUsers: Set<string>; activeUsers: Set<string> } }>();
     const allMonths = Object.keys(monthlyData).sort();
-    const sortedMonthLabels = allMonths.map(m => new Date(m).toLocaleString('default', { month: 'short', year: '2-digit' }));
-
+    const sortedMonthLabels = allMonths.map(m => new Date(m + '-02').toLocaleString('default', { month: 'short', year: '2-digit' }));
+    
     for (const month of allMonths) {
-        const monthLabel = new Date(month).toLocaleString('default', { month: 'short', year: '2-digit' });
+        const monthLabel = new Date(month + '-02').toLocaleString('default', { month: 'short', year: '2-digit' });
         const monthRows = monthlyData[month].rows;
 
         for (const row of monthRows) {
             const platform = (row['Platforms'] as string) || 'Unknown';
             const userId = row['1bankid'] as string;
             const isAdopted = row['is_created_via_JA'] === 1;
-
-            if (!platformMonthlyData.has(platform)) {
-                platformMonthlyData.set(platform, new Map());
-            }
-            const platformData = platformMonthlyData.get(platform)!;
             
-            if (!platformData.has(monthLabel)) {
-                platformData.set(monthLabel, { totalUsers: new Set(), activeUsers: new Set() });
+            if (!platformMonthlyStats.has(platform)) {
+                platformMonthlyStats.set(platform, {});
             }
-            const monthStats = platformData.get(monthLabel)!;
+            const platformData = platformMonthlyStats.get(platform)!;
+            
+            if (!platformData[monthLabel]) {
+                platformData[monthLabel] = { totalUsers: new Set(), activeUsers: new Set() };
+            }
+            const monthStats = platformData[monthLabel];
 
-            monthStats.totalUsers.add(userId);
-            if (isAdopted) {
-                monthStats.activeUsers.add(userId);
+            if (userId) {
+                monthStats.totalUsers.add(userId);
+                if (isAdopted) {
+                    monthStats.activeUsers.add(userId);
+                }
             }
         }
     }
     
     const finalReportData: PlatformAdoptionData[] = [];
-    for (const [platform, monthMap] of platformMonthlyData.entries()) {
-        const monthlyAdoption: { [month: string]: MonthlyStats } = {};
+    const allPlatformKeys = Array.from(platformMonthlyStats.keys()).sort();
+
+    for (const platform of allPlatformKeys) {
+        const monthMap = platformMonthlyStats.get(platform)!;
+        const platformAdoption: PlatformAdoptionData = { platform, monthlyData: {} };
 
         for(const monthLabel of sortedMonthLabels) {
-            const stats = monthMap.get(monthLabel);
+            const stats = monthMap[monthLabel];
             const totalUsers = stats?.totalUsers.size || 0;
             const activeUsers = stats?.activeUsers.size || 0;
             const adoption = totalUsers > 0 ? (activeUsers / totalUsers) * 100 : 0;
-            monthlyAdoption[monthLabel] = { totalUsers, activeUsers, adoption };
+            platformAdoption.monthlyData[monthLabel] = { totalUsers, activeUsers, adoption };
         }
-
-        finalReportData.push({ platform, monthlyData: monthlyAdoption });
+        finalReportData.push(platformAdoption);
     }
 
     const reportDataSorted = finalReportData.sort((a, b) => a.platform.localeCompare(b.platform));
@@ -150,10 +156,32 @@ export default function JiraAssistantAdoptionPage() {
         };
     }
 
+    const chartDataFormatted = sortedMonthLabels.map(month => {
+        const monthEntry: {[key: string]: any} = { name: month };
+        reportDataSorted.forEach(platformData => {
+            monthEntry[platformData.platform] = platformData.monthlyData[month]?.adoption.toFixed(2);
+        });
+        monthEntry['Total'] = grandTotal.monthlyData[month]?.adoption.toFixed(2);
+        return monthEntry;
+    });
+
+    const chartColors = [
+        'hsl(var(--chart-1))',
+        'hsl(var(--chart-2))',
+        'hsl(var(--chart-3))',
+        'hsl(var(--chart-4))',
+        'hsl(var(--chart-5))',
+        '#82ca9d',
+        '#ffc658',
+    ];
+
     return {
       reportData: reportDataSorted,
       sortedMonths: sortedMonthLabels,
       totalRow: grandTotal,
+      chartData: chartDataFormatted,
+      platformKeys: allPlatformKeys,
+      chartColors,
     };
   }, [monthlyData]);
 
@@ -170,19 +198,12 @@ export default function JiraAssistantAdoptionPage() {
                 </Link>
             </Button>
         </div>
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-3xl">Jira Assistant Adoption</CardTitle>
-            <CardDescription>
-                Month-on-month adoption breakdown for Jira Assistant features.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-8">
+        <div className="space-y-8">
             <Card>
                 <CardHeader>
                     <CardTitle>User Adoption</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-6">
                     {isLoading && (
                     <div className="flex items-center justify-center p-8">
                         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -252,10 +273,42 @@ export default function JiraAssistantAdoptionPage() {
                                     </TableBody>
                                 </Table>
                             </div>
-                    </div>
+                            
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Adoption Trend</CardTitle>
+                                    <CardDescription>Month-on-month adoption percentage.</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <ChartContainer config={{}} className="min-h-[400px] w-full">
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                                                <CartesianGrid strokeDasharray="3 3" />
+                                                <XAxis dataKey="name" />
+                                                <YAxis label={{ value: 'Adoption %', angle: -90, position: 'insideLeft' }} />
+                                                <Tooltip content={<ChartTooltipContent />} />
+                                                <ChartLegend />
+                                                <Line type="monotone" dataKey="Total" stroke="#ff7300" strokeWidth={3} name="Total Adoption" />
+                                                {platformKeys.map((key, index) => (
+                                                    <Line 
+                                                        key={key} 
+                                                        type="monotone" 
+                                                        dataKey={key} 
+                                                        stroke={chartColors[index % chartColors.length]} 
+                                                        strokeWidth={2}
+                                                        name={key}
+                                                    />
+                                                ))}
+                                            </LineChart>
+                                        </ResponsiveContainer>
+                                    </ChartContainer>
+                                </CardContent>
+                            </Card>
+                        </div>
                     )}
                 </CardContent>
             </Card>
+
             <Card>
                 <CardHeader>
                     <CardTitle>Jira Assist Test Cases Adoption</CardTitle>
@@ -266,8 +319,7 @@ export default function JiraAssistantAdoptionPage() {
                     </div>
                 </CardContent>
             </Card>
-          </CardContent>
-        </Card>
+        </div>
       </main>
     </div>
   );
