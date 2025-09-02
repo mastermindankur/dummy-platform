@@ -3,19 +3,7 @@ import { pillars, getPillarStatus } from "@/lib/data";
 import { ExecutiveSummary } from "@/components/dashboard/executive-summary";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { StatusIndicator } from "@/components/dashboard/status-indicator";
-import { TrendIndicator } from "@/components/dashboard/trend-indicator";
-import { Progress } from "@/components/ui/progress";
-import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
+import { PillarCard } from "@/components/dashboard/pillar-card";
 
 export default function Home() {
   const allPillarStatuses = pillars.reduce(
@@ -36,15 +24,6 @@ export default function Home() {
       {} as Record<string, "Green" | "Amber" | "Red">
     );
 
-  const allItems = pillars.flatMap((pillar) =>
-    pillar.subItems.map((subItem) => ({
-      ...subItem,
-      pillarName: pillar.name,
-      pillarId: pillar.id,
-      pillarIcon: pillar.icon,
-    }))
-  );
-
   return (
     <div className="flex min-h-screen w-full flex-col">
       <Header>
@@ -55,62 +34,11 @@ export default function Home() {
           />
         </Suspense>
       </Header>
-      <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
-        <div className="rounded-lg border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[18%]">Pillar / Sub-item</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Trend</TableHead>
-                <TableHead>% Complete</TableHead>
-                <TableHead>Owner</TableHead>
-                <TableHead>Last Update</TableHead>
-                <TableHead className="w-[25%]">Comments</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {pillars.map((pillar, index) => (
-                <>
-                  <TableRow key={pillar.id} className="bg-muted/50">
-                    <TableCell colSpan={8} className="p-2">
-                       <Link
-                        href={`/pillar/${pillar.id}`}
-                        className="flex items-center gap-2 font-semibold text-primary"
-                      >
-                         <pillar.icon className="h-5 w-5" />
-                        {pillar.name}
-                       </Link>
-                    </TableCell>
-                  </TableRow>
-                  {pillar.subItems.map((item) => (
-                    <TableRow key={item.id}>
-                      <TableCell className="pl-8 font-medium">{item.name}</TableCell>
-                      <TableCell>
-                        <StatusIndicator status={item.status} />
-                      </TableCell>
-                      <TableCell>
-                        <TrendIndicator trend={item.trend} />
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Progress value={item.percentageComplete} className="h-2 w-[80px]" />
-                           <span className="text-xs text-muted-foreground">{item.percentageComplete}%</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                         <Badge variant="secondary">{item.owner}</Badge>
-                      </TableCell>
-                      <TableCell>{item.lastUpdate}</TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {item.comments}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </>
-              ))}
-            </TableBody>
-          </Table>
+      <main className="flex-1 p-4 md:p-8">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {pillars.map((pillar) => (
+            <PillarCard key={pillar.id} pillar={pillar} />
+          ))}
         </div>
       </main>
     </div>
