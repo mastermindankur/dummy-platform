@@ -23,6 +23,9 @@ import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Metadata } from 'next'
 import { SubItemCard } from "@/components/dashboard/sub-item-card";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
  
 type Props = {
   params: { id: string }
@@ -58,6 +61,14 @@ export default async function PillarPage({ params }: { params: { id: string } })
     <div className="flex min-h-screen w-full flex-col">
       <Header />
       <main className="flex-1 p-4 md:p-8">
+        <div className="mb-4">
+            <Button asChild variant="outline">
+                <Link href="/">
+                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    Back to Dashboard
+                </Link>
+            </Button>
+        </div>
         <Card>
           <CardHeader>
             <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">

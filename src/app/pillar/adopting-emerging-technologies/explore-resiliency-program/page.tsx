@@ -18,12 +18,14 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Loader2 } from 'lucide-react';
+import { ArrowLeft, Loader2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import type { ExcelData, Pillar, SubItem, ExcelRow } from '@/types';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend } from '@/components/ui/chart';
 import { Progress } from '@/components/ui/progress';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 const fetchProgramData = async (): Promise<ExcelData | null> => {
   const res = await fetch('/api/data?key=explore-resiliency-program');
@@ -143,6 +145,14 @@ export default function ExploreResiliencyProgramPage() {
     <div className="flex min-h-screen w-full flex-col">
       <Header />
       <main className="flex-1 p-4 md:p-8">
+        <div className="mb-4">
+            <Button asChild variant="outline">
+                <Link href="/pillar/adopting-emerging-technologies">
+                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    Back to Pillar
+                </Link>
+            </Button>
+        </div>
         <Card>
           <CardHeader>
             <CardTitle className="text-3xl">Explore Resiliency Program</CardTitle>

@@ -163,7 +163,7 @@
         "percentageComplete": 19,
         "annualTarget": 25,
         "metricName": "YTD Progress",
-        "metricUnit": "App Assessment Count"
+        "metricUnit": "App Assessment Completion"
       },
       {
         "id": "hackathons",
