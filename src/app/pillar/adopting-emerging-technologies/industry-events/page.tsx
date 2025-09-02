@@ -151,7 +151,7 @@ export default function IndustryEventsDetailsPage() {
                             <Building className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{internalEvents}</div>
+                            <div className="text-4xl font-bold">{internalEvents}</div>
                         </CardContent>
                     </Card>
                      <Card>
@@ -160,7 +160,7 @@ export default function IndustryEventsDetailsPage() {
                             <Briefcase className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{externalEvents}</div>
+                            <div className="text-4xl font-bold">{externalEvents}</div>
                         </CardContent>
                     </Card>
                 </div>
