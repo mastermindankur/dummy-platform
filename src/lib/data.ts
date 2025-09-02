@@ -110,6 +110,23 @@ async function readData(): Promise<Pillar[]> {
             return pillar;
         });
     }
+    
+    // Attach SQUAD onboarding count
+    const squadData = await readExcelData('squad-onboarding');
+    if (squadData && squadData.rows.length > 0) {
+        const onboardedCount = squadData.rows.length;
+        jsonData = jsonData.map(pillar => {
+            if (pillar.id === 'making-design-resilient') {
+                pillar.subItems = pillar.subItems.map(subItem => {
+                    if (subItem.id === 'system-scalability') {
+                        return { ...subItem, percentageComplete: onboardedCount };
+                    }
+                    return subItem;
+                })
+            }
+            return pillar;
+        });
+    }
 
     // Attach icons back to the data
     return jsonData.map(pillar => ({
@@ -130,15 +147,6 @@ export async function getPillars(): Promise<Pillar[]> {
 export async function getPillarById(id: string): Promise<Pillar | undefined> {
   const pillars = await readData();
   return pillars.find((p) => p.id === id);
-}
-
-export function getPillarStatus(pillar: Pillar): Status {
-  if (!pillar || !pillar.subItems) return "Red";
-
-  const statuses = pillar.subItems.map((item: SubItem) => item.status);
-  if (statuses.includes("Red")) return "Red";
-  if (statuses.includes("Amber")) return "Amber";
-  return "Green";
 }
 
 export async function writeData(data: Pillar[]) {

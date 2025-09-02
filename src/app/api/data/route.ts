@@ -18,6 +18,10 @@ export async function GET(request: Request) {
             const data = await readExcelData('industry-events');
             return NextResponse.json(data?.rows ?? []);
         }
+        if (fileKey === 'squad-onboarding') {
+            const data = await readExcelData('squad-onboarding');
+            return NextResponse.json(data);
+        }
         const data = await readExcelData(fileKey);
         if (data) {
             return NextResponse.json(data);

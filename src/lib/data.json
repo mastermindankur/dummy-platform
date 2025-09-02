@@ -143,6 +143,34 @@
         "annualTarget": 4,
         "metricName": "Count of Knowledge Sharing Sessions",
         "metricUnit": "Sessions"
+      },
+      {
+        "id": "new-sub-item-1756825846001",
+        "name": "App Sherpas",
+        "description": "Increase the No of App Sheraps at DTI by 1",
+        "status": "Green",
+        "trend": "flat",
+        "owner": "",
+        "lastUpdate": "2025-09-02",
+        "comments": "",
+        "percentageComplete": 8,
+        "annualTarget": 8,
+        "metricName": "Count of App Sherpas",
+        "metricUnit": "App Sherpas"
+      },
+      {
+        "id": "new-sub-item-1756825954734",
+        "name": "ARC Re-Work",
+        "description": "Recuce No of ARC Reviews that go to ARC Forum.",
+        "status": "Green",
+        "trend": "flat",
+        "owner": "",
+        "lastUpdate": "2025-09-02",
+        "comments": "",
+        "percentageComplete": 5,
+        "annualTarget": 10,
+        "metricName": "Reduce ARC Forum Reviews",
+        "metricUnit": "% of Apps that go to ARC Forum"
       }
     ]
   },

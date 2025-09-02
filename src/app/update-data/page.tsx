@@ -139,7 +139,8 @@ export default function UpdateDataPage() {
   const [excelData, setExcelData] = useState<Record<string, ExcelData | null>>({
       'explore-resiliency-program': null,
       'dti-tech-blogs': null,
-      'tech-sphere-sessions': null
+      'tech-sphere-sessions': null,
+      'squad-onboarding': null,
   });
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -331,10 +332,13 @@ export default function UpdateDataPage() {
                                     <h4 className="text-xl font-semibold mb-4">Sub-Items</h4>
                                     <div className="space-y-4">
                                     {pillar.subItems.map((item, sIndex) => {
-                                      const isResiliencyProgram = item.id === 'explore-resiliency-program';
-                                      const isBlogs = item.id === 'blogs-open-source';
-                                      const isHackathons = item.id === 'hackathons';
-                                      const isAutoCalculated = isResiliencyProgram || isBlogs || isHackathons;
+                                      const isAutoCalculated = [
+                                        'explore-resiliency-program', 
+                                        'blogs-open-source', 
+                                        'hackathons', 
+                                        'industry-events',
+                                        'system-scalability'
+                                      ].includes(item.id);
 
                                       return (
                                         <div key={item.id} className="border rounded-md p-4 bg-secondary/50 relative">
@@ -453,6 +457,17 @@ export default function UpdateDataPage() {
                                             <Plus className="mr-2 h-4 w-4" /> Add Sub-Item
                                         </Button>
                                     </div>
+
+                                    {pillar.id === 'making-design-resilient' && (
+                                        <>
+                                            <ExcelUploadSection
+                                                title="SQUAD Onboarding"
+                                                description="Upload the Excel sheet for CAT1/CAT2 app onboarding to SQUAD."
+                                                fileKey="squad-onboarding"
+                                                onDataProcessed={handleExcelDataProcessed}
+                                            />
+                                        </>
+                                    )}
 
                                     {pillar.id === 'adopting-emerging-technologies' && (
                                         <>
