@@ -1,5 +1,5 @@
 import { Header } from "@/components/layout/header";
-import { getPillars, getPillarStatus } from "@/lib/data";
+import { getPillars } from "@/lib/data";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PillarCard } from "@/components/dashboard/pillar-card";
@@ -13,25 +13,8 @@ export default async function Home() {
   const comingSoonPillarIds = [
     "improving-productivity",
     "building-reliable-products",
+    "world-class-corporate-governance",
   ];
-
-  const allPillarStatuses = pillars.reduce(
-    (acc, pillar) => {
-      acc[pillar.name] = getPillarStatus(pillar);
-      return acc;
-    },
-    {} as Record<string, "Green" | "Amber" | "Red">
-  );
-
-  const allSubItemStatuses = pillars
-    .flatMap((p) => p.subItems)
-    .reduce(
-      (acc, item) => {
-        acc[item.name] = item.status;
-        return acc;
-      },
-      {} as Record<string, "Green" | "Amber" | "Red">
-    );
 
   return (
     <div className="flex min-h-screen w-full flex-col">
