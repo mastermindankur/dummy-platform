@@ -15,6 +15,8 @@ export type SubItem = {
   comments: string;
   percentageComplete: number;
   annualTarget: number;
+  metricName: string;
+  metricUnit: string;
 };
 
 export type Pillar = {

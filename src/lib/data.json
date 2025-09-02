@@ -15,7 +15,9 @@
         "lastUpdate": "2024-07-28",
         "comments": "Recent improvements are showing positive results.",
         "percentageComplete": 90,
-        "annualTarget": 100
+        "annualTarget": 100,
+        "metricName": "YTD Progress",
+        "metricUnit": "%"
       },
       {
         "id": "ci-cd-pipeline",
@@ -27,7 +29,9 @@
         "lastUpdate": "2024-07-27",
         "comments": "Blocked by infrastructure upgrade.",
         "percentageComplete": 60,
-        "annualTarget": 100
+        "annualTarget": 100,
+        "metricName": "YTD Progress",
+        "metricUnit": "%"
       },
       {
         "id": "eng-docs",
@@ -39,7 +43,9 @@
         "lastUpdate": "2024-07-29",
         "comments": "New documentation portal launched.",
         "percentageComplete": 85,
-        "annualTarget": 100
+        "annualTarget": 100,
+        "metricName": "YTD Progress",
+        "metricUnit": "%"
       }
     ]
   },
@@ -58,7 +64,9 @@
         "lastUpdate": "2024-07-30",
         "comments": "Exceeding SLO targets for 3 consecutive months.",
         "percentageComplete": 99,
-        "annualTarget": 100
+        "annualTarget": 100,
+        "metricName": "YTD Progress",
+        "metricUnit": "%"
       },
       {
         "id": "error-rate",
@@ -70,7 +78,9 @@
         "lastUpdate": "2024-07-29",
         "comments": "Spike in errors after recent deployment. Actively investigating.",
         "percentageComplete": 30,
-        "annualTarget": 100
+        "annualTarget": 100,
+        "metricName": "YTD Progress",
+        "metricUnit": "%"
       },
       {
         "id": "perf-testing",
@@ -82,7 +92,9 @@
         "lastUpdate": "2024-07-26",
         "comments": "Need to expand test coverage for new services.",
         "percentageComplete": 50,
-        "annualTarget": 100
+        "annualTarget": 100,
+        "metricName": "YTD Progress",
+        "metricUnit": "%"
       }
     ]
   },
@@ -101,7 +113,9 @@
         "lastUpdate": "2024-07-25",
         "comments": "Load tests show we can handle 2x traffic.",
         "percentageComplete": 95,
-        "annualTarget": 100
+        "annualTarget": 100,
+        "metricName": "YTD Progress",
+        "metricUnit": "%"
       },
       {
         "id": "disaster-recovery",
@@ -113,7 +127,9 @@
         "lastUpdate": "2024-07-22",
         "comments": "Last DR drill was successful with zero data loss.",
         "percentageComplete": 90,
-        "annualTarget": 100
+        "annualTarget": 100,
+        "metricName": "YTD Progress",
+        "metricUnit": "%"
       },
       {
         "id": "dependency-management",
@@ -125,7 +141,9 @@
         "lastUpdate": "2024-07-28",
         "comments": "Service map needs updating.",
         "percentageComplete": 65,
-        "annualTarget": 100
+        "annualTarget": 100,
+        "metricName": "YTD Progress",
+        "metricUnit": "%"
       }
     ]
   },
@@ -144,7 +162,9 @@
         "lastUpdate": "2024-07-28",
         "comments": "Awaiting budget approval for new initiatives.",
         "percentageComplete": 40,
-        "annualTarget": 100
+        "annualTarget": 100,
+        "metricName": "YTD Progress",
+        "metricUnit": "%"
       },
       {
         "id": "hackathons",
@@ -156,7 +176,9 @@
         "lastUpdate": "2024-07-20",
         "comments": "Last hackathon produced 3 viable project ideas.",
         "percentageComplete": 100,
-        "annualTarget": 100
+        "annualTarget": 100,
+        "metricName": "YTD Progress",
+        "metricUnit": "%"
       },
       {
         "id": "industry-events",
@@ -168,7 +190,9 @@
         "lastUpdate": "2024-07-15",
         "comments": "Upcoming conference in Q4.",
         "percentageComplete": 70,
-        "annualTarget": 100
+        "annualTarget": 100,
+        "metricName": "YTD Progress",
+        "metricUnit": "%"
       },
       {
         "id": "blogs-open-source",
@@ -180,7 +204,9 @@
         "lastUpdate": "2024-07-29",
         "comments": "New blog post on our open-source library was published.",
         "percentageComplete": 1,
-        "annualTarget": 100
+        "annualTarget": 100,
+        "metricName": "YTD Progress",
+        "metricUnit": "%"
       },
       {
         "id": "tech-sphere-sessions",
@@ -192,7 +218,9 @@
         "lastUpdate": "2024-07-25",
         "comments": "Record attendance at the last session.",
         "percentageComplete": 100,
-        "annualTarget": 100
+        "annualTarget": 100,
+        "metricName": "YTD Progress",
+        "metricUnit": "%"
       },
       {
         "id": "mentorship-program",
@@ -204,7 +232,9 @@
         "lastUpdate": "2024-07-22",
         "comments": "Successfully matched 10 new pairs.",
         "percentageComplete": 90,
-        "annualTarget": 100
+        "annualTarget": 100,
+        "metricName": "YTD Progress",
+        "metricUnit": "%"
       }
     ]
   },
@@ -223,7 +253,9 @@
         "lastUpdate": "2024-07-30",
         "comments": "SOC 2 Type II audit completed successfully.",
         "percentageComplete": 100,
-        "annualTarget": 100
+        "annualTarget": 100,
+        "metricName": "YTD Progress",
+        "metricUnit": "%"
       },
       {
         "id": "incident-management",
@@ -235,7 +267,9 @@
         "lastUpdate": "2024-07-27",
         "comments": "Mean Time to Resolution (MTTR) is down by 15%.",
         "percentageComplete": 85,
-        "annualTarget": 100
+        "annualTarget": 100,
+        "metricName": "YTD Progress",
+        "metricUnit": "%"
       },
       {
         "id": "access-control",
@@ -247,7 +281,9 @@
         "lastUpdate": "2024-07-28",
         "comments": "Quarterly access review is overdue.",
         "percentageComplete": 50,
-        "annualTarget": 100
+        "annualTarget": 100,
+        "metricName": "YTD Progress",
+        "metricUnit": "%"
       }
     ]
   }

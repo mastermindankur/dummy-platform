@@ -25,6 +25,8 @@ export function SubItemCard({ item, pillarName }: Props) {
   const isExploreResiliency = item.id === "explore-resiliency-program";
   const isBlogsOpenSource = item.id === "blogs-open-source";
 
+  const progressValue = item.annualTarget > 0 ? (item.percentageComplete / item.annualTarget) * 100 : 0;
+
   return (
     <Card className="flex flex-col">
       <CardHeader>
@@ -33,10 +35,10 @@ export function SubItemCard({ item, pillarName }: Props) {
       </CardHeader>
       <CardContent className="flex-grow">
         <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium">YTD Progress</span>
-            <span className="text-sm font-bold">{item.percentageComplete}%</span>
+            <span className="text-sm font-medium">{item.metricName}</span>
+            <span className="text-sm font-bold">{item.percentageComplete}{item.metricUnit} / {item.annualTarget}{item.metricUnit}</span>
         </div>
-        <Progress value={item.percentageComplete} className="h-2" />
+        <Progress value={progressValue} className="h-2" />
       </CardContent>
       <CardFooter className="flex justify-between items-center">
         <StatusIndicator status={item.status} />

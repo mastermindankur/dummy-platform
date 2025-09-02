@@ -209,6 +209,8 @@ export default function UpdateDataPage() {
       comments: '',
       percentageComplete: 0,
       annualTarget: 100,
+      metricName: 'YTD Progress',
+      metricUnit: '%'
     };
     newData[pillarIndex].subItems.push(newSubItem);
     setData(newData);
@@ -322,7 +324,7 @@ export default function UpdateDataPage() {
                                     <div className="space-y-4">
                                     {pillar.subItems.map((item, sIndex) => (
                                         <div key={item.id} className="border rounded-md p-4 bg-secondary/50 relative">
-                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                             <div>
                                                 <Label htmlFor={`item-name-${pIndex}-${sIndex}`}>Name</Label>
                                                 <Input
@@ -356,32 +358,54 @@ export default function UpdateDataPage() {
                                                 </SelectContent>
                                                 </Select>
                                             </div>
-                                            <div>
-                                                <Label htmlFor={`item-progress-${pIndex}-${sIndex}`}>
-                                                YTD Progress
-                                                </Label>
-                                                <Input
-                                                id={`item-progress-${pIndex}-${sIndex}`}
-                                                type="number"
-                                                value={item.percentageComplete}
-                                                onChange={(e) =>
-                                                    handleSubItemChange(pIndex, sIndex, 'percentageComplete', parseInt(e.target.value, 10) || 0)
-                                                }
-                                                />
+                                              <div>
+                                                  <Label htmlFor={`item-metric-name-${pIndex}-${sIndex}`}>Metric Name</Label>
+                                                  <Input
+                                                  id={`item-metric-name-${pIndex}-${sIndex}`}
+                                                  value={item.metricName}
+                                                  onChange={(e) =>
+                                                      handleSubItemChange(pIndex, sIndex, 'metricName', e.target.value)
+                                                  }
+                                                  />
+                                              </div>
                                             </div>
-                                             <div>
-                                                <Label htmlFor={`item-target-${pIndex}-${sIndex}`}>
-                                                Annual Target
-                                                </Label>
-                                                <Input
-                                                id={`item-target-${pIndex}-${sIndex}`}
-                                                type="number"
-                                                value={item.annualTarget}
-                                                onChange={(e) =>
-                                                    handleSubItemChange(pIndex, sIndex, 'annualTarget', parseInt(e.target.value, 10) || 0)
-                                                }
-                                                />
-                                            </div>
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                                              <div>
+                                                  <Label htmlFor={`item-progress-${pIndex}-${sIndex}`}>
+                                                  Current Value
+                                                  </Label>
+                                                  <Input
+                                                  id={`item-progress-${pIndex}-${sIndex}`}
+                                                  type="number"
+                                                  value={item.percentageComplete}
+                                                  onChange={(e) =>
+                                                      handleSubItemChange(pIndex, sIndex, 'percentageComplete', parseInt(e.target.value, 10) || 0)
+                                                  }
+                                                  />
+                                              </div>
+                                              <div>
+                                                  <Label htmlFor={`item-target-${pIndex}-${sIndex}`}>
+                                                  Annual Target
+                                                  </Label>
+                                                  <Input
+                                                  id={`item-target-${pIndex}-${sIndex}`}
+                                                  type="number"
+                                                  value={item.annualTarget}
+                                                  onChange={(e) =>
+                                                      handleSubItemChange(pIndex, sIndex, 'annualTarget', parseInt(e.target.value, 10) || 0)
+                                                  }
+                                                  />
+                                              </div>
+                                               <div>
+                                                  <Label htmlFor={`item-metric-unit-${pIndex}-${sIndex}`}>Unit</Label>
+                                                  <Input
+                                                  id={`item-metric-unit-${pIndex}-${sIndex}`}
+                                                  value={item.metricUnit}
+                                                  onChange={(e) =>
+                                                      handleSubItemChange(pIndex, sIndex, 'metricUnit', e.target.value)
+                                                  }
+                                                  />
+                                              </div>
                                             </div>
                                             <div className="mt-4">
                                             <Label htmlFor={`item-desc-${pIndex}-${sIndex}`}>
