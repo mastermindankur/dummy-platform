@@ -18,13 +18,11 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { ArrowLeft, Loader2, ArrowUp, ArrowDown, Minus } from 'lucide-react';
+import { ArrowLeft, Loader2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import type { MonthlyExcelData, ExcelRow } from '@/types';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { cn } from '@/lib/utils';
-
 
 const fetchAdoptionData = async (): Promise<MonthlyExcelData | null> => {
   const res = await fetch('/api/data?key=jira-assistant-adoption');
@@ -34,15 +32,15 @@ const fetchAdoptionData = async (): Promise<MonthlyExcelData | null> => {
   if (!res.ok) {
     throw new Error('Failed to fetch adoption data');
   }
-  return res.json();
+  const data = await res.json();
+  return Object.keys(data).length > 0 ? data : null;
 };
 
-type AdoptionStats = {
+type PlatformAdoptionData = {
     platform: string;
     totalUsers: number;
-    adoptedUsers: number;
-    adoptionRate: number;
-    prevAdoptionRate: number | null;
+    activeUsers: number;
+    monthlyAdoption: { [month: string]: number };
 };
 
 export default function UserAdoptionReportPage() {
@@ -69,116 +67,107 @@ export default function UserAdoptionReportPage() {
     loadData();
   }, []);
 
-  const adoptionReportData = useMemo(() => {
-    if (!monthlyData || Object.keys(monthlyData).length === 0) {
-      return [];
+  const { reportData, sortedMonths } = useMemo(() => {
+    if (!monthlyData) {
+      return { reportData: [], sortedMonths: [] };
+    }
+
+    const platformData = new Map<string, {
+        totalUserIds: Set<string>;
+        activeUserIds: Set<string>;
+        monthlyStats: Map<string, { total: Set<string>; active: Set<string> }>;
+    }>();
+
+    const allMonths = Object.keys(monthlyData).sort();
+
+    for (const month of allMonths) {
+        const monthRows = monthlyData[month].rows;
+        const monthLabel = new Date(month).toLocaleString('default', { month: 'short', year: '2-digit' });
+
+        for (const row of monthRows) {
+            const platform = (row['Platforms'] as string) || 'Unknown';
+            const userId = row['1bankid'] as string;
+            const isAdopted = row['is_created_via_JA'] === 1;
+
+            if (!platformData.has(platform)) {
+                platformData.set(platform, {
+                    totalUserIds: new Set(),
+                    activeUserIds: new Set(),
+                    monthlyStats: new Map(),
+                });
+            }
+            const data = platformData.get(platform)!;
+            data.totalUserIds.add(userId);
+
+            if (!data.monthlyStats.has(monthLabel)) {
+                data.monthlyStats.set(monthLabel, { total: new Set(), active: new Set() });
+            }
+            const monthStats = data.monthlyStats.get(monthLabel)!;
+            monthStats.total.add(userId);
+
+            if (isAdopted) {
+                data.activeUserIds.add(userId);
+                monthStats.active.add(userId);
+            }
+        }
     }
     
-    const sortedMonths = Object.keys(monthlyData).sort();
-    const currentMonth = sortedMonths[sortedMonths.length - 1];
-    const prevMonth = sortedMonths.length > 1 ? sortedMonths[sortedMonths.length - 2] : null;
-
-    const getPlatformStats = (monthKey: string | null): Map<string, { totalUsers: Set<string>; adoptedUsers: Set<string> }> => {
-        const stats = new Map<string, { totalUsers: Set<string>; adoptedUsers: Set<string> }>();
-        if (!monthKey || !monthlyData[monthKey]) return stats;
-
-        for (const row of monthlyData[monthKey].rows) {
-            const platform = row['Platforms'] as string || 'Unknown';
-            const userId = row['1bankid'] as string;
-            
-            if (!stats.has(platform)) {
-                stats.set(platform, { totalUsers: new Set(), adoptedUsers: new Set() });
-            }
-
-            const platformStats = stats.get(platform)!;
-            platformStats.totalUsers.add(userId);
-
-            if (row['is_created_via_JA'] === 1) {
-                platformStats.adoptedUsers.add(userId);
+    const finalReportData: PlatformAdoptionData[] = [];
+    for (const [platform, data] of platformData.entries()) {
+        const monthlyAdoption: { [month: string]: number } = {};
+        for(const month of allMonths) {
+            const monthLabel = new Date(month).toLocaleString('default', { month: 'short', year: '2-digit' });
+            const stats = data.monthlyStats.get(monthLabel);
+            if (stats && stats.total.size > 0) {
+                monthlyAdoption[monthLabel] = (stats.active.size / stats.total.size) * 100;
+            } else {
+                monthlyAdoption[monthLabel] = 0;
             }
         }
-        return stats;
-    };
-    
-    const currentMonthStats = getPlatformStats(currentMonth);
-    const prevMonthStats = getPlatformStats(prevMonth);
-    
-    const report: AdoptionStats[] = [];
 
-    for (const [platform, currentStats] of currentMonthStats.entries()) {
-        const prevStats = prevMonthStats.get(platform);
-        
-        const totalUsers = currentStats.totalUsers.size;
-        const adoptedUsers = currentStats.adoptedUsers.size;
-        const currentRate = totalUsers > 0 ? (adoptedUsers / totalUsers) * 100 : 0;
-        
-        let prevRate: number | null = null;
-        if (prevStats) {
-            const prevTotalUsers = prevStats.totalUsers.size;
-            const prevAdoptedUsers = prevStats.adoptedUsers.size;
-            prevRate = prevTotalUsers > 0 ? (prevAdoptedUsers / prevTotalUsers) * 100 : 0;
-        }
-        
-        report.push({
+        finalReportData.push({
             platform,
-            totalUsers,
-            adoptedUsers,
-            adoptionRate: currentRate,
-            prevAdoptionRate: prevRate,
+            totalUsers: data.totalUserIds.size,
+            activeUsers: data.activeUserIds.size,
+            monthlyAdoption
         });
     }
 
-    return report.sort((a,b) => a.platform.localeCompare(b.platform));
-
-  }, [monthlyData]);
-
-  const totalRow = useMemo(() => {
-    if (adoptionReportData.length === 0) return null;
-    
-    const totalUsers = adoptionReportData.reduce((sum, item) => sum + item.totalUsers, 0);
-    const adoptedUsers = adoptionReportData.reduce((sum, item) => sum + item.adoptedUsers, 0);
-    const adoptionRate = totalUsers > 0 ? (adoptedUsers / totalUsers) * 100 : 0;
-
-    const prevAdoptedUsers = adoptionReportData.reduce((sum, item) => {
-        if (item.prevAdoptionRate !== null) {
-            // Estimate previous adopted users based on previous rate and current total users
-            // This is an approximation as the user base might change.
-            return sum + (item.totalUsers * item.prevAdoptionRate / 100);
-        }
-        return sum;
-    }, 0);
-    
-    const prevTotalUsers = adoptionReportData.reduce((sum,item) => {
-         if (item.prevAdoptionRate !== null) {
-            return sum + item.totalUsers
-         }
-         return sum;
-    }, 0);
-
-
-    const prevAdoptionRate = prevTotalUsers > 0 ? (prevAdoptedUsers / prevTotalUsers) * 100 : null;
-
     return {
-        totalUsers,
-        adoptedUsers,
-        adoptionRate,
-        prevAdoptionRate
+      reportData: finalReportData.sort((a, b) => a.platform.localeCompare(b.platform)),
+      sortedMonths: allMonths.map(m => new Date(m).toLocaleString('default', { month: 'short', year: '2-digit' })),
+    };
+  }, [monthlyData]);
+  
+  const totalRow = useMemo(() => {
+    if (reportData.length === 0) return null;
+
+    const totalUsers = reportData.reduce((sum, item) => sum + item.totalUsers, 0);
+    const activeUsers = reportData.reduce((sum, item) => sum + item.activeUsers, 0);
+
+    const monthlyAdoption: { [month: string]: number } = {};
+    for (const month of sortedMonths) {
+        let monthTotalUsers = 0;
+        let monthActiveUsers = 0;
+        
+        for (const item of reportData) {
+            const adoptionRate = item.monthlyAdoption[month];
+            if (adoptionRate !== undefined) {
+                 // This is an approximation as we don't have distinct user counts per month at this stage
+                 // A more accurate way would be to recalculate from raw data, but this is a summary row
+                 const platformData = monthlyData ? Object.values(monthlyData).flatMap(m => m.rows).filter(r => r['Platforms'] === item.platform) : [];
+                 const usersThisMonth = new Set(platformData.filter(r => new Date(Object.keys(monthlyData!).find(key => monthlyData![key].rows.includes(r))!).toLocaleString('default', { month: 'short', year: '2-digit' }) === month).map(r => r['1bankid']));
+                 const totalUsersForPlatformThisMonth = usersThisMonth.size;
+
+                monthTotalUsers += totalUsersForPlatformThisMonth;
+                monthActiveUsers += (totalUsersForPlatformThisMonth * adoptionRate) / 100;
+            }
+        }
+        monthlyAdoption[month] = monthTotalUsers > 0 ? (monthActiveUsers / monthTotalUsers) * 100 : 0;
     }
-  }, [adoptionReportData]);
 
-  const ChangeIndicator = ({ current, previous }: { current: number, previous: number | null }) => {
-    if (previous === null) return <Minus className="h-4 w-4 text-muted-foreground" />;
-    
-    const change = current - previous;
-    if (Math.abs(change) < 0.01) return <Minus className="h-4 w-4 text-muted-foreground" />;
-
-    if (change > 0) {
-        return <ArrowUp className="h-4 w-4 text-green-500" />;
-    } else {
-        return <ArrowDown className="h-4 w-4 text-red-500" />;
-    }
-  };
-
+    return { totalUsers, activeUsers, monthlyAdoption };
+  }, [reportData, sortedMonths, monthlyData]);
 
   return (
     <div className="flex min-h-screen w-full flex-col">
@@ -206,54 +195,52 @@ export default function UserAdoptionReportPage() {
               </div>
             )}
 
-            {!isLoading && adoptionReportData.length === 0 && (
+            {!isLoading && reportData.length === 0 && (
               <div className="text-center text-muted-foreground p-8">
                   No data available to generate this report. Please upload data for at least one month.
               </div>
             )}
 
-            {!isLoading && adoptionReportData.length > 0 && (
-                <div className="border rounded-lg">
+            {!isLoading && reportData.length > 0 && (
+                <div className="border rounded-lg overflow-x-auto">
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>Platform</TableHead>
-                                <TableHead className="text-right"># DTI Users</TableHead>
-                                <TableHead className="text-right"># JA Adoption</TableHead>
-                                <TableHead className="text-right">% Adoption (Current)</TableHead>
-                                <TableHead className="text-right">% Adoption (Previous)</TableHead>
-                                <TableHead className="text-right">Change</TableHead>
+                                <TableHead className="min-w-[200px]">Platform</TableHead>
+                                <TableHead className="text-right">Total Users</TableHead>
+                                <TableHead className="text-right">Active Users</TableHead>
+                                {sortedMonths.map(month => (
+                                    <TableHead key={month} className="text-right min-w-[120px]">
+                                        Adoption % ({month})
+                                    </TableHead>
+                                ))}
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {adoptionReportData.map((item) => (
+                            {reportData.map((item) => (
                                 <TableRow key={item.platform}>
                                     <TableCell className="font-medium">{item.platform}</TableCell>
                                     <TableCell className="text-right">{item.totalUsers}</TableCell>
-                                    <TableCell className="text-right">{item.adoptedUsers}</TableCell>
-                                    <TableCell className="text-right">{item.adoptionRate.toFixed(2)}%</TableCell>
-                                    <TableCell className="text-right text-muted-foreground">
-                                        {item.prevAdoptionRate !== null ? `${item.prevAdoptionRate.toFixed(2)}%` : 'N/A'}
-                                    </TableCell>
-                                    <TableCell className="flex justify-end">
-                                        <ChangeIndicator current={item.adoptionRate} previous={item.prevAdoptionRate} />
-                                    </TableCell>
+                                    <TableCell className="text-right">{item.activeUsers}</TableCell>
+                                    {sortedMonths.map(month => (
+                                        <TableCell key={`${item.platform}-${month}`} className="text-right">
+                                            {item.monthlyAdoption[month] !== undefined ? `${item.monthlyAdoption[month].toFixed(2)}%` : 'N/A'}
+                                        </TableCell>
+                                    ))}
                                 </TableRow>
                             ))}
                         </TableBody>
-                        {totalRow && (
+                         {totalRow && (
                            <tfoot className="border-t">
                                 <TableRow className="font-bold bg-secondary/50">
                                     <TableCell>Total</TableCell>
                                     <TableCell className="text-right">{totalRow.totalUsers}</TableCell>
-                                    <TableCell className="text-right">{totalRow.adoptedUsers}</TableCell>
-                                    <TableCell className="text-right">{totalRow.adoptionRate.toFixed(2)}%</TableCell>
-                                    <TableCell className="text-right text-muted-foreground">
-                                        {totalRow.prevAdoptionRate !== null ? `${totalRow.prevAdoptionRate.toFixed(2)}%` : 'N/A'}
-                                    </TableCell>
-                                     <TableCell className="flex justify-end">
-                                        <ChangeIndicator current={totalRow.adoptionRate} previous={totalRow.prevAdoptionRate} />
-                                    </TableCell>
+                                    <TableCell className="text-right">{totalRow.activeUsers}</TableCell>
+                                    {sortedMonths.map(month => (
+                                        <TableCell key={`total-${month}`} className="text-right">
+                                            {totalRow.monthlyAdoption[month] !== undefined ? `${totalRow.monthlyAdoption[month].toFixed(2)}%` : 'N/A'}
+                                        </TableCell>
+                                    ))}
                                 </TableRow>
                            </tfoot>
                         )}
