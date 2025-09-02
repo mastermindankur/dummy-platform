@@ -210,8 +210,8 @@ export default function IndustryEventsPage() {
                             </Button>
                             <CardHeader>
                                 <div className="flex items-start justify-between">
-                                    <CardTitle>{event.name}</CardTitle>
-                                    <Badge variant={event.type === 'internal' ? 'secondary' : 'outline'}>
+                                    <CardTitle className="pr-12">{event.name}</CardTitle>
+                                    <Badge variant={event.type === 'internal' ? 'secondary' : 'outline'} className="shrink-0">
                                       {event.type.charAt(0).toUpperCase() + event.type.slice(1)}
                                     </Badge>
                                 </div>
