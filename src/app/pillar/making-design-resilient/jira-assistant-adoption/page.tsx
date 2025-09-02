@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/table';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
-import type { MonthlyExcelData, ExcelRow } from '@/types';
+import type { MonthlyExcelData } from '@/types';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend } from '@/components/ui/chart';
@@ -50,11 +50,6 @@ type PlatformAdoptionData = {
     monthlyData: { [month: string]: MonthlyStats };
 }
 
-type ReportTotal = {
-    platform: string;
-    monthlyData: { [month: string]: MonthlyStats };
-}
-
 export default function JiraAssistantAdoptionPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [monthlyData, setMonthlyData] = useState<MonthlyExcelData | null>(null);
@@ -79,9 +74,9 @@ export default function JiraAssistantAdoptionPage() {
     loadData();
   }, []);
 
-  const { reportData, sortedMonths, totalRow, chartData, platformKeys, chartColors } = useMemo(() => {
+  const { reportData, sortedMonths, totalRow, chartData, platformKeys, chartColors, latestMonthAdoption, totalUsers, activeUsers } = useMemo(() => {
     if (!monthlyData) {
-      return { reportData: [], sortedMonths: [], totalRow: null, chartData: [], platformKeys: [], chartColors: [] };
+      return { reportData: [], sortedMonths: [], totalRow: null, chartData: [], platformKeys: [], chartColors: [], latestMonthAdoption: 0, totalUsers: 0, activeUsers: 0 };
     }
 
     const platformMonthlyStats = new Map<string, { [month: string]: { totalUsers: Set<string>; activeUsers: Set<string> } }>();
@@ -135,7 +130,7 @@ export default function JiraAssistantAdoptionPage() {
 
     const reportDataSorted = finalReportData.sort((a, b) => a.platform.localeCompare(b.platform));
 
-    const grandTotal: ReportTotal = {
+    const grandTotalRow: PlatformAdoptionData = {
       platform: 'Total',
       monthlyData: {}
     };
@@ -149,7 +144,7 @@ export default function JiraAssistantAdoptionPage() {
         });
         
         const adoption = totalUsersForMonth > 0 ? (activeUsersForMonth / totalUsersForMonth) * 100 : 0;
-        grandTotal.monthlyData[monthLabel] = {
+        grandTotalRow.monthlyData[monthLabel] = {
             totalUsers: totalUsersForMonth,
             activeUsers: activeUsersForMonth,
             adoption: adoption
@@ -159,9 +154,9 @@ export default function JiraAssistantAdoptionPage() {
     const chartDataFormatted = sortedMonthLabels.map(month => {
         const monthEntry: {[key: string]: any} = { name: month };
         reportDataSorted.forEach(platformData => {
-            monthEntry[platformData.platform] = platformData.monthlyData[month]?.adoption.toFixed(2);
+            monthEntry[platformData.platform] = platformData.monthlyData[month]?.adoption;
         });
-        monthEntry['Total'] = grandTotal.monthlyData[month]?.adoption.toFixed(2);
+        monthEntry['Total'] = grandTotalRow.monthlyData[month]?.adoption;
         return monthEntry;
     });
 
@@ -175,13 +170,31 @@ export default function JiraAssistantAdoptionPage() {
         '#ffc658',
     ];
 
+    const latestMonth = sortedMonthLabels[sortedMonthLabels.length - 1];
+    const latestMonthStats = grandTotalRow.monthlyData[latestMonth];
+    const totalUserSet = new Set<string>();
+    const activeUserSet = new Set<string>();
+
+    allMonths.forEach(month => {
+      const monthLabel = new Date(month + '-02').toLocaleString('default', { month: 'short', year: '2-digit' });
+      reportDataSorted.forEach(p => {
+        const platformStats = platformMonthlyStats.get(p.platform);
+        platformStats?.[monthLabel]?.totalUsers.forEach(u => totalUserSet.add(u));
+        platformStats?.[monthLabel]?.activeUsers.forEach(u => activeUserSet.add(u));
+      })
+    })
+
+
     return {
       reportData: reportDataSorted,
       sortedMonths: sortedMonthLabels,
-      totalRow: grandTotal,
+      totalRow: grandTotalRow,
       chartData: chartDataFormatted,
       platformKeys: allPlatformKeys,
       chartColors: definedChartColors,
+      latestMonthAdoption: latestMonthStats?.adoption || 0,
+      totalUsers: totalUserSet.size,
+      activeUsers: activeUserSet.size
     };
   }, [monthlyData]);
 
@@ -221,6 +234,69 @@ export default function JiraAssistantAdoptionPage() {
 
                     {!isLoading && monthlyData && Object.keys(monthlyData).length > 0 && (
                         <div className="space-y-8">
+                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle>Adoption Trend</CardTitle>
+                                        <CardDescription>Month-on-month adoption percentage.</CardDescription>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <ChartContainer config={{}} className="h-[400px] w-full">
+                                            <ResponsiveContainer width="100%" height="100%">
+                                                <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                                                    <CartesianGrid strokeDasharray="3 3" />
+                                                    <XAxis dataKey="name" />
+                                                    <YAxis label={{ value: 'Adoption %', angle: -90, position: 'insideLeft' }} domain={[0, 100]}/>
+                                                    <Tooltip content={<ChartTooltipContent />} />
+                                                    <ChartLegend />
+                                                    <Line type="monotone" dataKey="Total" stroke="#ff7300" strokeWidth={3} name="Total Adoption" dot={false} />
+                                                    {platformKeys.map((key, index) => (
+                                                        <Line 
+                                                            key={key} 
+                                                            type="monotone" 
+                                                            dataKey={key} 
+                                                            stroke={chartColors[index % chartColors.length]} 
+                                                            strokeWidth={2}
+                                                            name={key}
+                                                            dot={false}
+                                                        />
+                                                    ))}
+                                                </LineChart>
+                                            </ResponsiveContainer>
+                                        </ChartContainer>
+                                    </CardContent>
+                                </Card>
+                                <div className="grid grid-cols-2 gap-4">
+                                     <Card>
+                                        <CardHeader>
+                                            <CardTitle>Total Unique Users</CardTitle>
+                                            <CardDescription>All users across all time.</CardDescription>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <div className="text-4xl font-bold">{totalUsers}</div>
+                                        </CardContent>
+                                    </Card>
+                                    <Card>
+                                        <CardHeader>
+                                            <CardTitle>Active Users</CardTitle>
+                                            <CardDescription>Users with at least one adoption event.</CardDescription>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <div className="text-4xl font-bold">{activeUsers}</div>
+                                        </CardContent>
+                                    </Card>
+                                    <Card className="col-span-2">
+                                        <CardHeader>
+                                            <CardTitle>Overall Adoption Rate</CardTitle>
+                                            <CardDescription>Percentage of active users from the total user base.</CardDescription>
+                                        </CardHeader>
+                                        <CardContent>
+                                             <div className="text-4xl font-bold">{totalUsers > 0 ? ((activeUsers / totalUsers) * 100).toFixed(2) : 0}%</div>
+                                        </CardContent>
+                                    </Card>
+                                </div>
+                             </div>
+
                             <div className="border rounded-lg overflow-x-auto">
                                 <Table>
                                     <TableHeader>
@@ -276,37 +352,6 @@ export default function JiraAssistantAdoptionPage() {
                                     </TableBody>
                                 </Table>
                             </div>
-                            
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>Adoption Trend</CardTitle>
-                                    <CardDescription>Month-on-month adoption percentage.</CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <ChartContainer config={{}} className="min-h-[400px] w-full">
-                                        <ResponsiveContainer width="100%" height="100%">
-                                            <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                                                <CartesianGrid strokeDasharray="3 3" />
-                                                <XAxis dataKey="name" />
-                                                <YAxis label={{ value: 'Adoption %', angle: -90, position: 'insideLeft' }} />
-                                                <Tooltip content={<ChartTooltipContent />} />
-                                                <ChartLegend />
-                                                <Line type="monotone" dataKey="Total" stroke="#ff7300" strokeWidth={3} name="Total Adoption" />
-                                                {platformKeys.map((key, index) => (
-                                                    <Line 
-                                                        key={key} 
-                                                        type="monotone" 
-                                                        dataKey={key} 
-                                                        stroke={chartColors[index % chartColors.length]} 
-                                                        strokeWidth={2}
-                                                        name={key}
-                                                    />
-                                                ))}
-                                            </LineChart>
-                                        </ResponsiveContainer>
-                                    </ChartContainer>
-                                </CardContent>
-                            </Card>
                         </div>
                     )}
                 </CardContent>
