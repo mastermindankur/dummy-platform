@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { toast } from '@/hooks/use-toast';
-import type { Hackathon, HackathonTeam, HackathonWinner } from '@/types';
+import type { Hackathon, HackathonTeam, HackathonWinner, ExcelData } from '@/types';
 import { Loader2, Plus, Trash2, Upload, Trophy, Users } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Label } from '@/components/ui/label';
@@ -32,49 +32,36 @@ import { Separator } from '@/components/ui/separator';
 function TeamUploader({ hackathon, onTeamsUpload }: { hackathon: Hackathon, onTeamsUpload: (hackathonId: string, teams: HackathonTeam[]) => void }) {
     const [file, setFile] = useState<File | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [processedData, setProcessedData] = useState<ExcelData | null>(null);
+    const [selectedTeamColumn, setSelectedTeamColumn] = useState<string>('');
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const files = event.target.files;
         if (files && files.length > 0) {
             setFile(files[0]);
+            setProcessedData(null);
+            setSelectedTeamColumn('');
         }
     };
-
-    const handleFileUpload = async () => {
+    
+    const handleProcessFile = async () => {
         if (!file) return;
         setIsLoading(true);
         try {
-            const fileAsDataUri = await new Promise<string>((resolve, reject) => {
+             const fileAsDataUri = await new Promise<string>((resolve, reject) => {
                 const reader = new FileReader();
                 reader.readAsDataURL(file);
                 reader.onload = () => resolve(reader.result as string);
                 reader.onerror = (error) => reject(error);
             });
             const result = await processExcelFile(fileAsDataUri);
-            
-            if (result.headers.length === 0 || !result.headers.includes('Team Name')) {
-                 toast({
-                    title: 'Invalid Excel Format',
-                    description: 'Excel file must contain a "Team Name" column.',
-                    variant: 'destructive',
-                });
-                setIsLoading(false);
-                return;
-            }
-
-            const teams: HackathonTeam[] = result.rows.map((row, index) => ({
-                id: `team-${hackathon.id}-${index}`,
-                name: row['Team Name'],
-            }));
-            
-            onTeamsUpload(hackathon.id, teams);
+            setProcessedData(result);
             toast({
-                title: `Teams uploaded for ${hackathon.name}`,
-                description: 'Remember to save all changes.',
+                title: 'File Processed',
+                description: 'Please select the column containing team names.',
             });
-
         } catch (error) {
-            console.error(error);
+             console.error(error);
             toast({
                 title: 'Error processing file',
                 variant: 'destructive',
@@ -82,6 +69,25 @@ function TeamUploader({ hackathon, onTeamsUpload }: { hackathon: Hackathon, onTe
         } finally {
             setIsLoading(false);
         }
+    }
+
+
+    const handleUploadTeams = async () => {
+        if (!processedData || !selectedTeamColumn) return;
+        
+        const teams: HackathonTeam[] = processedData.rows.map((row, index) => ({
+            id: `team-${hackathon.id}-${index}`,
+            name: row[selectedTeamColumn] || 'Unnamed Team',
+        }));
+        
+        onTeamsUpload(hackathon.id, teams);
+        toast({
+            title: `Teams uploaded for ${hackathon.name}`,
+            description: 'Remember to save all changes.',
+        });
+        setFile(null);
+        setProcessedData(null);
+        setSelectedTeamColumn('');
     };
     
     return (
@@ -98,11 +104,40 @@ function TeamUploader({ hackathon, onTeamsUpload }: { hackathon: Hackathon, onTe
                 onChange={handleFileChange}
                 className="flex-grow"
               />
-              <Button onClick={handleFileUpload} disabled={isLoading || !file}>
+              <Button onClick={handleProcessFile} disabled={isLoading || !file || !!processedData}>
                 {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
-                Upload
+                Process File
               </Button>
             </div>
+            
+            {processedData && (
+                <div className="space-y-4 p-4 border rounded-md bg-secondary/30">
+                    <h5 className="font-medium">Map Columns</h5>
+                    <p className="text-sm text-muted-foreground">
+                        Select the column from your file that contains the team names.
+                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+                        <div>
+                             <Label>Team Name Column</Label>
+                             <Select onValueChange={setSelectedTeamColumn} value={selectedTeamColumn}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select a column" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {processedData.headers.map(header => (
+                                        <SelectItem key={header} value={header}>
+                                            {header}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                             </Select>
+                        </div>
+                        <Button onClick={handleUploadTeams} disabled={!selectedTeamColumn}>
+                            <Upload className="mr-2 h-4 w-4" /> Upload Teams
+                        </Button>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
@@ -301,7 +336,7 @@ export default function HackathonsPage() {
                         </div>
                         <div>
                             <Label htmlFor="participants">No. of Participants</Label>
-                            <Input id="participants" type="number" placeholder="e.g., 150" value={newParticipants} onChange={(e) => setNewParticipants(Number(e.target.value))} />
+                            <Input id="participants" type="number" placeholder="e.g., 150" value={newParticipants || ''} onChange={(e) => setNewParticipants(Number(e.target.value))} />
                         </div>
                     </div>
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
