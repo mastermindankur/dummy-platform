@@ -38,7 +38,7 @@ const fetchAdoptionData = async (): Promise<MonthlyExcelData | null> => {
 };
 
 type AdoptionStats = {
-    lobt: string;
+    platform: string;
     totalUsers: number;
     adoptedUsers: number;
     adoptionRate: number;
@@ -78,72 +78,85 @@ export default function UserAdoptionReportPage() {
     const currentMonth = sortedMonths[sortedMonths.length - 1];
     const prevMonth = sortedMonths.length > 1 ? sortedMonths[sortedMonths.length - 2] : null;
 
-    const getLOBTStats = (month: string | null): Map<string, { total: number; adopted: number }> => {
-        const stats = new Map<string, { total: number; adopted: number }>();
-        if (!month || !monthlyData[month]) return stats;
+    const getPlatformStats = (monthKey: string | null): Map<string, { totalUsers: Set<string>; adoptedUsers: Set<string> }> => {
+        const stats = new Map<string, { totalUsers: Set<string>; adoptedUsers: Set<string> }>();
+        if (!monthKey || !monthlyData[monthKey]) return stats;
 
-        for (const row of monthlyData[month].rows) {
-            const lobt = row['L3 Department'] as string || 'Unknown';
-            if (!stats.has(lobt)) {
-                stats.set(lobt, { total: 0, adopted: 0 });
+        for (const row of monthlyData[monthKey].rows) {
+            const platform = row['Platforms'] as string || 'Unknown';
+            const userId = row['1bankid'] as string;
+            
+            if (!stats.has(platform)) {
+                stats.set(platform, { totalUsers: new Set(), adoptedUsers: new Set() });
             }
-            const lobtStats = stats.get(lobt)!;
-            lobtStats.total += 1;
+
+            const platformStats = stats.get(platform)!;
+            platformStats.totalUsers.add(userId);
+
             if (row['is_created_via_JA'] === 1) {
-                lobtStats.adopted += 1;
+                platformStats.adoptedUsers.add(userId);
             }
         }
         return stats;
     };
     
-    const currentMonthStats = getLOBTStats(currentMonth);
-    const prevMonthStats = getLOBTStats(prevMonth);
+    const currentMonthStats = getPlatformStats(currentMonth);
+    const prevMonthStats = getPlatformStats(prevMonth);
     
     const report: AdoptionStats[] = [];
 
-    for (const [lobt, currentStats] of currentMonthStats.entries()) {
-        const prevStats = prevMonthStats.get(lobt);
-        const currentRate = currentStats.total > 0 ? (currentStats.adopted / currentStats.total) * 100 : 0;
-        const prevRate = prevStats && prevStats.total > 0 ? (prevStats.adopted / prevStats.total) * 100 : null;
+    for (const [platform, currentStats] of currentMonthStats.entries()) {
+        const prevStats = prevMonthStats.get(platform);
+        
+        const totalUsers = currentStats.totalUsers.size;
+        const adoptedUsers = currentStats.adoptedUsers.size;
+        const currentRate = totalUsers > 0 ? (adoptedUsers / totalUsers) * 100 : 0;
+        
+        let prevRate: number | null = null;
+        if (prevStats) {
+            const prevTotalUsers = prevStats.totalUsers.size;
+            const prevAdoptedUsers = prevStats.adoptedUsers.size;
+            prevRate = prevTotalUsers > 0 ? (prevAdoptedUsers / prevTotalUsers) * 100 : 0;
+        }
         
         report.push({
-            lobt,
-            totalUsers: currentStats.total,
-            adoptedUsers: currentStats.adopted,
+            platform,
+            totalUsers,
+            adoptedUsers,
             adoptionRate: currentRate,
             prevAdoptionRate: prevRate,
         });
     }
 
-    return report.sort((a,b) => a.lobt.localeCompare(b.lobt));
+    return report.sort((a,b) => a.platform.localeCompare(b.platform));
 
   }, [monthlyData]);
 
   const totalRow = useMemo(() => {
     if (adoptionReportData.length === 0) return null;
+    
     const totalUsers = adoptionReportData.reduce((sum, item) => sum + item.totalUsers, 0);
     const adoptedUsers = adoptionReportData.reduce((sum, item) => sum + item.adoptedUsers, 0);
     const adoptionRate = totalUsers > 0 ? (adoptedUsers / totalUsers) * 100 : 0;
 
-    const prevTotalUsers = adoptionReportData.reduce((sum, item) => {
-        const rate = item.prevAdoptionRate;
-        if(rate !== null && item.totalUsers > 0) {
-           return sum + (item.totalUsers * rate / (item.adoptionRate || 1))
+    const prevAdoptedUsers = adoptionReportData.reduce((sum, item) => {
+        if (item.prevAdoptionRate !== null) {
+            // Estimate previous adopted users based on previous rate and current total users
+            // This is an approximation as the user base might change.
+            return sum + (item.totalUsers * item.prevAdoptionRate / 100);
         }
         return sum;
     }, 0);
+    
+    const prevTotalUsers = adoptionReportData.reduce((sum,item) => {
+         if (item.prevAdoptionRate !== null) {
+            return sum + item.totalUsers
+         }
+         return sum;
+    }, 0);
 
-    const prevAdoptedUsers = adoptionReportData.reduce((sum, item) => {
-        if(item.prevAdoptionRate !== null) {
-            // This is a rough estimate of previous adopted users
-             return sum + (item.totalUsers * item.prevAdoptionRate / 100);
-        }
-        return sum;
-    }, 0)
 
-    const prevAdoptionRate = adoptionReportData.some(d => d.prevAdoptionRate !== null) ?
-         (adoptionReportData.reduce((acc, item) => acc + (item.prevAdoptionRate || 0), 0) / adoptionReportData.filter(i => i.prevAdoptionRate !== null).length) : null;
-
+    const prevAdoptionRate = prevTotalUsers > 0 ? (prevAdoptedUsers / prevTotalUsers) * 100 : null;
 
     return {
         totalUsers,
@@ -183,7 +196,7 @@ export default function UserAdoptionReportPage() {
           <CardHeader>
             <CardTitle className="text-3xl">User Adoption Report</CardTitle>
             <CardDescription>
-                Month-on-month user adoption breakdown by Line of Business Technology (LOBT).
+                Month-on-month user adoption breakdown by Platform.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -204,7 +217,7 @@ export default function UserAdoptionReportPage() {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>LOBT</TableHead>
+                                <TableHead>Platform</TableHead>
                                 <TableHead className="text-right"># DTI Users</TableHead>
                                 <TableHead className="text-right"># JA Adoption</TableHead>
                                 <TableHead className="text-right">% Adoption (Current)</TableHead>
@@ -214,8 +227,8 @@ export default function UserAdoptionReportPage() {
                         </TableHeader>
                         <TableBody>
                             {adoptionReportData.map((item) => (
-                                <TableRow key={item.lobt}>
-                                    <TableCell className="font-medium">{item.lobt}</TableCell>
+                                <TableRow key={item.platform}>
+                                    <TableCell className="font-medium">{item.platform}</TableCell>
                                     <TableCell className="text-right">{item.totalUsers}</TableCell>
                                     <TableCell className="text-right">{item.adoptedUsers}</TableCell>
                                     <TableCell className="text-right">{item.adoptionRate.toFixed(2)}%</TableCell>
@@ -253,4 +266,3 @@ export default function UserAdoptionReportPage() {
     </div>
   );
 }
-
