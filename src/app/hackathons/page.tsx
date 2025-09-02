@@ -116,7 +116,7 @@ function WinnerSelector({ hackathon, onWinnerChange }: { hackathon: Hackathon, o
         return hackathon.winners.find(w => w.rank === rank)?.teamId || '';
     };
 
-    if (hackathon.teams.length === 0) {
+    if (!hackathon.teams || hackathon.teams.length === 0) {
         return <p className="text-sm text-muted-foreground">Upload teams to select winners.</p>
     }
 
@@ -257,7 +257,7 @@ export default function HackathonsPage() {
   
   const getTeamName = (teamId: string) => {
       for (const h of hackathons) {
-          const team = h.teams.find(t => t.id === teamId);
+          const team = (h.teams || []).find(t => t.id === teamId);
           if (team) return team.name;
       }
       return 'Unknown Team';
@@ -349,7 +349,7 @@ export default function HackathonsPage() {
                                 <Separator />
                                 <TeamUploader hackathon={hackathon} onTeamsUpload={handleTeamsUpload} />
                                 
-                                {hackathon.teams.length > 0 && (
+                                {hackathon.teams && hackathon.teams.length > 0 && (
                                    <div className="border rounded-md">
                                         <Table>
                                             <TableHeader>
@@ -371,7 +371,7 @@ export default function HackathonsPage() {
                                 <Separator />
                                 <WinnerSelector hackathon={hackathon} onWinnerChange={handleWinnerChange} />
 
-                                {hackathon.winners.length > 0 && (
+                                {hackathon.winners && hackathon.winners.length > 0 && (
                                      <div className="border rounded-md p-4">
                                          <h4 className="font-medium mb-2">Winning Teams</h4>
                                          <ul className="space-y-1">
