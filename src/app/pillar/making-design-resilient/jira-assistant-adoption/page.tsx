@@ -18,7 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { ArrowLeft, Loader2, TrendingUp, Users, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Loader2, TrendingUp, Users, CheckCircle, ArrowRight } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import type { ExcelData, MonthlyExcelData } from '@/types';
 import { Line, LineChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
@@ -119,11 +119,19 @@ export default function JiraAssistantAdoptionPage() {
             </Button>
         </div>
         <Card>
-          <CardHeader>
-            <CardTitle className="text-3xl">Jira Assistant Adoption</CardTitle>
-            <CardDescription>
-              Month-over-month analysis of Jira Assistant usage and adoption across teams.
-            </CardDescription>
+          <CardHeader className="flex flex-row items-start justify-between">
+            <div>
+                <CardTitle className="text-3xl">Jira Assistant Adoption</CardTitle>
+                <CardDescription>
+                Month-over-month analysis of Jira Assistant usage and adoption across teams.
+                </CardDescription>
+            </div>
+            <Button asChild>
+                <Link href="/pillar/making-design-resilient/user-adoption-report">
+                    View LOBT Report
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+            </Button>
           </CardHeader>
           <CardContent>
             {isLoading && (
