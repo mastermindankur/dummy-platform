@@ -17,10 +17,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { StatusIndicator } from "@/components/dashboard/status-indicator";
-import { RootCauseAnalysis } from "@/components/dashboard/root-cause-analysis";
-import { ActionRecommendations } from "@/components/dashboard/action-recommendations";
-import { Suspense } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
 import type { Metadata } from 'next'
 import { SubItemCard } from "@/components/dashboard/sub-item-card";
 import Link from "next/link";
@@ -86,11 +82,6 @@ export default async function PillarPage({ params }: { params: { id: string } })
                   <span className="font-semibold">Overall Status:</span>
                   <StatusIndicator status={status} className="text-lg" />
                 </div>
-                {status !== "Green" && (
-                  <Suspense fallback={<Skeleton className="h-10 w-52" />}>
-                    <ActionRecommendations pillarName={pillar.name} pillarSubItems={pillar.subItems.map(({name, status}) => ({name, status}))} />
-                  </Suspense>
-                )}
               </div>
             </div>
           </CardHeader>
@@ -124,11 +115,6 @@ export default async function PillarPage({ params }: { params: { id: string } })
                         {item.description}
                         </TableCell>
                         <TableCell className="text-right">
-                        {item.status !== "Green" && (
-                            <Suspense fallback={<Skeleton className="h-9 w-44 ml-auto" />}>
-                            <RootCauseAnalysis subItem={item} pillarName={pillar.name} />
-                            </Suspense>
-                        )}
                         </TableCell>
                     </TableRow>
                     ))}

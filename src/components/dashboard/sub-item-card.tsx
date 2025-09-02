@@ -10,9 +10,6 @@ import {
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { StatusIndicator } from "./status-indicator";
-import { Suspense } from "react";
-import { Skeleton } from "../ui/skeleton";
-import { RootCauseAnalysis } from "./root-cause-analysis";
 import Link from "next/link";
 import { Button } from "../ui/button";
 import { ArrowRight } from "lucide-react";
@@ -51,11 +48,6 @@ export function SubItemCard({ item, pillarName }: Props) {
       <CardFooter className="flex justify-between items-center">
         <StatusIndicator status={item.status} />
         <div className="flex items-center gap-2">
-          {item.status !== "Green" && !isExploreResiliency && !isBlogsOpenSource && !isTechSphere && (
-              <Suspense fallback={<Skeleton className="h-8 w-36" />}>
-                  <RootCauseAnalysis subItem={item} pillarName={pillarName} />
-              </Suspense>
-          )}
           {isExploreResiliency && (
              <Button asChild variant="outline" size="sm">
                 <Link href="/pillar/adopting-emerging-technologies/explore-resiliency-program">
