@@ -12,7 +12,7 @@ import type { Pillar } from "@/types";
 import { getPillarStatus } from "@/lib/data";
 
 export function PillarCard({ pillar }: { pillar: Pillar }) {
-  const status = getPillarStatus(pillar.id);
+  const status = getPillarStatus(pillar);
 
   return (
     <Link href={`/pillar/${pillar.id}`} className="block hover:shadow-lg transition-shadow duration-300 rounded-lg">

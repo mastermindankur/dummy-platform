@@ -1,14 +1,17 @@
 import { Header } from "@/components/layout/header";
-import { pillars, getPillarStatus } from "@/lib/data";
+import { getPillars, getPillarStatus } from "@/lib/data";
 import { ExecutiveSummary } from "@/components/dashboard/executive-summary";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PillarCard } from "@/components/dashboard/pillar-card";
+import type { Pillar } from "@/types";
 
-export default function Home() {
+export default async function Home() {
+  const pillars = await getPillars();
+
   const allPillarStatuses = pillars.reduce(
     (acc, pillar) => {
-      acc[pillar.name] = getPillarStatus(pillar.id);
+      acc[pillar.name] = getPillarStatus(pillar);
       return acc;
     },
     {} as Record<string, "Green" | "Amber" | "Red">
@@ -36,7 +39,7 @@ export default function Home() {
       </Header>
       <main className="flex-1 p-4 md:p-8">
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {pillars.map((pillar) => (
+          {pillars.map((pillar: Pillar) => (
             <PillarCard key={pillar.id} pillar={pillar} />
           ))}
         </div>

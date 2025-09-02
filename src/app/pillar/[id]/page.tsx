@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { Header } from "@/components/layout/header";
-import { getPillarById, getPillarStatus, pillars } from "@/lib/data";
+import { getPillarById, getPillarStatus, getPillars } from "@/lib/data";
 import {
   Card,
   CardContent,
@@ -29,7 +29,7 @@ type Props = {
 }
  
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const pillar = getPillarById(params.id);
+  const pillar = await getPillarById(params.id);
  
   return {
     title: `${pillar?.name || 'Pillar'} | WCE 2025 Dashboard`,
@@ -37,19 +37,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export async function generateStaticParams() {
+    const pillars = await getPillars();
     return pillars.map((pillar) => ({
       id: pillar.id,
     }))
   }
 
-export default function PillarPage({ params }: { params: { id: string } }) {
-  const pillar = getPillarById(params.id);
+export default async function PillarPage({ params }: { params: { id: string } }) {
+  const pillar = await getPillarById(params.id);
 
   if (!pillar) {
     notFound();
   }
 
-  const status = getPillarStatus(pillar.id);
+  const status = getPillarStatus(pillar);
 
   const isEmergingTech = pillar.id === 'adopting-emerging-technologies';
 

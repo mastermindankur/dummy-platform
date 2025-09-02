@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { WceLogo } from "@/components/icons";
+import { Button } from "../ui/button";
+import { PenSquare } from "lucide-react";
 
 export function Header({ children }: { children?: React.ReactNode }) {
   return (
@@ -14,6 +16,12 @@ export function Header({ children }: { children?: React.ReactNode }) {
         </Link>
         <div className="ml-auto flex items-center gap-4">
           {children}
+           <Button asChild variant="outline" size="sm">
+              <Link href="/update-data">
+                  <PenSquare className="mr-2 h-4 w-4" />
+                  Update Data
+              </Link>
+            </Button>
         </div>
       </nav>
     </header>
