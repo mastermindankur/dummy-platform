@@ -23,7 +23,7 @@ import { toast } from '@/hooks/use-toast';
 import type { Hackathon, ExcelRow } from '@/types';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer } from 'recharts';
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer, LabelList } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 
 const fetchHackathonsData = async (): Promise<Hackathon[]> => {
@@ -66,7 +66,8 @@ export default function HackathonsDetailsPage() {
 
     hackathons.forEach(h => {
         participants += h.participants;
-        teams += h.teams?.length || 0;
+        const hackathonTeams = h.teams?.length || 0;
+        teams += hackathonTeams;
         
         const hackathonLobtCounts: { [key: string]: number } = {};
 
@@ -81,12 +82,14 @@ export default function HackathonsDetailsPage() {
         individualLobtCounts[h.id] = Object.entries(hackathonLobtCounts).map(([name, value]) => ({
             name,
             value,
+            total: hackathonTeams,
         }));
     });
 
     const cumulativeLobtDistribution = Object.entries(cumulativeLobtCounts).map(([name, value]) => ({
         name,
         value,
+        total: teams
     }));
 
     return {
@@ -101,6 +104,35 @@ export default function HackathonsDetailsPage() {
   const getTeamName = (hackathon: Hackathon, teamId: string) => {
     const team = (hackathon.teams || []).find(t => t.id === teamId);
     return team ? team.name : 'Unknown Team';
+  };
+
+  const renderCustomizedLabel = (props: any) => {
+    const { x, y, width, height, value, total } = props;
+    const radius = 10;
+
+    if (width < 20) return null;
+
+    return (
+      <g>
+        <text x={x + width - 10} y={y + height / 2} fill="#fff" textAnchor="end" dominantBaseline="middle">
+          {`${value}/${total}`}
+        </text>
+      </g>
+    );
+  };
+  
+  const renderVerticalCustomizedLabel = (props: any) => {
+    const { x, y, width, height, value, total } = props;
+
+    if (height < 20) return null;
+
+    return (
+      <g>
+        <text x={x + width / 2} y={y - 4} fill="hsl(var(--foreground))" textAnchor="middle" dominantBaseline="middle">
+          {value}
+        </text>
+      </g>
+    );
   };
 
   return (
@@ -173,12 +205,14 @@ export default function HackathonsDetailsPage() {
                         <CardContent className="pt-4">
                              <ChartContainer config={{}} className="h-[200px] w-full">
                                 <ResponsiveContainer width="100%" height="100%">
-                                <BarChart data={cumulativeLobtDistribution} layout="vertical" margin={{ right: 20, left: 10, top: 0, bottom: 0 }}>
+                                <BarChart data={cumulativeLobtDistribution} layout="vertical" margin={{ right: 30, left: 10, top: 0, bottom: 0 }}>
                                     <CartesianGrid horizontal={false} />
                                     <XAxis type="number" hide />
                                     <YAxis dataKey="name" type="category" tickLine={false} axisLine={false} tick={{ fontSize: 12 }} width={80} />
                                     <ChartTooltip content={<ChartTooltipContent />} />
-                                    <Bar dataKey="value" fill="hsl(var(--chart-1))" radius={[0, 4, 4, 0]} />
+                                    <Bar dataKey="value" fill="hsl(var(--chart-1))" radius={[0, 4, 4, 0]}>
+                                        <LabelList dataKey="value" position="right" formatter={(value: number) => `${value}/${totalTeams}`} style={{ fill: 'hsl(var(--foreground))', fontSize: '12px' }} />
+                                    </Bar>
                                 </BarChart>
                                 </ResponsiveContainer>
                             </ChartContainer>
@@ -219,12 +253,14 @@ export default function HackathonsDetailsPage() {
                                             <div className="border rounded-md p-4">
                                                 <ChartContainer config={{}} className="h-[250px] w-full">
                                                     <ResponsiveContainer width="100%" height="100%">
-                                                        <BarChart data={individualLobtDistributions[hackathon.id]} layout="vertical" margin={{ left: 10, right: 20, top: 5, bottom: 5 }}>
+                                                        <BarChart data={individualLobtDistributions[hackathon.id]} layout="vertical" margin={{ left: 10, right: 30, top: 5, bottom: 5 }}>
                                                             <CartesianGrid strokeDasharray="3 3" horizontal={true} />
                                                             <XAxis type="number" allowDecimals={false} domain={[0, 'dataMax + 1']} />
                                                             <YAxis dataKey="name" type="category" width={80} tick={{ fontSize: 12 }} />
                                                             <ChartTooltip content={<ChartTooltipContent />} />
-                                                            <Bar dataKey="value" fill="hsl(var(--chart-2))" radius={[0, 4, 4, 0]} />
+                                                            <Bar dataKey="value" fill="hsl(var(--chart-2))" radius={[0, 4, 4, 0]} >
+                                                                <LabelList dataKey="value" position="right" formatter={(value: number, index: number) => { const total = individualLobtDistributions[hackathon.id][index].total; return `${value}/${total}`}} style={{ fill: 'hsl(var(--foreground))', fontSize: '12px' }}/>
+                                                            </Bar>
                                                         </BarChart>
                                                     </ResponsiveContainer>
                                                 </ChartContainer>
@@ -233,8 +269,8 @@ export default function HackathonsDetailsPage() {
                                     )}
                                 </div>
                                 {hackathon.teams && hackathon.teams.length > 0 && (
-                                    <div>
-                                        <h4 className="font-medium mb-2 mt-6">Top Teams ({hackathon.teams.length})</h4>
+                                    <div className="mt-6">
+                                        <h4 className="font-medium mb-2">Top Teams ({hackathon.teams.length})</h4>
                                         <div className="border rounded-md max-h-96 overflow-auto">
                                             <Table>
                                                 <TableHeader className="sticky top-0 bg-secondary">
@@ -290,3 +326,4 @@ export default function HackathonsDetailsPage() {
   );
 }
 
+  
