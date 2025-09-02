@@ -79,9 +79,9 @@ export default function JiraAssistantAdoptionPage() {
     loadData();
   }, []);
 
-  const { reportData, sortedMonths, totalRow, chartData, platformKeys } = useMemo(() => {
+  const { reportData, sortedMonths, totalRow, chartData, platformKeys, chartColors } = useMemo(() => {
     if (!monthlyData) {
-      return { reportData: [], sortedMonths: [], totalRow: null, chartData: [], platformKeys: [] };
+      return { reportData: [], sortedMonths: [], totalRow: null, chartData: [], platformKeys: [], chartColors: [] };
     }
 
     const platformMonthlyStats = new Map<string, { [month: string]: { totalUsers: Set<string>; activeUsers: Set<string> } }>();
@@ -165,7 +165,7 @@ export default function JiraAssistantAdoptionPage() {
         return monthEntry;
     });
 
-    const chartColors = [
+    const definedChartColors = [
         'hsl(var(--chart-1))',
         'hsl(var(--chart-2))',
         'hsl(var(--chart-3))',
@@ -181,7 +181,7 @@ export default function JiraAssistantAdoptionPage() {
       totalRow: grandTotal,
       chartData: chartDataFormatted,
       platformKeys: allPlatformKeys,
-      chartColors,
+      chartColors: definedChartColors,
     };
   }, [monthlyData]);
 
@@ -202,6 +202,9 @@ export default function JiraAssistantAdoptionPage() {
             <Card>
                 <CardHeader>
                     <CardTitle>User Adoption</CardTitle>
+                    <CardDescription>
+                        Month-on-month user adoption of Jira Assistant, broken down by platform.
+                    </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                     {isLoading && (
@@ -324,3 +327,4 @@ export default function JiraAssistantAdoptionPage() {
     </div>
   );
 }
+
