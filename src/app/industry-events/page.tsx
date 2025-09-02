@@ -199,19 +199,11 @@ export default function IndustryEventsPage() {
                 <h2 className="text-2xl font-bold">Current Events ({events.length})</h2>
                 {events.length > 0 ? (
                     events.map((event) => (
-                        <Card key={event.id} className="relative">
-                           <Button
-                                variant="destructive"
-                                size="icon"
-                                className="absolute top-4 right-4 z-10"
-                                onClick={() => handleRemoveEvent(event.id)}
-                            >
-                                <Trash2 className="h-4 w-4" />
-                            </Button>
+                        <Card key={event.id}>
                             <CardHeader>
                                 <div className="flex items-start justify-between gap-4">
                                     <div className="flex-1">
-                                        <CardTitle className="pr-12">{event.name}</CardTitle>
+                                        <CardTitle>{event.name}</CardTitle>
                                         <div className="flex items-center gap-4 text-sm text-muted-foreground pt-2">
                                             <div className="flex items-center gap-2">
                                                 <Calendar className="h-4 w-4" />
@@ -223,9 +215,18 @@ export default function IndustryEventsPage() {
                                             </div>
                                         </div>
                                     </div>
-                                    <Badge variant={event.type === 'internal' ? 'secondary' : 'outline'} className="shrink-0">
-                                      {event.type.charAt(0).toUpperCase() + event.type.slice(1)}
-                                    </Badge>
+                                    <div className="flex items-center gap-2">
+                                        <Badge variant={event.type === 'internal' ? 'secondary' : 'outline'} className="shrink-0">
+                                          {event.type.charAt(0).toUpperCase() + event.type.slice(1)}
+                                        </Badge>
+                                        <Button
+                                            variant="destructive"
+                                            size="icon"
+                                            onClick={() => handleRemoveEvent(event.id)}
+                                        >
+                                            <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                    </div>
                                 </div>
                             </CardHeader>
                             <CardContent>
