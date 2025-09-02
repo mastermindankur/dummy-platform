@@ -21,7 +21,7 @@ import {
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import type { ExcelData, Pillar, SubItem, ExcelRow } from '@/types';
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer } from 'recharts';
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer, LabelList } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
@@ -156,55 +156,59 @@ export default function SquadOnboardingPage() {
 
             {excelData && (
                 <div className="space-y-8">
-                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Overall Progress</CardTitle>
-                            <CardDescription>Total applications onboarded against the annual target.</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="flex items-center justify-center h-full">
-                               <div className="text-center">
-                                    <p className="text-5xl font-bold">{totalOnboarded}</p>
-                                    <p className="text-lg text-muted-foreground">out of {annualTarget} applications</p>
-                                    <Progress value={progressPercentage} className="mt-4 h-3" />
-                               </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                     <Card>
-                        <CardHeader>
-                            <CardTitle>Onboarding by Category</CardTitle>
-                            <CardDescription>Number of applications onboarded for each category.</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                          <ChartContainer config={{}} className="min-h-[200px] w-full">
-                            <ResponsiveContainer width="100%" height={300}>
-                              <BarChart data={categoryDistributionData} layout="vertical" margin={{ right: 20, left: 20 }}>
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis type="number" />
-                                <YAxis dataKey="name" type="category" width={80} tick={{ fontSize: 12 }} />
-                                <ChartTooltip content={<ChartTooltipContent />} />
-                                <Bar dataKey="value" fill="hsl(var(--chart-1))" radius={[0, 4, 4, 0]} />
-                              </BarChart>
-                            </ResponsiveContainer>
-                          </ChartContainer>
-                        </CardContent>
-                      </Card>
+                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div className="space-y-8">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Overall Progress</CardTitle>
+                                <CardDescription>Total applications onboarded against the annual target.</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="flex items-center justify-center h-full">
+                                <div className="text-center">
+                                        <p className="text-5xl font-bold">{totalOnboarded}</p>
+                                        <p className="text-lg text-muted-foreground">out of {annualTarget} applications</p>
+                                        <Progress value={progressPercentage} className="mt-4 h-3" />
+                                </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Onboarding by Category</CardTitle>
+                                <CardDescription>Number of applications onboarded for each category.</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                            <ChartContainer config={{}} className="min-h-[200px] w-full">
+                                <ResponsiveContainer width="100%" height={200}>
+                                <BarChart data={categoryDistributionData} layout="vertical" margin={{ right: 20 }}>
+                                    <CartesianGrid strokeDasharray="3 3" />
+                                    <XAxis type="number" allowDecimals={false} />
+                                    <YAxis dataKey="name" type="category" width={60} tick={{ fontSize: 12 }} />
+                                    <ChartTooltip content={<ChartTooltipContent />} />
+                                    <Bar dataKey="value" fill="hsl(var(--chart-1))" radius={[0, 4, 4, 0]} />
+                                </BarChart>
+                                </ResponsiveContainer>
+                            </ChartContainer>
+                            </CardContent>
+                        </Card>
+                    </div>
                       <Card>
                         <CardHeader>
                             <CardTitle>LOBT-wise Distribution</CardTitle>
                             <CardDescription>Number of applications onboarded by each Line of Business Technology.</CardDescription>
                         </CardHeader>
                         <CardContent>
-                          <ChartContainer config={{}} className="min-h-[200px] w-full">
-                            <ResponsiveContainer width="100%" height={300}>
-                              <BarChart data={lobtDistributionData} margin={{ right: 20 }}>
+                          <ChartContainer config={{}} className="h-[500px] w-full">
+                            <ResponsiveContainer width="100%" height="100%">
+                              <BarChart data={lobtDistributionData} layout="vertical" margin={{ left: 10, right: 30 }}>
                                 <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="name" tick={{ fontSize: 12 }} angle={-45} textAnchor="end" height={60} />
-                                <YAxis allowDecimals={false} />
+                                <XAxis type="number" allowDecimals={false} />
+                                <YAxis dataKey="name" type="category" width={60} tick={{ fontSize: 12 }} />
                                 <ChartTooltip content={<ChartTooltipContent />} />
-                                <Bar dataKey="value" fill="hsl(var(--chart-2))" radius={[4, 4, 0, 0]} />
+                                <Bar dataKey="value" fill="hsl(var(--chart-2))" radius={[0, 4, 4, 0]}>
+                                    <LabelList dataKey="value" position="right" style={{ fill: 'hsl(var(--foreground))', fontSize: '12px' }} />
+                                </Bar>
                               </BarChart>
                             </ResponsiveContainer>
                           </ChartContainer>
@@ -214,11 +218,11 @@ export default function SquadOnboardingPage() {
                  
                   <div>
                     <h3 className="text-xl font-semibold mb-4">
-                    Spreadsheet Data
+                    Spreadsheet Data ({totalOnboarded} Applications)
                     </h3>
-                    <div className="border rounded-lg">
+                    <div className="border rounded-lg max-h-[500px] overflow-auto">
                     <Table>
-                        <TableHeader>
+                        <TableHeader className="sticky top-0 bg-secondary">
                         <TableRow>
                             {excelData.headers.map((header) => (
                             <TableHead key={header}>{header}</TableHead>
