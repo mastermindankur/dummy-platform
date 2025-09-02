@@ -94,6 +94,23 @@ async function readData(): Promise<Pillar[]> {
         });
     }
 
+     // Attach industry events count
+    const industryEventsData = await readExcelData('industry-events');
+    if (industryEventsData && industryEventsData.rows.length > 0) {
+        const industryEventsCount = industryEventsData.rows.length;
+        jsonData = jsonData.map(pillar => {
+            if (pillar.id === 'adopting-emerging-technologies') {
+                pillar.subItems = pillar.subItems.map(subItem => {
+                    if (subItem.id === 'industry-events') {
+                        return { ...subItem, percentageComplete: industryEventsCount };
+                    }
+                    return subItem;
+                })
+            }
+            return pillar;
+        });
+    }
+
     // Attach icons back to the data
     return jsonData.map(pillar => ({
       ...pillar,
@@ -142,9 +159,9 @@ export async function readExcelData(fileKey: string): Promise<ExcelData | null> 
     try {
         const fileContent = await fs.readFile(dataFilePath(`${fileKey}.json`), 'utf-8');
         // A bit of a hack: if it's hackathons.json, it's not ExcelData format but Hackathon[]
-        if (fileKey === 'hackathons') {
-          const hackathons = JSON.parse(fileContent);
-          return { headers: ['id', 'name', 'date'], rows: hackathons };
+        if (fileKey === 'hackathons' || fileKey === 'industry-events') {
+          const data = JSON.parse(fileContent);
+          return { headers: [], rows: data };
         }
         return JSON.parse(fileContent);
     } catch (error) {
@@ -152,11 +169,11 @@ export async function readExcelData(fileKey: string): Promise<ExcelData | null> 
         if (error instanceof Error && (error as NodeJS.ErrnoException).code === 'ENOENT') {
             try {
                 // If the file doesn't exist, create it with empty data
-                const emptyContent = fileKey === 'hackathons' ? '[]' : JSON.stringify({ headers: [], rows: [] }, null, 2);
+                const emptyContent = (fileKey === 'hackathons' || fileKey === 'industry-events') ? '[]' : JSON.stringify({ headers: [], rows: [] }, null, 2);
                 await fs.writeFile(dataFilePath(`${fileKey}.json`), emptyContent, 'utf-8');
 
-                if (fileKey === 'hackathons') {
-                    return { headers: ['id', 'name', 'date'], rows: [] };
+                if (fileKey === 'hackathons' || fileKey === 'industry-events') {
+                    return { headers: [], rows: [] };
                 }
                 return { headers: [], rows: [] };
             } catch (writeError) {
@@ -173,7 +190,7 @@ export async function readExcelData(fileKey: string): Promise<ExcelData | null> 
 export async function writeExcelData(fileKey: string, data: any) {
     try {
         // A bit of a hack for hackathons data
-        const dataToWrite = fileKey === 'hackathons' ? data : data;
+        const dataToWrite = (fileKey === 'hackathons' || fileKey === 'industry-events') ? data : data;
         await fs.writeFile(dataFilePath(`${fileKey}.json`), JSON.stringify(dataToWrite, null, 2), 'utf-8');
     } catch (error) {
         console.error(`Could not write to ${fileKey}.json:`, error);

@@ -472,6 +472,22 @@ export default function UpdateDataPage() {
                                                     </Button>
                                                 </CardContent>
                                             </Card>
+                                             <Card className="bg-secondary/30 mt-6">
+                                                <CardHeader>
+                                                    <CardTitle className="text-xl">Manage Industry Events</CardTitle>
+                                                    <CardDescription>
+                                                        Add and manage industry event details.
+                                                    </CardDescription>
+                                                </CardHeader>
+                                                <CardContent>
+                                                    <Button asChild>
+                                                        <Link href="/industry-events">
+                                                            Go to Event Management
+                                                            <ArrowRight className="ml-2 h-4 w-4" />
+                                                        </Link>
+                                                    </Button>
+                                                </CardContent>
+                                            </Card>
                                             <ExcelUploadSection
                                                 title="Explore Resiliency Program"
                                                 description="Upload the Excel sheet for the Resiliency Program."

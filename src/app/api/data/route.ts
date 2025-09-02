@@ -14,6 +14,10 @@ export async function GET(request: Request) {
             // hackathons are not in ExcelData format, they are just an array in the `rows` property
             return NextResponse.json(data?.rows ?? []); 
         }
+        if (fileKey === 'industry-events') {
+            const data = await readExcelData('industry-events');
+            return NextResponse.json(data?.rows ?? []);
+        }
         const data = await readExcelData(fileKey);
         if (data) {
             return NextResponse.json(data);
@@ -45,7 +49,7 @@ export async function POST(request: Request) {
             if (Object.prototype.hasOwnProperty.call(body.excelData, key)) {
                  if (body.excelData[key]) {
                     // special handling for hackathons since they are just an array
-                    if (key === 'hackathons') {
+                    if (key === 'hackathons' || key === 'industry-events') {
                       await writeExcelData(key, body.excelData[key]);
                     } else {
                       await writeExcelData(key, body.excelData[key]);

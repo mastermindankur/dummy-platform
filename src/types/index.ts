@@ -57,3 +57,11 @@ export type Hackathon = {
   winners: HackathonWinner[];
   teamDataHeaders?: string[];
 };
+
+export type IndustryEvent = {
+    id: string;
+    name: string;
+    date: string;
+    location: string;
+    description: string;
+};
