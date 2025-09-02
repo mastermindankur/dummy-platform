@@ -18,11 +18,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { ArrowLeft, Loader2, TrendingUp, Users, CheckCircle, ArrowRight } from 'lucide-react';
+import { ArrowLeft, Loader2, TrendingUp, Users, CheckCircle } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
-import type { ExcelData, MonthlyExcelData } from '@/types';
-import { Line, LineChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
-import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
+import type { MonthlyExcelData } from '@/types';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
@@ -37,6 +35,13 @@ const fetchAdoptionData = async (): Promise<MonthlyExcelData | null> => {
   const data = await res.json();
   if (Object.keys(data).length === 0) return null;
   return data;
+};
+
+type PlatformAdoptionData = {
+    platform: string;
+    totalUsers: number;
+    activeUsers: number;
+    monthlyAdoption: { [month: string]: number };
 };
 
 export default function JiraAssistantAdoptionPage() {
@@ -63,47 +68,96 @@ export default function JiraAssistantAdoptionPage() {
     loadData();
   }, []);
 
-  const { chartData, summaryMetrics, allTimeData, headers } = useMemo(() => {
-    if (!monthlyData || Object.keys(monthlyData).length === 0) {
-      return { chartData: [], summaryMetrics: { totalUsers: 0, teamsOnboarded: 0, averageAdoption: '0.00' }, allTimeData: [], headers: [] };
+ const { reportData, sortedMonths, summaryMetrics } = useMemo(() => {
+    if (!monthlyData) {
+      return { reportData: [], sortedMonths: [], summaryMetrics: { totalUsers: 0, teamsOnboarded: 0, averageAdoption: '0.00' } };
     }
 
-    const allHeaders = new Set<string>();
-    const data: { month: string; users: number; teams: number; adoption: number }[] = [];
-    let allRows: any[] = [];
+    // --- Start: Logic from old user-adoption-report page ---
+    const platformData = new Map<string, {
+        totalUserIds: Set<string>;
+        activeUserIds: Set<string>;
+        monthlyStats: Map<string, { total: Set<string>; active: Set<string> }>;
+    }>();
 
-    const sortedMonths = Object.keys(monthlyData).sort();
+    const allMonths = Object.keys(monthlyData).sort();
 
-    sortedMonths.forEach(month => {
-        const monthData = monthlyData[month];
-        monthData.headers.forEach(h => allHeaders.add(h));
-        const monthRows = monthData.rows;
-        allRows = allRows.concat(monthRows.map(row => ({...row, 'Month': new Date(month).toLocaleString('default', { month: 'short', year: '2-digit' }) })));
+    for (const month of allMonths) {
+        const monthRows = monthlyData[month].rows;
+        const monthLabel = new Date(month).toLocaleString('default', { month: 'short', year: '2-digit' });
 
-        const totalUsers = monthRows.length;
-        const teamsOnboarded = new Set(monthRows.map(r => r['Team'])).size;
-        // Assuming 'Adoption %' is a field in the data
-        const totalAdoption = monthRows.reduce((acc, row) => acc + (parseFloat(row['Adoption %']) || 0), 0);
-        const averageAdoption = totalUsers > 0 ? totalAdoption / totalUsers : 0;
-        
-        data.push({
-            month: new Date(month).toLocaleString('default', { month: 'short', year: '2-digit' }),
-            users: totalUsers,
-            teams: teamsOnboarded,
-            adoption: parseFloat(averageAdoption.toFixed(2)),
-        });
-    });
+        for (const row of monthRows) {
+            const platform = (row['Platforms'] as string) || 'Unknown';
+            const userId = row['1bankid'] as string;
+            const isAdopted = row['is_created_via_JA'] === 1;
 
-    const uniqueUsers = new Set(allRows.map(r => r['User ID'])).size;
-    const uniqueTeams = new Set(allRows.map(r => r['Team'])).size;
-    const overallAdoption = allRows.reduce((acc, row) => acc + (parseFloat(row['Adoption %']) || 0), 0);
-    const averageAdoption = allRows.length > 0 ? (overallAdoption / allRows.length).toFixed(2) : '0.00';
+            if (!platformData.has(platform)) {
+                platformData.set(platform, {
+                    totalUserIds: new Set(),
+                    activeUserIds: new Set(),
+                    monthlyStats: new Map(),
+                });
+            }
+            const data = platformData.get(platform)!;
+            data.totalUserIds.add(userId);
+
+            if (!data.monthlyStats.has(monthLabel)) {
+                data.monthlyStats.set(monthLabel, { total: new Set(), active: new Set() });
+            }
+            const monthStats = data.monthlyStats.get(monthLabel)!;
+            monthStats.total.add(userId);
+
+            if (isAdopted) {
+                data.activeUserIds.add(userId);
+                monthStats.active.add(userId);
+            }
+        }
+    }
     
-    return { 
-        chartData: data,
-        summaryMetrics: { totalUsers: uniqueUsers, teamsOnboarded: uniqueTeams, averageAdoption },
-        allTimeData: allRows,
-        headers: ['Month', ...Array.from(allHeaders)],
+    const finalReportData: PlatformAdoptionData[] = [];
+    for (const [platform, data] of platformData.entries()) {
+        const monthlyAdoption: { [month: string]: number } = {};
+        for(const month of allMonths) {
+            const monthLabel = new Date(month).toLocaleString('default', { month: 'short', year: '2-digit' });
+            const stats = data.monthlyStats.get(monthLabel);
+            if (stats && stats.total.size > 0) {
+                monthlyAdoption[monthLabel] = (stats.active.size / stats.total.size) * 100;
+            } else {
+                monthlyAdoption[monthLabel] = 0;
+            }
+        }
+
+        finalReportData.push({
+            platform,
+            totalUsers: data.totalUserIds.size,
+            activeUsers: data.activeUserIds.size,
+            monthlyAdoption
+        });
+    }
+
+    const reportDataSorted = finalReportData.sort((a, b) => a.platform.localeCompare(b.platform));
+    const sortedMonthLabels = allMonths.map(m => new Date(m).toLocaleString('default', { month: 'short', year: '2-digit' }));
+    // --- End: Logic from old user-adoption-report page ---
+
+
+    // --- Start: Logic for summary cards ---
+    const allRows = Object.values(monthlyData).flatMap(monthData => monthData.rows);
+    const uniqueUsers = new Set(allRows.map(r => r['1bankid'])).size;
+    const uniqueTeams = new Set(allRows.map(r => r['Team'])).size;
+    const overallAdoption = allRows.reduce((acc, row) => acc + (Number(row['is_created_via_JA']) || 0), 0);
+    const averageAdoption = allRows.length > 0 ? ((overallAdoption / allRows.length) * 100).toFixed(2) : '0.00';
+    
+    const summaryMetricsData = { 
+        totalUsers: uniqueUsers, 
+        teamsOnboarded: uniqueTeams, 
+        averageAdoption 
+    };
+    // --- End: Logic for summary cards ---
+
+    return {
+      reportData: reportDataSorted,
+      sortedMonths: sortedMonthLabels,
+      summaryMetrics: summaryMetricsData
     };
   }, [monthlyData]);
 
@@ -121,19 +175,11 @@ export default function JiraAssistantAdoptionPage() {
             </Button>
         </div>
         <Card>
-          <CardHeader className="flex flex-row items-start justify-between">
-            <div>
-                <CardTitle className="text-3xl">Jira Assistant Adoption</CardTitle>
-                <CardDescription>
-                Month-over-month analysis of Jira Assistant usage and adoption across teams.
-                </CardDescription>
-            </div>
-            <Button asChild>
-                <Link href="/pillar/making-design-resilient/user-adoption-report">
-                    View LOBT Report
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-            </Button>
+          <CardHeader>
+            <CardTitle className="text-3xl">Jira Assistant Adoption</CardTitle>
+            <CardDescription>
+                Month-on-month user adoption breakdown by Platform.
+            </CardDescription>
           </CardHeader>
           <CardContent>
             {isLoading && (
@@ -171,7 +217,7 @@ export default function JiraAssistantAdoptionPage() {
                         </Card>
                         <Card>
                             <CardHeader className="flex flex-row items-center justify-between pb-2">
-                                <CardTitle className="text-sm font-medium">Average Adoption</CardTitle>
+                                <CardTitle className="text-sm font-medium">Average Story Adoption</CardTitle>
                                 <TrendingUp className="h-4 w-4 text-muted-foreground" />
                             </CardHeader>
                             <CardContent>
@@ -179,65 +225,37 @@ export default function JiraAssistantAdoptionPage() {
                             </CardContent>
                         </Card>
                     </div>
-
-                 <Card>
-                    <CardHeader>
-                        <CardTitle>Adoption Trend</CardTitle>
-                        <CardDescription>Monthly active users and average adoption rate.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="border rounded-lg">
-                          <Table>
-                              <TableHeader>
-                                  <TableRow>
-                                      <TableHead>Month</TableHead>
-                                      <TableHead className="text-right">Active Users</TableHead>
-                                      <TableHead className="text-right">Teams Onboarded</TableHead>
-                                      <TableHead className="text-right">Adoption %</TableHead>
-                                  </TableRow>
-                              </TableHeader>
-                              <TableBody>
-                                  {chartData.map((item) => (
-                                      <TableRow key={item.month}>
-                                          <TableCell className="font-medium">{item.month}</TableCell>
-                                          <TableCell className="text-right">{item.users}</TableCell>
-                                          <TableCell className="text-right">{item.teams}</TableCell>
-                                          <TableCell className="text-right">{item.adoption}%</TableCell>
-                                      </TableRow>
-                                  ))}
-                              </TableBody>
-                          </Table>
-                      </div>
-                    </CardContent>
-                  </Card>
-                 
-                  <div>
-                    <h3 className="text-xl font-semibold mb-4">
-                        All-Time Data
-                    </h3>
-                    <div className="border rounded-lg max-h-[500px] overflow-auto">
-                    <Table>
-                        <TableHeader className="sticky top-0 bg-secondary">
-                        <TableRow>
-                            {headers.map((header) => (
-                            <TableHead key={header}>{header}</TableHead>
-                            ))}
-                        </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                        {allTimeData.map((row, rowIndex) => (
-                            <TableRow key={rowIndex}>
-                            {headers.map((header) => (
-                                <TableCell key={header}>
-                                {String(row[header] ?? '')}
-                                </TableCell>
-                            ))}
-                            </TableRow>
-                        ))}
-                        </TableBody>
-                    </Table>
+                    
+                    <div className="border rounded-lg overflow-x-auto">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead className="min-w-[200px] sticky left-0 bg-secondary">Platform</TableHead>
+                                    <TableHead className="text-right">Total Users</TableHead>
+                                    <TableHead className="text-right">Active Users</TableHead>
+                                    {sortedMonths.map(month => (
+                                        <TableHead key={month} className="text-right min-w-[120px]">
+                                            Adoption % ({month})
+                                        </TableHead>
+                                    ))}
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {reportData.map((item) => (
+                                    <TableRow key={item.platform}>
+                                        <TableCell className="font-medium sticky left-0 bg-background">{item.platform}</TableCell>
+                                        <TableCell className="text-right">{item.totalUsers}</TableCell>
+                                        <TableCell className="text-right">{item.activeUsers}</TableCell>
+                                        {sortedMonths.map(month => (
+                                            <TableCell key={`${item.platform}-${month}`} className="text-right">
+                                                {item.monthlyAdoption[month] !== undefined ? `${item.monthlyAdoption[month].toFixed(2)}%` : 'N/A'}
+                                            </TableCell>
+                                        ))}
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
                     </div>
-                </div>
               </div>
             )}
           </CardContent>
