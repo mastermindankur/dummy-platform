@@ -23,6 +23,7 @@ import { toast } from '@/hooks/use-toast';
 import type { MonthlyExcelData } from '@/types';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { Badge } from '@/components/ui/badge';
 
 const fetchAdoptionData = async (): Promise<MonthlyExcelData | null> => {
   const res = await fetch('/api/data?key=jira-assistant-adoption');
@@ -68,9 +69,9 @@ export default function JiraAssistantAdoptionPage() {
     loadData();
   }, []);
 
- const { reportData, sortedMonths } = useMemo(() => {
+ const { reportData, sortedMonths, totalRow } = useMemo(() => {
     if (!monthlyData) {
-      return { reportData: [], sortedMonths: [] };
+      return { reportData: [], sortedMonths: [], totalRow: null };
     }
 
     const platformData = new Map<string, {
@@ -137,9 +138,43 @@ export default function JiraAssistantAdoptionPage() {
     const reportDataSorted = finalReportData.sort((a, b) => a.platform.localeCompare(b.platform));
     const sortedMonthLabels = allMonths.map(m => new Date(m).toLocaleString('default', { month: 'short', year: '2-digit' }));
 
+    const grandTotal = {
+      platform: 'Total',
+      totalUsers: 0,
+      activeUsers: 0,
+      monthlyAdoption: {} as { [month: string]: number }
+    };
+
+    const monthlyTotals: { [month: string]: { total: Set<string>, active: Set<string> } } = {};
+
+    reportDataSorted.forEach(item => {
+      grandTotal.totalUsers += item.totalUsers;
+      grandTotal.activeUsers += item.activeUsers;
+    });
+
+    for(const [platform, data] of platformData.entries()) {
+        for(const [monthLabel, stats] of data.monthlyStats.entries()) {
+            if(!monthlyTotals[monthLabel]) {
+                monthlyTotals[monthLabel] = { total: new Set(), active: new Set() };
+            }
+            stats.total.forEach(u => monthlyTotals[monthLabel].total.add(u));
+            stats.active.forEach(u => monthlyTotals[monthLabel].active.add(u));
+        }
+    }
+    
+    sortedMonthLabels.forEach(monthLabel => {
+        const monthStat = monthlyTotals[monthLabel];
+        if (monthStat && monthStat.total.size > 0) {
+            grandTotal.monthlyAdoption[monthLabel] = (monthStat.active.size / monthStat.total.size) * 100;
+        } else {
+            grandTotal.monthlyAdoption[monthLabel] = 0;
+        }
+    });
+
     return {
       reportData: reportDataSorted,
       sortedMonths: sortedMonthLabels,
+      totalRow: grandTotal,
     };
   }, [monthlyData]);
 
@@ -211,6 +246,18 @@ export default function JiraAssistantAdoptionPage() {
                                                     ))}
                                                 </TableRow>
                                             ))}
+                                            {totalRow && (
+                                                <TableRow className="font-bold bg-secondary hover:bg-secondary/80">
+                                                    <TableCell className="sticky left-0 bg-secondary">{totalRow.platform}</TableCell>
+                                                    <TableCell className="text-right">{totalRow.totalUsers}</TableCell>
+                                                    <TableCell className="text-right">{totalRow.activeUsers}</TableCell>
+                                                    {sortedMonths.map(month => (
+                                                        <TableCell key={`total-${month}`} className="text-right">
+                                                          {totalRow.monthlyAdoption[month] !== undefined ? `${totalRow.monthlyAdoption[month].toFixed(2)}%` : 'N/A'}
+                                                        </TableCell>
+                                                    ))}
+                                                </TableRow>
+                                            )}
                                         </TableBody>
                                     </Table>
                                 </div>
@@ -235,4 +282,3 @@ export default function JiraAssistantAdoptionPage() {
     </div>
   );
 }
-
