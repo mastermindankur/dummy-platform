@@ -42,14 +42,14 @@ export default async function Home() {
             comingSoonPillarIds.includes(pillar.id) ? (
               <Card
                 key={pillar.id}
-                className="flex flex-col justify-between h-full bg-card/50 text-muted-foreground"
+                className="flex flex-col justify-between h-full bg-card/50 text-muted-foreground border-dashed"
               >
                 <CardHeader>
                   <div className="flex justify-between items-start">
-                    <pillar.icon className="h-8 w-8 text-muted-foreground" />
+                    <pillar.icon className="h-8 w-8 text-muted-foreground/50" />
                     <Badge variant="outline">Coming Soon</Badge>
                   </div>
-                  <CardTitle className="pt-4">{pillar.name}</CardTitle>
+                  <CardTitle className="pt-4 text-card-foreground/60">{pillar.name}</CardTitle>
                   <CardDescription className="line-clamp-2">
                     {pillar.description}
                   </CardDescription>
