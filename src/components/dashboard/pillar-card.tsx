@@ -8,9 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { StatusIndicator } from "./status-indicator";
 import type { Pillar } from "@/types";
-import { getPillarStatus } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
 const statusStyles: Record<"Green" | "Amber" | "Red", string> = {
@@ -21,7 +19,6 @@ const statusStyles: Record<"Green" | "Amber" | "Red", string> = {
 
 
 export function PillarCard({ pillar }: { pillar: Pillar }) {
-  const status = getPillarStatus(pillar);
 
   const statusCounts = pillar.subItems.reduce((acc, item) => {
     acc[item.status] = (acc[item.status] || 0) + 1;
@@ -39,18 +36,21 @@ export function PillarCard({ pillar }: { pillar: Pillar }) {
           <CardTitle>{pillar.name}</CardTitle>
           <CardDescription className="line-clamp-2">{pillar.description}</CardDescription>
         </CardHeader>
-        <CardFooter className="flex justify-between items-center">
-          <StatusIndicator status={status} />
+        <CardFooter className="flex justify-end items-center">
           <div className="flex items-center gap-3 text-xs text-muted-foreground">
-            {Object.entries(statusCounts).sort(([a], [b]) => {
-                const order = { Red: 0, Amber: 1, Green: 2 };
-                return order[a as "Red" | "Amber" | "Green"] - order[b as "Red" | "Amber" | "Green"];
-            }).map(([key, value]) => (
-                <div key={key} className="flex items-center gap-1.5">
-                    <span className={cn("h-2 w-2 rounded-full", statusStyles[key as "Red" | "Amber" | "Green"])} />
-                    <span>{value}</span>
-                </div>
-            ))}
+            {(Object.keys(statusCounts) as Array<keyof typeof statusCounts>).length > 0 ? (
+                (Object.keys(statusCounts) as Array<keyof typeof statusCounts>).sort((a, b) => {
+                    const order = { Red: 0, Amber: 1, Green: 2 };
+                    return order[a] - order[b];
+                }).map((key) => (
+                    <div key={key} className="flex items-center gap-1.5">
+                        <span className={cn("h-2 w-2 rounded-full", statusStyles[key])} />
+                        <span>{statusCounts[key]} {key}</span>
+                    </div>
+                ))
+            ) : (
+                <div className="text-sm text-muted-foreground">No sub-items</div>
+            )}
           </div>
         </CardFooter>
       </Card>

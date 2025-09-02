@@ -1,6 +1,7 @@
+
 import { notFound } from "next/navigation";
 import { Header } from "@/components/layout/header";
-import { getPillarById, getPillarStatus, getPillars } from "@/lib/data";
+import { getPillarById, getPillars } from "@/lib/data";
 import {
   Card,
   CardContent,
@@ -49,8 +50,6 @@ export default async function PillarPage({ params }: { params: { id: string } })
     notFound();
   }
 
-  const status = getPillarStatus(pillar);
-
   const isEmergingTech = pillar.id === 'adopting-emerging-technologies';
 
   return (
@@ -76,12 +75,6 @@ export default async function PillarPage({ params }: { params: { id: string } })
                 <CardDescription className="max-w-prose">
                   {pillar.description}
                 </CardDescription>
-              </div>
-              <div className="flex flex-col items-start md:items-end gap-2 shrink-0">
-                <div className="flex items-center gap-4">
-                  <span className="font-semibold">Overall Status:</span>
-                  <StatusIndicator status={status} className="text-lg" />
-                </div>
               </div>
             </div>
           </CardHeader>
