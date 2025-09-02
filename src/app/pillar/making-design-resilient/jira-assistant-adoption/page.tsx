@@ -34,7 +34,9 @@ const fetchAdoptionData = async (): Promise<MonthlyExcelData | null> => {
   if (!res.ok) {
     throw new Error('Failed to fetch adoption data');
   }
-  return res.json();
+  const data = await res.json();
+  if (Object.keys(data).length === 0) return null;
+  return data;
 };
 
 export default function JiraAssistantAdoptionPage() {
@@ -76,7 +78,7 @@ export default function JiraAssistantAdoptionPage() {
         const monthData = monthlyData[month];
         monthData.headers.forEach(h => allHeaders.add(h));
         const monthRows = monthData.rows;
-        allRows = allRows.concat(monthRows.map(row => ({...row, 'Month': month})));
+        allRows = allRows.concat(monthRows.map(row => ({...row, 'Month': new Date(month).toLocaleString('default', { month: 'short', year: '2-digit' }) })));
 
         const totalUsers = monthRows.length;
         const teamsOnboarded = new Set(monthRows.map(r => r['Team'])).size;
@@ -95,7 +97,7 @@ export default function JiraAssistantAdoptionPage() {
     const uniqueUsers = new Set(allRows.map(r => r['User ID'])).size;
     const uniqueTeams = new Set(allRows.map(r => r['Team'])).size;
     const overallAdoption = allRows.reduce((acc, row) => acc + (parseFloat(row['Adoption %']) || 0), 0);
-    const averageAdoption = uniqueUsers > 0 ? (overallAdoption / uniqueUsers).toFixed(2) : '0.00';
+    const averageAdoption = allRows.length > 0 ? (overallAdoption / allRows.length).toFixed(2) : '0.00';
     
     return { 
         chartData: data,
@@ -184,19 +186,28 @@ export default function JiraAssistantAdoptionPage() {
                         <CardDescription>Monthly active users and average adoption rate.</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <ChartContainer config={{}} className="min-h-[300px] w-full">
-                        <ResponsiveContainer width="100%" height={300}>
-                          <LineChart data={chartData} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="month" />
-                            <YAxis yAxisId="left" label={{ value: 'Active Users', angle: -90, position: 'insideLeft' }} />
-                            <YAxis yAxisId="right" orientation="right" label={{ value: 'Adoption %', angle: -90, position: 'insideRight' }} />
-                            <Tooltip content={<ChartTooltipContent />} />
-                            <Line yAxisId="left" type="monotone" dataKey="users" stroke="hsl(var(--chart-1))" name="Active Users" />
-                            <Line yAxisId="right" type="monotone" dataKey="adoption" stroke="hsl(var(--chart-2))" name="Adoption %" />
-                          </LineChart>
-                        </ResponsiveContainer>
-                      </ChartContainer>
+                      <div className="border rounded-lg">
+                          <Table>
+                              <TableHeader>
+                                  <TableRow>
+                                      <TableHead>Month</TableHead>
+                                      <TableHead className="text-right">Active Users</TableHead>
+                                      <TableHead className="text-right">Teams Onboarded</TableHead>
+                                      <TableHead className="text-right">Adoption %</TableHead>
+                                  </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                  {chartData.map((item) => (
+                                      <TableRow key={item.month}>
+                                          <TableCell className="font-medium">{item.month}</TableCell>
+                                          <TableCell className="text-right">{item.users}</TableCell>
+                                          <TableCell className="text-right">{item.teams}</TableCell>
+                                          <TableCell className="text-right">{item.adoption}%</TableCell>
+                                      </TableRow>
+                                  ))}
+                              </TableBody>
+                          </Table>
+                      </div>
                     </CardContent>
                   </Card>
                  
