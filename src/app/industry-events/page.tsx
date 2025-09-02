@@ -203,27 +203,29 @@ export default function IndustryEventsPage() {
                            <Button
                                 variant="destructive"
                                 size="icon"
-                                className="absolute top-4 right-4"
+                                className="absolute top-4 right-4 z-10"
                                 onClick={() => handleRemoveEvent(event.id)}
                             >
                                 <Trash2 className="h-4 w-4" />
                             </Button>
                             <CardHeader>
-                                <div className="flex items-start justify-between">
-                                    <CardTitle className="pr-12">{event.name}</CardTitle>
+                                <div className="flex items-start justify-between gap-4">
+                                    <div className="flex-1">
+                                        <CardTitle className="pr-12">{event.name}</CardTitle>
+                                        <div className="flex items-center gap-4 text-sm text-muted-foreground pt-2">
+                                            <div className="flex items-center gap-2">
+                                                <Calendar className="h-4 w-4" />
+                                                <span>{formatDateRange(event.startDate, event.endDate)}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <MapPin className="h-4 w-4" />
+                                                <span>{event.location}</span>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <Badge variant={event.type === 'internal' ? 'secondary' : 'outline'} className="shrink-0">
                                       {event.type.charAt(0).toUpperCase() + event.type.slice(1)}
                                     </Badge>
-                                </div>
-                                <div className="flex items-center gap-4 text-sm text-muted-foreground pt-1">
-                                    <div className="flex items-center gap-2">
-                                        <Calendar className="h-4 w-4" />
-                                        <span>{formatDateRange(event.startDate, event.endDate)}</span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <MapPin className="h-4 w-4" />
-                                        <span>{event.location}</span>
-                                    </div>
                                 </div>
                             </CardHeader>
                             <CardContent>
