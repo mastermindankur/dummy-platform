@@ -137,7 +137,7 @@ export default function HackathonsDetailsPage() {
             
             {!isLoading && hackathons.length > 0 && (
               <div className="space-y-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between pb-2">
                             <CardTitle className="text-sm font-medium">Total Hackathons</CardTitle>
@@ -171,12 +171,12 @@ export default function HackathonsDetailsPage() {
                             <CardDescription className="text-xs text-muted-foreground">Team distribution across all hackathons.</CardDescription>
                         </CardHeader>
                         <CardContent className="pt-4">
-                             <ChartContainer config={{}} className="h-[120px] w-full">
+                             <ChartContainer config={{}} className="h-[200px] w-full">
                                 <ResponsiveContainer width="100%" height="100%">
                                 <BarChart data={cumulativeLobtDistribution} layout="vertical" margin={{ right: 20, left: 10, top: 0, bottom: 0 }}>
                                     <CartesianGrid horizontal={false} />
                                     <XAxis type="number" hide />
-                                    <YAxis dataKey="name" type="category" tickLine={false} axisLine={false} tick={{ fontSize: 12 }} />
+                                    <YAxis dataKey="name" type="category" tickLine={false} axisLine={false} tick={{ fontSize: 12 }} width={80} />
                                     <ChartTooltip content={<ChartTooltipContent />} />
                                     <Bar dataKey="value" fill="hsl(var(--chart-1))" radius={[0, 4, 4, 0]} />
                                 </BarChart>
@@ -249,9 +249,9 @@ export default function HackathonsDetailsPage() {
                                                 <ChartContainer config={{}} className="h-[250px] w-full">
                                                     <ResponsiveContainer width="100%" height="100%">
                                                         <BarChart data={individualLobtDistributions[hackathon.id]} layout="vertical" margin={{ left: 10, right: 20, top: 5, bottom: 5 }}>
-                                                            <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                                                            <CartesianGrid strokeDasharray="3 3" horizontal={true} />
                                                             <XAxis type="number" allowDecimals={false} domain={[0, 'dataMax + 1']} />
-                                                            <YAxis dataKey="name" type="category" width={60} tick={{ fontSize: 12 }} />
+                                                            <YAxis dataKey="name" type="category" width={80} tick={{ fontSize: 12 }} />
                                                             <ChartTooltip content={<ChartTooltipContent />} />
                                                             <Bar dataKey="value" fill="hsl(var(--chart-2))" radius={[0, 4, 4, 0]} />
                                                         </BarChart>
@@ -278,5 +278,3 @@ export default function HackathonsDetailsPage() {
     </div>
   );
 }
-
-    
