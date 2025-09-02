@@ -19,8 +19,9 @@ import { toast } from '@/hooks/use-toast';
 import type { Pillar, SubItem, Status, ExcelData } from '@/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Loader2, Plus, Trash2, Upload } from 'lucide-react';
+import { Loader2, Plus, Trash2, Upload, Trophy, ArrowRight } from 'lucide-react';
 import { processExcelFile } from '@/lib/excel-utils';
+import Link from 'next/link';
 
 function ExcelUploadSection({
   title,
@@ -455,6 +456,22 @@ export default function UpdateDataPage() {
 
                                     {pillar.id === 'adopting-emerging-technologies' && (
                                         <>
+                                            <Card className="bg-secondary/30 mt-6">
+                                                <CardHeader>
+                                                    <CardTitle className="text-xl">Manage Hackathons</CardTitle>
+                                                    <CardDescription>
+                                                        Add, edit, and upload team data for company hackathons.
+                                                    </CardDescription>
+                                                </CardHeader>
+                                                <CardContent>
+                                                    <Button asChild>
+                                                        <Link href="/hackathons">
+                                                            Go to Hackathon Management
+                                                            <ArrowRight className="ml-2 h-4 w-4" />
+                                                        </Link>
+                                                    </Button>
+                                                </CardContent>
+                                            </Card>
                                             <ExcelUploadSection
                                                 title="Explore Resiliency Program"
                                                 description="Upload the Excel sheet for the Resiliency Program."
