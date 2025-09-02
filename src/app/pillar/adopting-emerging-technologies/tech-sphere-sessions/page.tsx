@@ -88,11 +88,12 @@ export default function TechSphereSessionsPage() {
 
     let total = 0;
     const data = excelData.rows.map((row: ExcelRow) => {
-        const attendees = Number(row['Attendees']) || 0;
+        const attendees = Number(row['Participation']) || 0;
         total += attendees;
         return {
-            name: row['Session Title'] as string,
+            name: row['Date'] as string,
             attendees: attendees,
+            title: row['Agenda of Session'] as string
         };
     });
 
@@ -103,6 +104,20 @@ export default function TechSphereSessionsPage() {
   const annualTarget = sessionSubItem?.annualTarget || 0;
   // Using percentageComplete from data.json as the single source of truth for progress
   const progressPercentage = sessionSubItem?.percentageComplete || 0;
+
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="p-2 bg-background border rounded-md shadow-md">
+          <p className="label">{`Date: ${label}`}</p>
+          <p className="intro">{`Session: ${payload[0].payload.title}`}</p>
+          <p className="desc">{`Participation: ${payload[0].value}`}</p>
+        </div>
+      );
+    }
+    return null;
+  };
+
 
   return (
     <div className="flex min-h-screen w-full flex-col">
@@ -166,10 +181,10 @@ export default function TechSphereSessionsPage() {
                             <ResponsiveContainer width="100%" height={300}>
                               <BarChart data={participationData} margin={{ right: 20 }}>
                                 <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="name" tick={{ fontSize: 10 }} angle={-45} textAnchor="end" height={80} />
+                                <XAxis dataKey="name" tick={{ fontSize: 10 }} angle={-45} textAnchor="end" height={80} interval={0} />
                                 <YAxis />
-                                <ChartTooltip content={<ChartTooltipContent />} />
-                                <Bar dataKey="attendees" fill="hsl(var(--chart-1))" radius={[4, 4, 0, 0]} />
+                                <ChartTooltip content={<CustomTooltip />} />
+                                <Bar dataKey="attendees" name="Participation" fill="hsl(var(--chart-1))" radius={[4, 4, 0, 0]} />
                               </BarChart>
                             </ResponsiveContainer>
                           </ChartContainer>
