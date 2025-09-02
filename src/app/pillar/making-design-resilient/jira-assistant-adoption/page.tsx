@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/table';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
-import type { MonthlyExcelData } from '@/types';
+import type { MonthlyExcelData, ExcelRow } from '@/types';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend } from '@/components/ui/chart';
@@ -74,20 +74,25 @@ export default function JiraAssistantAdoptionPage() {
     loadData();
   }, []);
 
-  const { reportData, sortedMonths, totalRow, chartData, platformKeys } = useMemo(() => {
+  const { reportData, sortedMonths, totalRow, chartData, platformKeys, testCaseAdoptionData, testCaseTotals } = useMemo(() => {
     if (!monthlyData) {
-      return { reportData: [], sortedMonths: [], totalRow: null, chartData: [], platformKeys: [] };
+      return { reportData: [], sortedMonths: [], totalRow: null, chartData: [], platformKeys: [], testCaseAdoptionData: [], testCaseTotals: { totalCases: 0, jaCases: 0, adoption: 0 } };
     }
 
+    // USER ADOPTION LOGIC
     const platformMonthlyStats = new Map<string, { [month: string]: { totalUsers: Set<string>; activeUsers: Set<string> } }>();
     const allMonths = Object.keys(monthlyData).sort();
     const sortedMonthLabels = allMonths.map(m => new Date(m + '-02').toLocaleString('default', { month: 'short', year: '2-digit' }));
     
+    // TEST CASE ADOPTION LOGIC
+    const testCaseStatsByLOBT = new Map<string, { totalCases: number; jaCases: number }>();
+
     for (const month of allMonths) {
-        const monthLabel = new Date(month + '-02').toLocaleString('default', { month: 'short', year: '2-digit' });
+        const monthLabel = new Date(month + '-02').toLocaleString('default', { month: 'short', 'year': '2-digit' });
         const monthRows = monthlyData[month].rows;
 
         for (const row of monthRows) {
+            // User Adoption Processing
             const platform = (row['Platforms'] as string) || 'Unknown';
             const userId = row['1bankid'] as string;
             const isAdopted = row['is_created_via_JA'] === 1;
@@ -106,6 +111,19 @@ export default function JiraAssistantAdoptionPage() {
                 monthStats.totalUsers.add(userId);
                 if (isAdopted) {
                     monthStats.activeUsers.add(userId);
+                }
+            }
+
+            // Test Case Adoption Processing
+            if (row['issue_type'] === 'Test') {
+                const lobt = (row['LOBT'] as string) || 'Unknown';
+                if (!testCaseStatsByLOBT.has(lobt)) {
+                    testCaseStatsByLOBT.set(lobt, { totalCases: 0, jaCases: 0 });
+                }
+                const stats = testCaseStatsByLOBT.get(lobt)!;
+                stats.totalCases += 1;
+                if (row['is_created_via_JA'] === 1) {
+                    stats.jaCases += 1;
                 }
             }
         }
@@ -154,11 +172,26 @@ export default function JiraAssistantAdoptionPage() {
     const chartDataFormatted = sortedMonthLabels.map(month => {
         const monthEntry: {[key: string]: any} = { name: month };
         reportDataSorted.forEach(platformData => {
-            monthEntry[platformData.platform] = platformData.monthlyData[month]?.adoption;
+            monthEntry[platformData.platform] = platformData.monthlyData[month]?.adoption.toFixed(2);
         });
-        monthEntry['Total'] = grandTotalRow.monthlyData[month]?.adoption;
+        monthEntry['Total'] = grandTotalRow.monthlyData[month]?.adoption.toFixed(2);
         return monthEntry;
     });
+
+    const testCaseAdoptionData = Array.from(testCaseStatsByLOBT.entries()).map(([lobt, stats]) => ({
+      lobt,
+      ...stats,
+      adoption: stats.totalCases > 0 ? (stats.jaCases / stats.totalCases) * 100 : 0,
+    })).sort((a, b) => a.lobt.localeCompare(b.lobt));
+
+    const testCaseTotals = testCaseAdoptionData.reduce((acc, curr) => {
+        acc.totalCases += curr.totalCases;
+        acc.jaCases += curr.jaCases;
+        return acc;
+    }, { totalCases: 0, jaCases: 0, adoption: 0});
+    
+    testCaseTotals.adoption = testCaseTotals.totalCases > 0 ? (testCaseTotals.jaCases / testCaseTotals.totalCases) * 100 : 0;
+
 
     return {
       reportData: reportDataSorted,
@@ -166,6 +199,8 @@ export default function JiraAssistantAdoptionPage() {
       totalRow: grandTotalRow,
       chartData: chartDataFormatted,
       platformKeys: allPlatformKeys,
+      testCaseAdoptionData,
+      testCaseTotals
     };
   }, [monthlyData]);
 
@@ -192,36 +227,49 @@ export default function JiraAssistantAdoptionPage() {
             </Button>
         </div>
         <div className="space-y-8">
+
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <Card>
+                 <Card>
                     <CardHeader>
                         <CardTitle>User Adoption Trend</CardTitle>
                         <CardDescription>Month-on-month adoption percentage.</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <ChartContainer config={{}} className="h-[400px] w-full">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                                    <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis dataKey="name" />
-                                    <YAxis label={{ value: 'Adoption %', angle: -90, position: 'insideLeft' }} domain={[0, 100]}/>
-                                    <Tooltip content={<ChartTooltipContent />} />
-                                    <ChartLegend />
-                                    <Line type="monotone" dataKey="Total" stroke="#ff7300" strokeWidth={3} name="Total Adoption" dot={false} />
-                                    {platformKeys.map((key, index) => (
-                                        <Line 
-                                            key={key} 
-                                            type="monotone" 
-                                            dataKey={key} 
-                                            stroke={chartColors[index % chartColors.length]} 
-                                            strokeWidth={2}
-                                            name={key}
-                                            dot={false}
-                                        />
-                                    ))}
-                                </LineChart>
-                            </ResponsiveContainer>
-                        </ChartContainer>
+                        {isLoading && (
+                            <div className="flex items-center justify-center p-8 h-[400px]">
+                                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                            </div>
+                        )}
+                        {!isLoading && chartData.length > 0 && (
+                            <ChartContainer config={{}} className="h-[400px] w-full">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                                        <CartesianGrid strokeDasharray="3 3" />
+                                        <XAxis dataKey="name" />
+                                        <YAxis label={{ value: 'Adoption %', angle: -90, position: 'insideLeft' }} domain={[0, 100]}/>
+                                        <Tooltip content={<ChartTooltipContent indicator="dot" />} />
+                                        <ChartLegend />
+                                        <Line type="monotone" dataKey="Total" stroke="#ff7300" strokeWidth={3} name="Total Adoption" dot={false} />
+                                        {platformKeys.map((key, index) => (
+                                            <Line 
+                                                key={key} 
+                                                type="monotone" 
+                                                dataKey={key} 
+                                                stroke={chartColors[index % chartColors.length]} 
+                                                strokeWidth={2}
+                                                name={key}
+                                                dot={false}
+                                            />
+                                        ))}
+                                    </LineChart>
+                                </ResponsiveContainer>
+                            </ChartContainer>
+                        )}
+                        {!isLoading && chartData.length === 0 && (
+                             <div className="flex items-center justify-center h-[400px] text-muted-foreground">
+                                No data available to display chart.
+                            </div>
+                        )}
                     </CardContent>
                 </Card>
                 <div />
@@ -312,9 +360,46 @@ export default function JiraAssistantAdoptionPage() {
                     <CardTitle>Jira Assist Test Cases Adoption</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="flex items-center justify-center h-full text-muted-foreground p-8">
-                        <p>This section is under construction.</p>
-                    </div>
+                    {isLoading && (
+                        <div className="flex items-center justify-center p-8">
+                            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                        </div>
+                    )}
+                    {!isLoading && testCaseAdoptionData.length === 0 && (
+                         <div className="text-center text-muted-foreground p-8">
+                            No test case data is available to display.
+                        </div>
+                    )}
+                    {!isLoading && testCaseAdoptionData.length > 0 && (
+                         <div className="border rounded-lg">
+                             <Table>
+                                 <TableHeader>
+                                     <TableRow>
+                                         <TableHead>LOBT</TableHead>
+                                         <TableHead className="text-right">Total Test Cases</TableHead>
+                                         <TableHead className="text-right">JA Created Cases</TableHead>
+                                         <TableHead className="text-right">Adoption %</TableHead>
+                                     </TableRow>
+                                 </TableHeader>
+                                 <TableBody>
+                                     {testCaseAdoptionData.map(item => (
+                                         <TableRow key={item.lobt}>
+                                             <TableCell className="font-medium">{item.lobt}</TableCell>
+                                             <TableCell className="text-right">{item.totalCases}</TableCell>
+                                             <TableCell className="text-right">{item.jaCases}</TableCell>
+                                             <TableCell className="text-right">{item.adoption.toFixed(2)}%</TableCell>
+                                         </TableRow>
+                                     ))}
+                                     <TableRow className="font-bold bg-secondary hover:bg-secondary/80">
+                                         <TableCell>Total</TableCell>
+                                         <TableCell className="text-right">{testCaseTotals.totalCases}</TableCell>
+                                         <TableCell className="text-right">{testCaseTotals.jaCases}</TableCell>
+                                         <TableCell className="text-right">{testCaseTotals.adoption.toFixed(2)}%</TableCell>
+                                     </TableRow>
+                                 </TableBody>
+                             </Table>
+                         </div>
+                    )}
                 </CardContent>
             </Card>
         </div>
