@@ -20,9 +20,7 @@ import type { Pillar, SubItem, Status, ExcelData } from '@/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Loader2, Plus, Trash2, Upload } from 'lucide-react';
-import {
-  processExcelFile
-} from '@/ai/flows/process-excel-file';
+import { processExcelFile } from '@/lib/excel-utils';
 
 function ExcelUploadSection({
   title,
@@ -63,7 +61,7 @@ function ExcelUploadSection({
       reader.onload = async () => {
         const fileAsDataUri = reader.result as string;
         try {
-          const result = await processExcelFile({ fileAsDataUri });
+          const result = await processExcelFile(fileAsDataUri);
           onDataProcessed(fileKey, result);
            toast({
              title: `"${file.name}" processed`,
