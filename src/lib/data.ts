@@ -51,12 +51,24 @@ async function readData(): Promise<Pillar[]> {
             if (pillar.id === 'adopting-emerging-technologies') {
                 pillar.subItems = pillar.subItems.map(subItem => {
                     if (subItem.id === 'explore-resiliency-program') {
-                        // The value from data.json acts as the override.
-                        // If we are reading fresh from an upload, we calculate it.
-                        // This logic assumes we don't re-save the calculated value back to data.json,
-                        // allowing manual override to persist.
-                        // The prompt implies we SHOULD update it, so let's do that.
                         return { ...subItem, percentageComplete: completedAssessments };
+                    }
+                    return subItem;
+                })
+            }
+            return pillar;
+        });
+    }
+
+    // Attach published blogs count for DTI Tech Blogs
+    const blogsData = await readExcelData('dti-tech-blogs');
+    if (blogsData && blogsData.rows.length > 0) {
+        const publishedBlogs = blogsData.rows.length;
+        jsonData = jsonData.map(pillar => {
+            if (pillar.id === 'adopting-emerging-technologies') {
+                pillar.subItems = pillar.subItems.map(subItem => {
+                    if (subItem.id === 'blogs-open-source') {
+                        return { ...subItem, percentageComplete: publishedBlogs };
                     }
                     return subItem;
                 })

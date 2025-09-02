@@ -326,6 +326,7 @@ export default function UpdateDataPage() {
                                     <div className="space-y-4">
                                     {pillar.subItems.map((item, sIndex) => {
                                       const isResiliencyProgram = item.id === 'explore-resiliency-program';
+                                      const isBlogs = item.id === 'blogs-open-source';
                                       return (
                                         <div key={item.id} className="border rounded-md p-4 bg-secondary/50 relative">
                                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -376,7 +377,7 @@ export default function UpdateDataPage() {
                                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                                               <div>
                                                   <Label htmlFor={`item-progress-${pIndex}-${sIndex}`}>
-                                                    Current Value {isResiliencyProgram && '(Auto-calculated)'}
+                                                    Current Value {(isResiliencyProgram || isBlogs) && '(Auto-calculated)'}
                                                   </Label>
                                                   <Input
                                                   id={`item-progress-${pIndex}-${sIndex}`}
@@ -385,7 +386,7 @@ export default function UpdateDataPage() {
                                                   onChange={(e) =>
                                                       handleSubItemChange(pIndex, sIndex, 'percentageComplete', parseInt(e.target.value, 10) || 0)
                                                   }
-                                                  disabled={isResiliencyProgram}
+                                                  disabled={isResiliencyProgram || isBlogs}
                                                   />
                                               </div>
                                               <div>
