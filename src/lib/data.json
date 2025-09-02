@@ -122,12 +122,12 @@
   {
     "id": "adopting-emerging-technologies",
     "name": "Adopting Emerging Tech",
-    "description": "Leveraging new technologies like AI and serverless to drive innovation.",
+    "description": "Leveraging new emerging technologies like AI to drive innovation.",
     "subItems": [
       {
         "id": "explore-resiliency-program",
         "name": "Explore Resiliency Program",
-        "status": "Amber",
+        "status": "Green",
         "description": "Explore Resiliency program to cover the Design & cloud adoption.",
         "trend": "flat",
         "owner": "Innovation Team",
