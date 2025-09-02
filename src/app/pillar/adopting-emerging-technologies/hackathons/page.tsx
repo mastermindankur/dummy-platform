@@ -195,39 +195,40 @@ export default function HackathonsDetailsPage() {
                                     {hackathon.startMonth} to {hackathon.endMonth} &bull; {hackathon.participants} Participants
                                 </CardDescription>
                             </CardHeader>
-                            <CardContent className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                <div className="space-y-4">
-                                    {hackathon.teams && hackathon.teams.length > 0 && (
-                                        <div>
-                                            <h4 className="font-medium mb-2">Top Teams ({hackathon.teams.length})</h4>
-                                            <div className="border rounded-md max-h-96 overflow-auto">
-                                                <Table>
-                                                    <TableHeader className="sticky top-0 bg-secondary">
-                                                        <TableRow>
+                            <CardContent className="space-y-6">
+                                {hackathon.teams && hackathon.teams.length > 0 && (
+                                    <div>
+                                        <h4 className="font-medium mb-2">Top Teams ({hackathon.teams.length})</h4>
+                                        <div className="border rounded-md max-h-96 overflow-auto">
+                                            <Table>
+                                                <TableHeader className="sticky top-0 bg-secondary">
+                                                    <TableRow>
+                                                        {(hackathon.teamDataHeaders || []).map(header => (
+                                                            <TableHead key={header}>{header}</TableHead>
+                                                        ))}
+                                                    </TableRow>
+                                                </TableHeader>
+                                                <TableBody>
+                                                    {hackathon.teams.map(team => (
+                                                        <TableRow key={team.id}>
                                                             {(hackathon.teamDataHeaders || []).map(header => (
-                                                                <TableHead key={header}>{header}</TableHead>
+                                                                <TableCell key={`${team.id}-${header}`}>
+                                                                    {String(team.data[header] ?? '')}
+                                                                </TableCell>
                                                             ))}
                                                         </TableRow>
-                                                    </TableHeader>
-                                                    <TableBody>
-                                                        {hackathon.teams.map(team => (
-                                                            <TableRow key={team.id}>
-                                                                {(hackathon.teamDataHeaders || []).map(header => (
-                                                                    <TableCell key={`${team.id}-${header}`}>
-                                                                        {String(team.data[header] ?? '')}
-                                                                    </TableCell>
-                                                                ))}
-                                                            </TableRow>
-                                                        ))}
-                                                    </TableBody>
-                                                </Table>
-                                            </div>
+                                                    ))}
+                                                </TableBody>
+                                            </Table>
                                         </div>
-                                    )}
+                                    </div>
+                                )}
+                                
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                      {hackathon.winners && hackathon.winners.length > 0 && (
                                         <div>
                                             <h4 className="font-medium mb-2">Winners</h4>
-                                            <div className="border rounded-md p-4">
+                                            <div className="border rounded-md p-4 h-full">
                                                 <ul className="space-y-2">
                                                 {(hackathon.winners || []).sort((a,b) => a.rank - b.rank).map(winner => (
                                                     <li key={`${winner.rank}-${winner.teamId}`} className="flex items-center gap-3">
@@ -240,8 +241,6 @@ export default function HackathonsDetailsPage() {
                                             </div>
                                         </div>
                                     )}
-                                </div>
-                                <div className="space-y-4">
                                     {individualLobtDistributions[hackathon.id] && individualLobtDistributions[hackathon.id].length > 0 && (
                                         <div>
                                             <h4 className="font-medium mb-2">LOBT-wise Distribution</h4>
@@ -260,12 +259,13 @@ export default function HackathonsDetailsPage() {
                                             </div>
                                         </div>
                                     )}
-                                    {(!hackathon.teams || hackathon.teams.length === 0) && (
-                                        <div className="h-full flex items-center justify-center text-muted-foreground p-8 border-dashed border-2 rounded-md">
-                                            <p>No team data has been uploaded for this hackathon.</p>
-                                        </div>
-                                    )}
                                 </div>
+
+                                {(!hackathon.teams || hackathon.teams.length === 0) && (
+                                    <div className="h-full flex items-center justify-center text-muted-foreground p-8 border-dashed border-2 rounded-md">
+                                        <p>No team data has been uploaded for this hackathon.</p>
+                                    </div>
+                                )}
                             </CardContent>
                         </Card>
                     ))}
