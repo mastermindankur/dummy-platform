@@ -324,7 +324,9 @@ export default function UpdateDataPage() {
                                 <div>
                                     <h4 className="text-xl font-semibold mb-4">Sub-Items</h4>
                                     <div className="space-y-4">
-                                    {pillar.subItems.map((item, sIndex) => (
+                                    {pillar.subItems.map((item, sIndex) => {
+                                      const isResiliencyProgram = item.id === 'explore-resiliency-program';
+                                      return (
                                         <div key={item.id} className="border rounded-md p-4 bg-secondary/50 relative">
                                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                             <div>
@@ -374,7 +376,7 @@ export default function UpdateDataPage() {
                                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                                               <div>
                                                   <Label htmlFor={`item-progress-${pIndex}-${sIndex}`}>
-                                                  Current Value
+                                                    Current Value {isResiliencyProgram && '(Auto-calculated)'}
                                                   </Label>
                                                   <Input
                                                   id={`item-progress-${pIndex}-${sIndex}`}
@@ -383,6 +385,7 @@ export default function UpdateDataPage() {
                                                   onChange={(e) =>
                                                       handleSubItemChange(pIndex, sIndex, 'percentageComplete', parseInt(e.target.value, 10) || 0)
                                                   }
+                                                  disabled={isResiliencyProgram}
                                                   />
                                               </div>
                                               <div>
@@ -432,7 +435,8 @@ export default function UpdateDataPage() {
                                                 </Button>
                                             </div>
                                         </div>
-                                    ))}
+                                      )
+                                    })}
                                     </div>
                                     <div className="mt-4">
                                         <Button variant="outline" onClick={() => addSubItem(pIndex)}>
