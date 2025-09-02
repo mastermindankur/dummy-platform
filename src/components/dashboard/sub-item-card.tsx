@@ -23,6 +23,7 @@ export function SubItemCard({ item, pillarName }: Props) {
   const isExploreResiliency = item.id === "explore-resiliency-program";
   const isBlogsOpenSource = item.id === "blogs-open-source";
   const isTechSphere = item.id === "tech-sphere-sessions";
+  const isHackathons = item.id === "hackathons";
 
   const progressValue = item.annualTarget > 0 ? (item.percentageComplete / item.annualTarget) * 100 : 0;
 
@@ -70,6 +71,14 @@ export function SubItemCard({ item, pillarName }: Props) {
                 View Details
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
+            </Button>
+          )}
+           {isHackathons && (
+            <Button asChild variant="outline" size="sm">
+                <Link href="/pillar/adopting-emerging-technologies/hackathons">
+                    View Details
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
             </Button>
           )}
         </div>
