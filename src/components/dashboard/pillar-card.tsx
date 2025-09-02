@@ -20,6 +20,7 @@ const statusStyles: Record<"Green" | "Amber" | "Red", string> = {
 
 export function PillarCard({ pillar }: { pillar: Pillar }) {
 
+  const totalSubItems = pillar.subItems.length;
   const statusCounts = pillar.subItems.reduce((acc, item) => {
     acc[item.status] = (acc[item.status] || 0) + 1;
     return acc;
@@ -38,14 +39,14 @@ export function PillarCard({ pillar }: { pillar: Pillar }) {
         </CardHeader>
         <CardFooter className="flex justify-end items-center">
           <div className="flex items-center gap-3 text-xs text-muted-foreground">
-            {(Object.keys(statusCounts) as Array<keyof typeof statusCounts>).length > 0 ? (
+            {totalSubItems > 0 ? (
                 (Object.keys(statusCounts) as Array<keyof typeof statusCounts>).sort((a, b) => {
                     const order = { Red: 0, Amber: 1, Green: 2 };
                     return order[a] - order[b];
                 }).map((key) => (
                     <div key={key} className="flex items-center gap-1.5">
                         <span className={cn("h-2 w-2 rounded-full", statusStyles[key])} />
-                        <span>{statusCounts[key]} {key}</span>
+                        <span>{statusCounts[key]}/{totalSubItems} {key}</span>
                     </div>
                 ))
             ) : (
