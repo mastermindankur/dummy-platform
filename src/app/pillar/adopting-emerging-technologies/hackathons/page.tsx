@@ -82,14 +82,12 @@ export default function HackathonsDetailsPage() {
         individualLobtCounts[h.id] = Object.entries(hackathonLobtCounts).map(([name, value]) => ({
             name,
             value,
-            total: hackathonTeams,
         }));
     });
 
     const cumulativeLobtDistribution = Object.entries(cumulativeLobtCounts).map(([name, value]) => ({
         name,
         value,
-        total: teams
     }));
 
     return {
@@ -259,7 +257,7 @@ export default function HackathonsDetailsPage() {
                                                             <YAxis dataKey="name" type="category" width={80} tick={{ fontSize: 12 }} />
                                                             <ChartTooltip content={<ChartTooltipContent />} />
                                                             <Bar dataKey="value" fill="hsl(var(--chart-2))" radius={[0, 4, 4, 0]} >
-                                                                <LabelList dataKey="value" position="right" formatter={(value: number, index: number) => { const total = individualLobtDistributions[hackathon.id][index].total; return `${value}/${total}`}} style={{ fill: 'hsl(var(--foreground))', fontSize: '12px' }}/>
+                                                                <LabelList dataKey="value" position="right" formatter={(value: number) => `${value}/${(hackathon.teams || []).length}`} style={{ fill: 'hsl(var(--foreground))', fontSize: '12px' }}/>
                                                             </Bar>
                                                         </BarChart>
                                                     </ResponsiveContainer>
@@ -325,5 +323,3 @@ export default function HackathonsDetailsPage() {
     </div>
   );
 }
-
-  
