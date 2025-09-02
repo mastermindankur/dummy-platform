@@ -23,7 +23,7 @@ const dataFilePath = path.join(process.cwd(), 'src', 'lib', 'data.json');
 async function readData(): Promise<Pillar[]> {
   try {
     const fileContent = await fs.readFile(dataFilePath, 'utf-8');
-    const jsonData: Pillar[] = JSON.parse(fileContent);
+    const jsonData: Omit<Pillar, 'icon'>[] = JSON.parse(fileContent);
     // Attach icons back to the data
     return jsonData.map(pillar => ({
       ...pillar,
