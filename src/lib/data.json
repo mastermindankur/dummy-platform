@@ -159,14 +159,14 @@
       },
       {
         "id": "blogs-open-source",
-        "name": "Blogs and Open Source",
+        "name": "DTI Tech Blogs ",
         "status": "Green",
         "description": "Publish blogs and contribute to open source to share knowledge.",
         "trend": "up",
         "owner": "Engineering Team",
         "lastUpdate": "2024-07-29",
         "comments": "New blog post on our open-source library was published.",
-        "percentageComplete": 80
+        "percentageComplete": 1
       },
       {
         "id": "tech-sphere-sessions",
