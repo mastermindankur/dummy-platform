@@ -36,7 +36,7 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
 
-function TeamUploader({ hackathon, onTeamsUpload }: { hackathon: Hackathon, onTeamsUpload: (hackathonId: string, teams: HackathonTeam[]) => void }) {
+function TeamUploader({ hackathon, onTeamsUpload }: { hackathon: Hackathon, onTeamsUpload: (hackathonId: string, teams: HackathonTeam[], headers: string[]) => void }) {
     const [file, setFile] = useState<File | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [processedData, setProcessedData] = useState<ExcelData | null>(null);
@@ -85,9 +85,10 @@ function TeamUploader({ hackathon, onTeamsUpload }: { hackathon: Hackathon, onTe
         const teams: HackathonTeam[] = processedData.rows.map((row, index) => ({
             id: `team-${hackathon.id}-${index}`,
             name: row[selectedTeamColumn] || 'Unnamed Team',
+            data: row,
         }));
         
-        onTeamsUpload(hackathon.id, teams);
+        onTeamsUpload(hackathon.id, teams, processedData.headers);
         toast({
             title: `Teams uploaded for ${hackathon.name}`,
             description: 'Remember to save all changes.',
@@ -168,7 +169,7 @@ function WinnerSelector({ hackathon, onWinnerChange }: { hackathon: Hackathon, o
     };
 
     const getWinnerIds = (rank: 1 | 2 | 3): string[] => {
-        return hackathon.winners.filter(w => w.rank === rank).map(w => w.teamId);
+        return (hackathon.winners || []).filter(w => w.rank === rank).map(w => w.teamId);
     };
 
     if (!hackathon.teams || hackathon.teams.length === 0) {
@@ -193,7 +194,7 @@ function WinnerSelector({ hackathon, onWinnerChange }: { hackathon: Hackathon, o
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent className="w-64">
-                                    {hackathon.teams.map(team => (
+                                    {(hackathon.teams || []).map(team => (
                                         <DropdownMenuItem key={team.id} onSelect={(e) => e.preventDefault()}>
                                             <div className="flex items-center space-x-2" onClick={() => handleSelect(rank, team.id)}>
                                                 <Checkbox
@@ -281,8 +282,8 @@ export default function HackathonsPage() {
     setHackathons(hackathons.filter((h) => h.id !== id));
   };
   
-  const handleTeamsUpload = (hackathonId: string, teams: HackathonTeam[]) => {
-      setHackathons(hackathons.map(h => h.id === hackathonId ? {...h, teams} : h));
+  const handleTeamsUpload = (hackathonId: string, teams: HackathonTeam[], headers: string[]) => {
+      setHackathons(hackathons.map(h => h.id === hackathonId ? {...h, teams, teamDataHeaders: headers } : h));
   };
 
   const handleWinnerChange = (hackathonId: string, winners: HackathonWinner[]) => {
@@ -443,7 +444,7 @@ export default function HackathonsPage() {
                                      <div className="border rounded-md p-4">
                                          <h4 className="font-medium mb-2">Winning Teams</h4>
                                          <ul className="space-y-1">
-                                            {hackathon.winners.sort((a,b) => a.rank - b.rank).map(winner => (
+                                            {(hackathon.winners || []).sort((a,b) => a.rank - b.rank).map(winner => (
                                                 <li key={`${winner.rank}-${winner.teamId}`} className="flex items-center gap-2">
                                                     <Trophy className={`h-5 w-5 ${winner.rank === 1 ? 'text-yellow-500' : winner.rank === 2 ? 'text-gray-400' : 'text-yellow-700'}`} />
                                                     <span className="font-semibold">{winner.rank}.</span>

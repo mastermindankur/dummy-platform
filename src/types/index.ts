@@ -39,6 +39,7 @@ export type ExcelData = {
 export type HackathonTeam = {
   id: string;
   name: string;
+  data: ExcelRow;
 };
 
 export type HackathonWinner = {
@@ -54,4 +55,5 @@ export type Hackathon = {
   participants: number;
   teams: HackathonTeam[];
   winners: HackathonWinner[];
+  teamDataHeaders?: string[];
 };

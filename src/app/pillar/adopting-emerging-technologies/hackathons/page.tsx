@@ -156,13 +156,19 @@ export default function HackathonsDetailsPage() {
                                             <Table>
                                                 <TableHeader>
                                                     <TableRow>
-                                                        <TableHead>Team Name</TableHead>
+                                                        {(hackathon.teamDataHeaders || []).map(header => (
+                                                            <TableHead key={header}>{header}</TableHead>
+                                                        ))}
                                                     </TableRow>
                                                 </TableHeader>
                                                 <TableBody>
                                                     {hackathon.teams.map(team => (
                                                         <TableRow key={team.id}>
-                                                            <TableCell>{team.name}</TableCell>
+                                                            {(hackathon.teamDataHeaders || []).map(header => (
+                                                                <TableCell key={`${team.id}-${header}`}>
+                                                                    {String(team.data[header] ?? '')}
+                                                                </TableCell>
+                                                            ))}
                                                         </TableRow>
                                                     ))}
                                                 </TableBody>
@@ -175,7 +181,7 @@ export default function HackathonsDetailsPage() {
                                         <h4 className="font-medium mb-2">Winners</h4>
                                         <div className="border rounded-md p-4">
                                             <ul className="space-y-2">
-                                            {hackathon.winners.sort((a,b) => a.rank - b.rank).map(winner => (
+                                            {(hackathon.winners || []).sort((a,b) => a.rank - b.rank).map(winner => (
                                                 <li key={`${winner.rank}-${winner.teamId}`} className="flex items-center gap-3">
                                                     <Trophy className={`h-5 w-5 ${winner.rank === 1 ? 'text-yellow-500' : winner.rank === 2 ? 'text-gray-400' : 'text-yellow-700'}`} />
                                                     <span className="font-semibold text-lg">{winner.rank}.</span>
