@@ -166,6 +166,7 @@ export default function UpdateDataPage() {
       'tech-sphere-sessions': null,
       'squad-onboarding': null,
       'arc-trainings': null,
+      'app-sherpas': null,
       'jira-assistant-adoption': null,
   });
   const [isLoading, setIsLoading] = useState(true);
@@ -365,6 +366,7 @@ export default function UpdateDataPage() {
                                         'industry-events',
                                         'system-scalability',
                                         'arc-trainings',
+                                        'app-sherpas',
                                         'jira-assistant-adoption'
                                       ].includes(item.id);
 
@@ -498,6 +500,12 @@ export default function UpdateDataPage() {
                                                 title="ARC Trainings"
                                                 description="Upload the Excel sheet for ARC Training sessions."
                                                 fileKey="arc-trainings"
+                                                onDataProcessed={handleExcelDataProcessed}
+                                            />
+                                            <ExcelUploadSection
+                                                title="App Sherpas"
+                                                description="Upload the Excel sheet for App Sherpas."
+                                                fileKey="app-sherpas"
                                                 onDataProcessed={handleExcelDataProcessed}
                                             />
                                             <ExcelUploadSection

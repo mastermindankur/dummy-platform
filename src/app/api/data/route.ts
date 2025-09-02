@@ -36,6 +36,10 @@ export async function GET(request: Request) {
             const data = await readExcelData('arc-trainings');
             return NextResponse.json(data);
         }
+        if (fileKey === 'app-sherpas') {
+            const data = await readExcelData('app-sherpas');
+            return NextResponse.json(data);
+        }
         const data = await readExcelData(fileKey);
         if (data) {
             return NextResponse.json(data);

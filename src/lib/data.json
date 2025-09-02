@@ -1,3 +1,4 @@
+
 [
   {
     "id": "improving-productivity",
@@ -145,7 +146,7 @@
         "metricUnit": "Sessions"
       },
       {
-        "id": "new-sub-item-1756825846001",
+        "id": "app-sherpas",
         "name": "App Sherpas",
         "description": "Increase the No of App Sheraps at DTI by 1",
         "status": "Green",
@@ -153,7 +154,7 @@
         "owner": "",
         "lastUpdate": "2025-09-02",
         "comments": "",
-        "percentageComplete": 8,
+        "percentageComplete": 0,
         "annualTarget": 8,
         "metricName": "Count of App Sherpas",
         "metricUnit": "App Sherpas"

@@ -62,6 +62,23 @@ async function readData(): Promise<Pillar[]> {
             return pillar;
         });
     }
+
+    // Attach App Sherpas count
+    const appSherpasData = await readExcelData('app-sherpas');
+    if (appSherpasData && appSherpasData.rows.length > 0) {
+        const sherpasCount = appSherpasData.rows.length;
+        jsonData = jsonData.map(pillar => {
+            if (pillar.id === 'making-design-resilient') {
+                pillar.subItems = pillar.subItems.map(subItem => {
+                    if (subItem.id === 'app-sherpas') {
+                        return { ...subItem, percentageComplete: sherpasCount };
+                    }
+                    return subItem;
+                });
+            }
+            return pillar;
+        });
+    }
     
     // Attach completed assessment count for Explore Resiliency Program
     const resiliencyData = await readExcelData('explore-resiliency-program');

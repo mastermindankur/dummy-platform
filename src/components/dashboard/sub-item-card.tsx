@@ -27,6 +27,7 @@ export function SubItemCard({ item, pillarName }: Props) {
   const isIndustryEvents = item.id === "industry-events";
   const isSquadOnboarding = item.id === 'system-scalability';
   const isArcTrainings = item.id === 'arc-trainings';
+  const isAppSherpas = item.id === 'app-sherpas';
   const isJiraAssistantAdoption = item.id === 'jira-assistant-adoption';
 
   const progressValue = item.annualTarget > 0 ? (item.percentageComplete / item.annualTarget) * 100 : 0;
@@ -70,6 +71,14 @@ export function SubItemCard({ item, pillarName }: Props) {
           {isArcTrainings && (
              <Button asChild variant="outline" size="sm">
                 <Link href="/pillar/making-design-resilient/arc-trainings">
+                    View Details
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+             </Button>
+          )}
+           {isAppSherpas && (
+             <Button asChild variant="outline" size="sm">
+                <Link href="/pillar/making-design-resilient/app-sherpas">
                     View Details
                     <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
