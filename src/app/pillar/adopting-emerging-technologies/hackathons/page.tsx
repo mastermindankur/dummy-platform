@@ -149,9 +149,9 @@ export default function HackathonsDetailsPage() {
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
-                                <div>
-                                    <h4 className="font-medium mb-2">Top Teams</h4>
-                                    {hackathon.teams && hackathon.teams.length > 0 ? (
+                                {hackathon.teams && hackathon.teams.length > 0 && (
+                                    <div>
+                                        <h4 className="font-medium mb-2">Top Teams</h4>
                                         <div className="border rounded-md">
                                             <Table>
                                                 <TableHeader>
@@ -168,28 +168,27 @@ export default function HackathonsDetailsPage() {
                                                 </TableBody>
                                             </Table>
                                         </div>
-                                    ) : (
-                                        <p className="text-sm text-muted-foreground">No top teams have been uploaded for this hackathon.</p>
-                                    )}
-                                </div>
-                                 <div>
-                                    <h4 className="font-medium mb-2">Winners</h4>
-                                    {hackathon.winners && hackathon.winners.length > 0 ? (
-                                         <div className="border rounded-md p-4">
-                                             <ul className="space-y-2">
-                                                {hackathon.winners.sort((a,b) => a.rank - b.rank).map(winner => (
-                                                    <li key={`${winner.rank}-${winner.teamId}`} className="flex items-center gap-3">
-                                                        <Trophy className={`h-5 w-5 ${winner.rank === 1 ? 'text-yellow-500' : winner.rank === 2 ? 'text-gray-400' : 'text-yellow-700'}`} />
-                                                        <span className="font-semibold text-lg">{winner.rank}.</span>
-                                                        <span>{getTeamName(hackathon, winner.teamId)}</span>
-                                                    </li>
-                                                ))}
-                                             </ul>
-                                         </div>
-                                    ) : (
-                                        <p className="text-sm text-muted-foreground">Winners have not been selected for this hackathon.</p>
-                                    )}
-                                </div>
+                                    </div>
+                                )}
+                                {hackathon.winners && hackathon.winners.length > 0 && (
+                                    <div>
+                                        <h4 className="font-medium mb-2">Winners</h4>
+                                        <div className="border rounded-md p-4">
+                                            <ul className="space-y-2">
+                                            {hackathon.winners.sort((a,b) => a.rank - b.rank).map(winner => (
+                                                <li key={`${winner.rank}-${winner.teamId}`} className="flex items-center gap-3">
+                                                    <Trophy className={`h-5 w-5 ${winner.rank === 1 ? 'text-yellow-500' : winner.rank === 2 ? 'text-gray-400' : 'text-yellow-700'}`} />
+                                                    <span className="font-semibold text-lg">{winner.rank}.</span>
+                                                    <span>{getTeamName(hackathon, winner.teamId)}</span>
+                                                </li>
+                                            ))}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                )}
+                                {(!hackathon.teams || hackathon.teams.length === 0) && (!hackathon.winners || hackathon.winners.length === 0) && (
+                                    <p className="text-sm text-muted-foreground text-center py-4">No team or winner data has been uploaded for this hackathon.</p>
+                                )}
                             </CardContent>
                         </Card>
                     ))}
