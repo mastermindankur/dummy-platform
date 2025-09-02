@@ -36,6 +36,10 @@ export type ExcelData = {
   rows: ExcelRow[];
 };
 
+export type MonthlyExcelData = {
+  [month: string]: ExcelData;
+}
+
 export type HackathonTeam = {
   id: string;
   name: string;

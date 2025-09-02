@@ -6,7 +6,7 @@ import {
   Cpu,
   Landmark,
 } from "lucide-react";
-import type { Pillar, Status, SubItem, ExcelData } from "@/types";
+import type { Pillar, Status, SubItem, ExcelData, MonthlyExcelData } from "@/types";
 import { promises as fs } from 'fs';
 import path from 'path';
 
@@ -20,6 +20,8 @@ const pillarIcons: { [key: string]: Pillar['icon'] } = {
 };
 
 const dataFilePath = (filename: string) => path.join(process.cwd(), 'src', 'lib', filename);
+const monthlyDataDirectoryPath = (dir: string) => path.join(process.cwd(), 'src', 'lib', dir);
+
 
 async function readData(): Promise<Pillar[]> {
   try {
@@ -146,6 +148,26 @@ async function readData(): Promise<Pillar[]> {
         });
     }
 
+    // Attach Jira Assistant Adoption data
+    const jiraAdoptionData = await readMonthlyData('jira-assistant-adoption');
+    if (jiraAdoptionData && Object.keys(jiraAdoptionData).length > 0) {
+        const allRows = Object.values(jiraAdoptionData).flatMap(monthData => monthData.rows);
+        const uniqueUsers = new Set(allRows.map(row => row['User ID'])).size;
+
+        jsonData = jsonData.map(pillar => {
+            if (pillar.id === 'making-design-resilient') {
+                pillar.subItems = pillar.subItems.map(subItem => {
+                    if (subItem.id === 'jira-assistant-adoption') {
+                        return { ...subItem, percentageComplete: uniqueUsers };
+                    }
+                    return subItem;
+                });
+            }
+            return pillar;
+        });
+    }
+
+
     // Attach icons back to the data
     return jsonData.map(pillar => ({
       ...pillar,
@@ -221,5 +243,48 @@ export async function writeExcelData(fileKey: string, data: any) {
     } catch (error) {
         console.error(`Could not write to ${fileKey}.json:`, error);
         throw new Error(`Failed to save ${fileKey} data.`);
+    }
+}
+
+export async function readMonthlyData(dir: string, month?: string | null): Promise<MonthlyExcelData | null> {
+    const dirPath = monthlyDataDirectoryPath(dir);
+    try {
+        await fs.mkdir(dirPath, { recursive: true });
+        const files = await fs.readdir(dirPath);
+        
+        if (month) {
+            const fileName = `${month}.json`;
+            if (files.includes(fileName)) {
+                const fileContent = await fs.readFile(path.join(dirPath, fileName), 'utf-8');
+                return { [month]: JSON.parse(fileContent) };
+            }
+            return null;
+        }
+
+        const allData: MonthlyExcelData = {};
+        for (const file of files) {
+            if (path.extname(file) === '.json') {
+                const monthKey = path.basename(file, '.json');
+                const fileContent = await fs.readFile(path.join(dirPath, file), 'utf-8');
+                allData[monthKey] = JSON.parse(fileContent);
+            }
+        }
+        return allData;
+
+    } catch (error) {
+        console.error(`Could not read from directory ${dir}:`, error);
+        return null;
+    }
+}
+
+export async function writeMonthlyData(dir: string, month: string, data: ExcelData) {
+    const dirPath = monthlyDataDirectoryPath(dir);
+    try {
+        await fs.mkdir(dirPath, { recursive: true });
+        const filePath = path.join(dirPath, `${month}.json`);
+        await fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf-8');
+    } catch (error) {
+        console.error(`Could not write to ${dir}/${month}.json:`, error);
+        throw new Error(`Failed to save ${dir} data for ${month}.`);
     }
 }

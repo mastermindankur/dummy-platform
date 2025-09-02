@@ -1,11 +1,21 @@
 
 import { NextResponse } from 'next/server';
-import { getPillars, writeData, readExcelData, writeExcelData } from '@/lib/data';
+import { getPillars, writeData, readExcelData, writeExcelData, readMonthlyData, writeMonthlyData } from '@/lib/data';
 import type { Pillar } from '@/types';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const fileKey = searchParams.get('key');
+  const month = searchParams.get('month'); // e.g., '2024-08'
+
+  if (fileKey === 'jira-assistant-adoption') {
+      try {
+          const data = await readMonthlyData(fileKey, month);
+          return NextResponse.json(data);
+      } catch (error) {
+          return new NextResponse('Internal Server Error', { status: 500 });
+      }
+  }
 
   if (fileKey) {
      try {
@@ -59,7 +69,13 @@ export async function POST(request: Request) {
                     // special handling for hackathons since they are just an array
                     if (key === 'hackathons' || key === 'industry-events') {
                       await writeExcelData(key, body.excelData[key]);
-                    } else {
+                    } else if (key.startsWith('jira-assistant-adoption')) {
+                        const [, month] = key.split(':');
+                        if (month) {
+                            await writeMonthlyData('jira-assistant-adoption', month, body.excelData[key]);
+                        }
+                    }
+                    else {
                       await writeExcelData(key, body.excelData[key]);
                     }
                  }

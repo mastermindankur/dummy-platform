@@ -28,14 +28,17 @@ function ExcelUploadSection({
   description,
   fileKey,
   onDataProcessed,
+  isMonthly = false,
 }: {
   title: string;
   description: string;
   fileKey: string;
   onDataProcessed: (key: string, data: ExcelData) => void;
+  isMonthly?: boolean;
 }) {
   const [file, setFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [month, setMonth] = useState<string>(isMonthly ? new Date().toISOString().slice(0, 7) : '');
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -53,6 +56,14 @@ function ExcelUploadSection({
       });
       return;
     }
+    if (isMonthly && !month) {
+        toast({
+        title: 'No month selected',
+        description: 'Please select a month for the data upload.',
+        variant: 'destructive',
+      });
+      return;
+    }
 
     setIsLoading(true);
 
@@ -63,7 +74,8 @@ function ExcelUploadSection({
         const fileAsDataUri = reader.result as string;
         try {
           const result = await processExcelFile(fileAsDataUri);
-          onDataProcessed(fileKey, result);
+          const finalFileKey = isMonthly ? `${fileKey}:${month}` : fileKey;
+          onDataProcessed(finalFileKey, result);
            toast({
              title: `"${file.name}" processed`,
              description: 'Data loaded from Excel. Remember to save all changes.',
@@ -107,6 +119,18 @@ function ExcelUploadSection({
           <CardDescription>{description}</CardDescription>
         </CardHeader>
         <CardContent>
+            {isMonthly && (
+                <div className="mb-4">
+                    <Label htmlFor={`month-select-${fileKey}`}>Select Month</Label>
+                    <Input 
+                        id={`month-select-${fileKey}`} 
+                        type="month" 
+                        value={month}
+                        onChange={e => setMonth(e.target.value)}
+                        className="w-full max-w-xs"
+                    />
+                </div>
+            )}
           <div className="grid w-full max-w-sm items-center gap-2">
             <Label htmlFor={`excel-upload-${fileKey}`}>{`Upload ${title} Data`}</Label>
             <div className="flex gap-2">
@@ -142,6 +166,7 @@ export default function UpdateDataPage() {
       'tech-sphere-sessions': null,
       'squad-onboarding': null,
       'arc-trainings': null,
+      'jira-assistant-adoption': null,
   });
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -339,7 +364,8 @@ export default function UpdateDataPage() {
                                         'hackathons', 
                                         'industry-events',
                                         'system-scalability',
-                                        'arc-trainings'
+                                        'arc-trainings',
+                                        'jira-assistant-adoption'
                                       ].includes(item.id);
 
                                       return (
@@ -473,6 +499,13 @@ export default function UpdateDataPage() {
                                                 description="Upload the Excel sheet for ARC Training sessions."
                                                 fileKey="arc-trainings"
                                                 onDataProcessed={handleExcelDataProcessed}
+                                            />
+                                            <ExcelUploadSection
+                                                title="Jira Assistant Adoption"
+                                                description="Upload monthly Excel sheets for Jira Assistant Adoption."
+                                                fileKey="jira-assistant-adoption"
+                                                onDataProcessed={handleExcelDataProcessed}
+                                                isMonthly={true}
                                             />
                                         </>
                                     )}

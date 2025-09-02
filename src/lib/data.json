@@ -118,18 +118,18 @@
         "metricUnit": "Apps"
       },
       {
-        "id": "disaster-recovery",
-        "name": "Usage of Jira Assistant to CAT1/CAT2 Apps",
+        "id": "jira-assistant-adoption",
+        "name": "Jira Assistant Adoption",
         "status": "Amber",
         "description": "Percentage Adoption of Jira Assist Month on Month",
         "trend": "up",
         "owner": "SRE Team",
         "lastUpdate": "2024-07-22",
         "comments": "Last DR drill was successful with zero data loss.",
-        "percentageComplete": 58,
+        "percentageComplete": 0,
         "annualTarget": 100,
-        "metricName": "YTD Progress",
-        "metricUnit": "%"
+        "metricName": "Active Users",
+        "metricUnit": "Users"
       },
       {
         "id": "arc-trainings",
