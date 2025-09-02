@@ -74,9 +74,9 @@ export default function JiraAssistantAdoptionPage() {
     loadData();
   }, []);
 
-  const { reportData, sortedMonths, totalRow, chartData, platformKeys, totalUsers, activeUsers } = useMemo(() => {
+  const { reportData, sortedMonths, totalRow, chartData, platformKeys } = useMemo(() => {
     if (!monthlyData) {
-      return { reportData: [], sortedMonths: [], totalRow: null, chartData: [], platformKeys: [], totalUsers: 0, activeUsers: 0 };
+      return { reportData: [], sortedMonths: [], totalRow: null, chartData: [], platformKeys: [] };
     }
 
     const platformMonthlyStats = new Map<string, { [month: string]: { totalUsers: Set<string>; activeUsers: Set<string> } }>();
@@ -160,27 +160,12 @@ export default function JiraAssistantAdoptionPage() {
         return monthEntry;
     });
 
-    const totalUserSet = new Set<string>();
-    const activeUserSet = new Set<string>();
-
-    allMonths.forEach(month => {
-      reportDataSorted.forEach(p => {
-        const platformStats = platformMonthlyStats.get(p.platform);
-        const monthLabel = new Date(month + '-02').toLocaleString('default', { month: 'short', year: '2-digit' });
-        platformStats?.[monthLabel]?.totalUsers.forEach(u => totalUserSet.add(u));
-        platformStats?.[monthLabel]?.activeUsers.forEach(u => activeUserSet.add(u));
-      })
-    })
-
-
     return {
       reportData: reportDataSorted,
       sortedMonths: sortedMonthLabels,
       totalRow: grandTotalRow,
       chartData: chartDataFormatted,
       platformKeys: allPlatformKeys,
-      totalUsers: totalUserSet.size,
-      activeUsers: activeUserSet.size
     };
   }, [monthlyData]);
 
@@ -193,7 +178,6 @@ export default function JiraAssistantAdoptionPage() {
       '#82ca9d',
       '#ffc658',
   ];
-
 
   return (
     <div className="flex min-h-screen w-full flex-col">
@@ -208,6 +192,41 @@ export default function JiraAssistantAdoptionPage() {
             </Button>
         </div>
         <div className="space-y-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>User Adoption Trend</CardTitle>
+                        <CardDescription>Month-on-month adoption percentage.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <ChartContainer config={{}} className="h-[400px] w-full">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                                    <CartesianGrid strokeDasharray="3 3" />
+                                    <XAxis dataKey="name" />
+                                    <YAxis label={{ value: 'Adoption %', angle: -90, position: 'insideLeft' }} domain={[0, 100]}/>
+                                    <Tooltip content={<ChartTooltipContent />} />
+                                    <ChartLegend />
+                                    <Line type="monotone" dataKey="Total" stroke="#ff7300" strokeWidth={3} name="Total Adoption" dot={false} />
+                                    {platformKeys.map((key, index) => (
+                                        <Line 
+                                            key={key} 
+                                            type="monotone" 
+                                            dataKey={key} 
+                                            stroke={chartColors[index % chartColors.length]} 
+                                            strokeWidth={2}
+                                            name={key}
+                                            dot={false}
+                                        />
+                                    ))}
+                                </LineChart>
+                            </ResponsiveContainer>
+                        </ChartContainer>
+                    </CardContent>
+                </Card>
+                <div />
+            </div>
+
             <Card>
                 <CardHeader>
                     <CardTitle>User Adoption</CardTitle>
@@ -215,7 +234,7 @@ export default function JiraAssistantAdoptionPage() {
                         Month-on-month user adoption of Jira Assistant, broken down by platform.
                     </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-6">
+                <CardContent>
                     {isLoading && (
                     <div className="flex items-center justify-center p-8">
                         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -229,97 +248,60 @@ export default function JiraAssistantAdoptionPage() {
                     )}
 
                     {!isLoading && monthlyData && Object.keys(monthlyData).length > 0 && (
-                        <div className="space-y-8">
-                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-                                <Card>
-                                    <CardHeader>
-                                        <CardTitle>User Adoption Trend</CardTitle>
-                                        <CardDescription>Month-on-month adoption percentage.</CardDescription>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <ChartContainer config={{}} className="h-[400px] w-full">
-                                            <ResponsiveContainer width="100%" height="100%">
-                                                <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                                                    <CartesianGrid strokeDasharray="3 3" />
-                                                    <XAxis dataKey="name" />
-                                                    <YAxis label={{ value: 'Adoption %', angle: -90, position: 'insideLeft' }} domain={[0, 100]}/>
-                                                    <Tooltip content={<ChartTooltipContent />} />
-                                                    <ChartLegend />
-                                                    <Line type="monotone" dataKey="Total" stroke="#ff7300" strokeWidth={3} name="Total Adoption" dot={false} />
-                                                    {platformKeys.map((key, index) => (
-                                                        <Line 
-                                                            key={key} 
-                                                            type="monotone" 
-                                                            dataKey={key} 
-                                                            stroke={chartColors[index % chartColors.length]} 
-                                                            strokeWidth={2}
-                                                            name={key}
-                                                            dot={false}
-                                                        />
-                                                    ))}
-                                                </LineChart>
-                                            </ResponsiveContainer>
-                                        </ChartContainer>
-                                    </CardContent>
-                                </Card>
-                                <div />
-                             </div>
-
-                            <div className="border rounded-lg overflow-x-auto">
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead className="min-w-[150px] sticky left-0 bg-secondary" rowSpan={2}>Platform</TableHead>
-                                            {sortedMonths.map(month => (
-                                                <TableHead key={month} className="text-center min-w-[300px] border-l" colSpan={3}>
-                                                    {month}
-                                                </TableHead>
-                                            ))}
-                                        </TableRow>
-                                         <TableRow>
-                                            {sortedMonths.map(month => (
-                                                <React.Fragment key={`${month}-sub`}>
-                                                    <TableHead className="text-right border-l">Total Users</TableHead>
-                                                    <TableHead className="text-right">Active Users</TableHead>
-                                                    <TableHead className="text-right">Adoption %</TableHead>
-                                                </React.Fragment>
-                                            ))}
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {reportData.map((item) => (
-                                            <TableRow key={item.platform}>
-                                                <TableCell className="font-medium sticky left-0 bg-background">{item.platform}</TableCell>
-                                                {sortedMonths.map(month => {
-                                                    const monthData = item.monthlyData[month];
-                                                    return (
-                                                       <React.Fragment key={`${item.platform}-${month}`}>
-                                                            <TableCell className="text-right border-l">{monthData?.totalUsers ?? 'N/A'}</TableCell>
-                                                            <TableCell className="text-right">{monthData?.activeUsers ?? 'N/A'}</TableCell>
-                                                            <TableCell className="text-right">{monthData?.adoption !== undefined ? `${monthData.adoption.toFixed(2)}%` : 'N/A'}</TableCell>
-                                                       </React.Fragment>
-                                                    )
-                                                })}
-                                            </TableRow>
+                        <div className="border rounded-lg overflow-x-auto">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead className="min-w-[150px] sticky left-0 bg-secondary" rowSpan={2}>Platform</TableHead>
+                                        {sortedMonths.map(month => (
+                                            <TableHead key={month} className="text-center min-w-[300px] border-l" colSpan={3}>
+                                                {month}
+                                            </TableHead>
                                         ))}
-                                        {totalRow && (
-                                            <TableRow className="font-bold bg-secondary hover:bg-secondary/80">
-                                                <TableCell className="sticky left-0 bg-secondary">{totalRow.platform}</TableCell>
-                                                {sortedMonths.map(month => {
-                                                    const monthData = totalRow.monthlyData[month];
-                                                    return (
-                                                       <React.Fragment key={`total-${month}`}>
-                                                            <TableCell className="text-right border-l">{monthData?.totalUsers ?? 'N/A'}</TableCell>
-                                                            <TableCell className="text-right">{monthData?.activeUsers ?? 'N/A'}</TableCell>
-                                                            <TableCell className="text-right">{monthData?.adoption !== undefined ? `${monthData.adoption.toFixed(2)}%` : 'N/A'}</TableCell>
-                                                       </React.Fragment>
-                                                    )
-                                                })}
-                                            </TableRow>
-                                        )}
-                                    </TableBody>
-                                </Table>
-                            </div>
+                                    </TableRow>
+                                     <TableRow>
+                                        {sortedMonths.map(month => (
+                                            <React.Fragment key={`${month}-sub`}>
+                                                <TableHead className="text-right border-l">Total Users</TableHead>
+                                                <TableHead className="text-right">Active Users</TableHead>
+                                                <TableHead className="text-right">Adoption %</TableHead>
+                                            </React.Fragment>
+                                        ))}
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {reportData.map((item) => (
+                                        <TableRow key={item.platform}>
+                                            <TableCell className="font-medium sticky left-0 bg-background">{item.platform}</TableCell>
+                                            {sortedMonths.map(month => {
+                                                const monthData = item.monthlyData[month];
+                                                return (
+                                                   <React.Fragment key={`${item.platform}-${month}`}>
+                                                        <TableCell className="text-right border-l">{monthData?.totalUsers ?? 'N/A'}</TableCell>
+                                                        <TableCell className="text-right">{monthData?.activeUsers ?? 'N/A'}</TableCell>
+                                                        <TableCell className="text-right">{monthData?.adoption !== undefined ? `${monthData.adoption.toFixed(2)}%` : 'N/A'}</TableCell>
+                                                   </React.Fragment>
+                                                )
+                                            })}
+                                        </TableRow>
+                                    ))}
+                                    {totalRow && (
+                                        <TableRow className="font-bold bg-secondary hover:bg-secondary/80">
+                                            <TableCell className="sticky left-0 bg-secondary">{totalRow.platform}</TableCell>
+                                            {sortedMonths.map(month => {
+                                                const monthData = totalRow.monthlyData[month];
+                                                return (
+                                                   <React.Fragment key={`total-${month}`}>
+                                                        <TableCell className="text-right border-l">{monthData?.totalUsers ?? 'N/A'}</TableCell>
+                                                        <TableCell className="text-right">{monthData?.activeUsers ?? 'N/A'}</TableCell>
+                                                        <TableCell className="text-right">{monthData?.adoption !== undefined ? `${monthData.adoption.toFixed(2)}%` : 'N/A'}</TableCell>
+                                                   </React.Fragment>
+                                                )
+                                            })}
+                                        </TableRow>
+                                    )}
+                                </TableBody>
+                            </Table>
                         </div>
                     )}
                 </CardContent>
