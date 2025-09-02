@@ -1,6 +1,5 @@
 import { Header } from "@/components/layout/header";
 import { getPillars, getPillarStatus } from "@/lib/data";
-import { ExecutiveSummary } from "@/components/dashboard/executive-summary";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PillarCard } from "@/components/dashboard/pillar-card";
@@ -29,14 +28,7 @@ export default async function Home() {
 
   return (
     <div className="flex min-h-screen w-full flex-col">
-      <Header>
-        <Suspense fallback={<Skeleton className="h-9 w-48" />}>
-          <ExecutiveSummary
-            pillarStatuses={allPillarStatuses}
-            subItemStatuses={allSubItemStatuses}
-          />
-        </Suspense>
-      </Header>
+      <Header />
       <main className="flex-1 p-4 md:p-8">
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {pillars.map((pillar: Pillar) => (
