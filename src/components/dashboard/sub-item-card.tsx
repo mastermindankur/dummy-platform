@@ -23,6 +23,7 @@ type Props = {
 
 export function SubItemCard({ item, pillarName }: Props) {
   const isExploreResiliency = item.id === "explore-resiliency-program";
+  const isBlogsOpenSource = item.id === "blogs-open-source";
 
   return (
     <Card className="flex flex-col">
@@ -40,7 +41,7 @@ export function SubItemCard({ item, pillarName }: Props) {
       <CardFooter className="flex justify-between items-center">
         <StatusIndicator status={item.status} />
         <div className="flex items-center gap-2">
-          {item.status !== "Green" && !isExploreResiliency && (
+          {item.status !== "Green" && !isExploreResiliency && !isBlogsOpenSource && (
               <Suspense fallback={<Skeleton className="h-8 w-36" />}>
                   <RootCauseAnalysis subItem={item} pillarName={pillarName} />
               </Suspense>
@@ -52,6 +53,14 @@ export function SubItemCard({ item, pillarName }: Props) {
                     <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
              </Button>
+          )}
+          {isBlogsOpenSource && (
+            <Button asChild variant="outline" size="sm">
+              <Link href="/pillar/adopting-emerging-technologies/blogs-and-open-source">
+                View Details
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
           )}
         </div>
       </CardFooter>
