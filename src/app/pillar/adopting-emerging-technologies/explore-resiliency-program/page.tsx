@@ -240,6 +240,7 @@ export default function ExploreResiliencyProgramPage() {
                     <Table>
                       <TableHeader>
                         <TableRow>
+                          <TableHead>S.No.</TableHead>
                           {excelData.headers.map((header) => (
                             <TableHead key={header}>{header}</TableHead>
                           ))}
@@ -248,6 +249,7 @@ export default function ExploreResiliencyProgramPage() {
                       <TableBody>
                         {excelData.rows.map((row, rowIndex) => (
                           <TableRow key={rowIndex}>
+                            <TableCell>{rowIndex + 1}</TableCell>
                             {excelData.headers.map((header) => (
                               <TableCell key={header}>
                                 {String(row[header] ?? '')}
@@ -267,5 +269,3 @@ export default function ExploreResiliencyProgramPage() {
     </div>
   );
 }
-
-    
