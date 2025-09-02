@@ -29,7 +29,6 @@ pnpm-debug.log*
 next-env.d.ts
 
 # data files
-src/lib/data.json
 src/lib/dti-tech-blogs.json
 src/lib/explore-resiliency-program.json
 src/lib/tech-sphere-sessions.json
