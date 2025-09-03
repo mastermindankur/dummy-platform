@@ -6,7 +6,7 @@ import {
   Cpu,
   Landmark,
 } from "lucide-react";
-import type { Pillar, Status, SubItem, ExcelData, MonthlyExcelData } from "@/types";
+import type { Pillar, SubItem, ExcelData, MonthlyExcelData } from "@/types";
 import { promises as fs } from 'fs';
 import path from 'path';
 
@@ -32,17 +32,14 @@ async function readData(): Promise<Pillar[]> {
     const techSessionsData = await readExcelData('tech-sphere-sessions');
     if (techSessionsData && techSessionsData.rows.length > 0) {
       const totalParticipants = techSessionsData.rows.reduce((sum, row) => sum + (Number(row['Participation']) || 0), 0);
-      jsonData = jsonData.map(pillar => {
-        if (pillar.id === 'adopting-emerging-technologies') {
-          pillar.subItems = pillar.subItems.map(subItem => {
-            if (subItem.id === 'tech-sphere-sessions') {
-              return { ...subItem, totalParticipants };
-            }
-            return subItem;
-          });
-        }
-        return pillar;
-      });
+      jsonData = jsonData.map(pillar => ({
+        ...pillar,
+        subItems: pillar.subItems.map(subItem => 
+            subItem.dataKey === 'tech-sphere-sessions' 
+            ? { ...subItem, totalParticipants } 
+            : subItem
+        ),
+      }));
     }
 
     // Attach total participants and session count for ARC trainings
@@ -50,119 +47,98 @@ async function readData(): Promise<Pillar[]> {
     if (arcTrainingsData && arcTrainingsData.rows.length > 0) {
         const totalParticipants = arcTrainingsData.rows.reduce((sum, row) => sum + (Number(row['Participation']) || 0), 0);
         const sessionsCount = arcTrainingsData.rows.length;
-        jsonData = jsonData.map(pillar => {
-            if (pillar.id === 'making-design-resilient') {
-                pillar.subItems = pillar.subItems.map(subItem => {
-                    if (subItem.id === 'arc-trainings') {
-                        return { ...subItem, totalParticipants, percentageComplete: sessionsCount };
-                    }
-                    return subItem;
-                });
-            }
-            return pillar;
-        });
+        jsonData = jsonData.map(pillar => ({
+            ...pillar,
+            subItems: pillar.subItems.map(subItem => 
+                subItem.dataKey === 'arc-trainings' 
+                ? { ...subItem, totalParticipants, percentageComplete: sessionsCount } 
+                : subItem
+            ),
+        }));
     }
 
     // Attach App Sherpas count
     const appSherpasData = await readExcelData('app-sherpas');
     if (appSherpasData && appSherpasData.rows.length > 0) {
         const sherpasCount = appSherpasData.rows.length;
-        jsonData = jsonData.map(pillar => {
-            if (pillar.id === 'making-design-resilient') {
-                pillar.subItems = pillar.subItems.map(subItem => {
-                    if (subItem.id === 'app-sherpas') {
-                        return { ...subItem, percentageComplete: sherpasCount };
-                    }
-                    return subItem;
-                });
-            }
-            return pillar;
-        });
+        jsonData = jsonData.map(pillar => ({
+            ...pillar,
+            subItems: pillar.subItems.map(subItem => 
+                subItem.dataKey === 'app-sherpas' 
+                ? { ...subItem, percentageComplete: sherpasCount } 
+                : subItem
+            ),
+        }));
     }
     
     // Attach completed assessment count for Explore Resiliency Program
     const resiliencyData = await readExcelData('explore-resiliency-program');
     if (resiliencyData && resiliencyData.rows.length > 0) {
         const completedAssessments = resiliencyData.rows.filter(row => row['Status'] === 'Assessment Completed').length;
-        jsonData = jsonData.map(pillar => {
-            if (pillar.id === 'adopting-emerging-technologies') {
-                pillar.subItems = pillar.subItems.map(subItem => {
-                    if (subItem.id === 'explore-resiliency-program') {
-                        return { ...subItem, percentageComplete: completedAssessments };
-                    }
-                    return subItem;
-                })
-            }
-            return pillar;
-        });
+        jsonData = jsonData.map(pillar => ({
+            ...pillar,
+            subItems: pillar.subItems.map(subItem => 
+                subItem.dataKey === 'explore-resiliency-program' 
+                ? { ...subItem, percentageComplete: completedAssessments } 
+                : subItem
+            ),
+        }));
     }
 
     // Attach published blogs count for DTI Tech Blogs
     const blogsData = await readExcelData('dti-tech-blogs');
     if (blogsData) { // Check if blogsData is not null
         const publishedBlogs = blogsData.rows.length;
-        jsonData = jsonData.map(pillar => {
-            if (pillar.id === 'adopting-emerging-technologies') {
-                pillar.subItems = pillar.subItems.map(subItem => {
-                    if (subItem.id === 'blogs-open-source') {
-                        return { ...subItem, percentageComplete: publishedBlogs };
-                    }
-                    return subItem;
-                })
-            }
-            return pillar;
-        });
+        jsonData = jsonData.map(pillar => ({
+            ...pillar,
+            subItems: pillar.subItems.map(subItem => 
+                subItem.dataKey === 'blogs-open-source' 
+                ? { ...subItem, percentageComplete: publishedBlogs } 
+                : subItem
+            ),
+        }));
     }
 
     // Attach hackathons count
     const hackathonsData = await readExcelData('hackathons');
     if (hackathonsData && hackathonsData.rows.length > 0) {
         const hackathonsCount = hackathonsData.rows.length;
-        jsonData = jsonData.map(pillar => {
-            if (pillar.id === 'adopting-emerging-technologies') {
-                pillar.subItems = pillar.subItems.map(subItem => {
-                    if (subItem.id === 'hackathons') {
-                        return { ...subItem, percentageComplete: hackathonsCount };
-                    }
-                    return subItem;
-                })
-            }
-            return pillar;
-        });
+        jsonData = jsonData.map(pillar => ({
+            ...pillar,
+            subItems: pillar.subItems.map(subItem => 
+                subItem.dataKey === 'hackathons' 
+                ? { ...subItem, percentageComplete: hackathonsCount } 
+                : subItem
+            ),
+        }));
     }
 
      // Attach industry events count
     const industryEventsData = await readExcelData('industry-events');
     if (industryEventsData && industryEventsData.rows.length > 0) {
         const industryEventsCount = industryEventsData.rows.length;
-        jsonData = jsonData.map(pillar => {
-            if (pillar.id === 'adopting-emerging-technologies') {
-                pillar.subItems = pillar.subItems.map(subItem => {
-                    if (subItem.id === 'industry-events') {
-                        return { ...subItem, percentageComplete: industryEventsCount };
-                    }
-                    return subItem;
-                })
-            }
-            return pillar;
-        });
+        jsonData = jsonData.map(pillar => ({
+            ...pillar,
+            subItems: pillar.subItems.map(subItem => 
+                subItem.dataKey === 'industry-events' 
+                ? { ...subItem, percentageComplete: industryEventsCount } 
+                : subItem
+            ),
+        }));
     }
     
     // Attach SQUAD onboarding count
     const squadData = await readExcelData('squad-onboarding');
     if (squadData && squadData.rows.length > 0) {
         const onboardedCount = squadData.rows.length;
-        jsonData = jsonData.map(pillar => {
-            if (pillar.id === 'making-design-resilient') {
-                pillar.subItems = pillar.subItems.map(subItem => {
-                    if (subItem.id === 'system-scalability') {
-                        return { ...subItem, percentageComplete: onboardedCount };
-                    }
-                    return subItem;
-                })
-            }
-            return pillar;
-        });
+        jsonData = jsonData.map(pillar => ({
+            ...pillar,
+            subItems: pillar.subItems.map(subItem => 
+                subItem.dataKey === 'squad-onboarding' 
+                ? { ...subItem, percentageComplete: onboardedCount } 
+                : subItem
+            ),
+        }));
     }
 
     // Attach Jira Assistant Adoption data
@@ -171,17 +147,14 @@ async function readData(): Promise<Pillar[]> {
         const allRows = Object.values(jiraAdoptionData).flatMap(monthData => monthData.rows);
         const uniqueUsers = new Set(allRows.map(row => row['User ID'])).size;
 
-        jsonData = jsonData.map(pillar => {
-            if (pillar.id === 'making-design-resilient') {
-                pillar.subItems = pillar.subItems.map(subItem => {
-                    if (subItem.id === 'jira-assistant-adoption') {
-                        return { ...subItem, percentageComplete: uniqueUsers };
-                    }
-                    return subItem;
-                });
-            }
-            return pillar;
-        });
+        jsonData = jsonData.map(pillar => ({
+            ...pillar,
+            subItems: pillar.subItems.map(subItem => 
+                subItem.dataKey === 'jira-assistant-adoption' 
+                ? { ...subItem, percentageComplete: uniqueUsers } 
+                : subItem
+            ),
+        }));
     }
 
 

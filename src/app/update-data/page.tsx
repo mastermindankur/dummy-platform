@@ -19,7 +19,7 @@ import { toast } from '@/hooks/use-toast';
 import type { Pillar, SubItem, Status, ExcelData } from '@/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Loader2, Plus, Trash2, Upload, Trophy, ArrowRight } from 'lucide-react';
+import { Loader2, Plus, Trash2, Upload, ArrowRight } from 'lucide-react';
 import { processExcelFile } from '@/lib/excel-utils';
 import Link from 'next/link';
 
@@ -237,7 +237,8 @@ export default function UpdateDataPage() {
       percentageComplete: 0,
       annualTarget: 100,
       metricName: 'YTD Progress',
-      metricUnit: '%'
+      metricUnit: '%',
+      dataKey: '',
     };
     newData[pillarIndex].subItems.push(newSubItem);
     setData(newData);
@@ -359,16 +360,7 @@ export default function UpdateDataPage() {
                                     <h4 className="text-xl font-semibold mb-4">Sub-Items</h4>
                                     <div className="space-y-4">
                                     {pillar.subItems.map((item, sIndex) => {
-                                      const isAutoCalculated = [
-                                        'explore-resiliency-program', 
-                                        'blogs-open-source', 
-                                        'hackathons', 
-                                        'industry-events',
-                                        'system-scalability',
-                                        'arc-trainings',
-                                        'app-sherpas',
-                                        'jira-assistant-adoption'
-                                      ].includes(item.id);
+                                      const isAutoCalculated = !!item.dataKey;
 
                                       return (
                                         <div key={item.id} className="border rounded-md p-4 bg-secondary/50 relative">
@@ -420,7 +412,7 @@ export default function UpdateDataPage() {
                                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                                               <div>
                                                   <Label htmlFor={`item-progress-${pIndex}-${sIndex}`}>
-                                                    Current Value {isAutoCalculated && '(Auto-calculated)'}
+                                                    Current Value {isAutoCalculated && '(Auto)'}
                                                   </Label>
                                                   <Input
                                                   id={`item-progress-${pIndex}-${sIndex}`}
@@ -456,22 +448,38 @@ export default function UpdateDataPage() {
                                                   />
                                               </div>
                                             </div>
-                                            <div className="mt-4">
-                                            <Label htmlFor={`item-desc-${pIndex}-${sIndex}`}>
-                                                Description
-                                            </Label>
-                                            <Textarea
-                                                id={`item-desc-${pIndex}-${sIndex}`}
-                                                value={item.description}
-                                                onChange={(e) =>
-                                                handleSubItemChange(
-                                                    pIndex,
-                                                    sIndex,
-                                                    'description',
-                                                    e.target.value
-                                                )
-                                                }
-                                            />
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                                                <div>
+                                                  <Label htmlFor={`item-desc-${pIndex}-${sIndex}`}>
+                                                      Description
+                                                  </Label>
+                                                  <Textarea
+                                                      id={`item-desc-${pIndex}-${sIndex}`}
+                                                      value={item.description}
+                                                      onChange={(e) =>
+                                                      handleSubItemChange(
+                                                          pIndex,
+                                                          sIndex,
+                                                          'description',
+                                                          e.target.value
+                                                      )
+                                                      }
+                                                  />
+                                                </div>
+                                                <div>
+                                                    <Label htmlFor={`item-datakey-${pIndex}-${sIndex}`}>Data Key (for auto-calculation)</Label>
+                                                    <Input
+                                                        id={`item-datakey-${pIndex}-${sIndex}`}
+                                                        value={item.dataKey || ''}
+                                                        placeholder="e.g., dti-tech-blogs"
+                                                        onChange={(e) =>
+                                                            handleSubItemChange(pIndex, sIndex, 'dataKey', e.target.value)
+                                                        }
+                                                    />
+                                                    <p className="text-xs text-muted-foreground mt-1">
+                                                        Stable key that links this item to an Excel upload type.
+                                                    </p>
+                                                </div>
                                             </div>
                                             <div className="absolute top-4 right-4">
                                                 <Button variant="destructive" size="icon" onClick={() => removeSubItem(pIndex, sIndex)}>

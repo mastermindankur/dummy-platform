@@ -544,6 +544,10 @@ body {
   margin-top: 1.5rem;
 }
 
+.mt-1 {
+  margin-top: .25rem;
+}
+
 .line-clamp-2 {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;

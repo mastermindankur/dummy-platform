@@ -290,175 +290,112 @@ async function readData() {
         const techSessionsData = await readExcelData('tech-sphere-sessions');
         if (techSessionsData && techSessionsData.rows.length > 0) {
             const totalParticipants = techSessionsData.rows.reduce((sum, row)=>sum + (Number(row['Participation']) || 0), 0);
-            jsonData = jsonData.map((pillar)=>{
-                if (pillar.id === 'adopting-emerging-technologies') {
-                    pillar.subItems = pillar.subItems.map((subItem)=>{
-                        if (subItem.id === 'tech-sphere-sessions') {
-                            return {
-                                ...subItem,
-                                totalParticipants
-                            };
-                        }
-                        return subItem;
-                    });
-                }
-                return pillar;
-            });
+            jsonData = jsonData.map((pillar)=>({
+                    ...pillar,
+                    subItems: pillar.subItems.map((subItem)=>subItem.dataKey === 'tech-sphere-sessions' ? {
+                            ...subItem,
+                            totalParticipants
+                        } : subItem)
+                }));
         }
         // Attach total participants and session count for ARC trainings
         const arcTrainingsData = await readExcelData('arc-trainings');
         if (arcTrainingsData && arcTrainingsData.rows.length > 0) {
             const totalParticipants = arcTrainingsData.rows.reduce((sum, row)=>sum + (Number(row['Participation']) || 0), 0);
             const sessionsCount = arcTrainingsData.rows.length;
-            jsonData = jsonData.map((pillar)=>{
-                if (pillar.id === 'making-design-resilient') {
-                    pillar.subItems = pillar.subItems.map((subItem)=>{
-                        if (subItem.id === 'arc-trainings') {
-                            return {
-                                ...subItem,
-                                totalParticipants,
-                                percentageComplete: sessionsCount
-                            };
-                        }
-                        return subItem;
-                    });
-                }
-                return pillar;
-            });
+            jsonData = jsonData.map((pillar)=>({
+                    ...pillar,
+                    subItems: pillar.subItems.map((subItem)=>subItem.dataKey === 'arc-trainings' ? {
+                            ...subItem,
+                            totalParticipants,
+                            percentageComplete: sessionsCount
+                        } : subItem)
+                }));
         }
         // Attach App Sherpas count
         const appSherpasData = await readExcelData('app-sherpas');
         if (appSherpasData && appSherpasData.rows.length > 0) {
             const sherpasCount = appSherpasData.rows.length;
-            jsonData = jsonData.map((pillar)=>{
-                if (pillar.id === 'making-design-resilient') {
-                    pillar.subItems = pillar.subItems.map((subItem)=>{
-                        if (subItem.id === 'app-sherpas') {
-                            return {
-                                ...subItem,
-                                percentageComplete: sherpasCount
-                            };
-                        }
-                        return subItem;
-                    });
-                }
-                return pillar;
-            });
+            jsonData = jsonData.map((pillar)=>({
+                    ...pillar,
+                    subItems: pillar.subItems.map((subItem)=>subItem.dataKey === 'app-sherpas' ? {
+                            ...subItem,
+                            percentageComplete: sherpasCount
+                        } : subItem)
+                }));
         }
         // Attach completed assessment count for Explore Resiliency Program
         const resiliencyData = await readExcelData('explore-resiliency-program');
         if (resiliencyData && resiliencyData.rows.length > 0) {
             const completedAssessments = resiliencyData.rows.filter((row)=>row['Status'] === 'Assessment Completed').length;
-            jsonData = jsonData.map((pillar)=>{
-                if (pillar.id === 'adopting-emerging-technologies') {
-                    pillar.subItems = pillar.subItems.map((subItem)=>{
-                        if (subItem.id === 'explore-resiliency-program') {
-                            return {
-                                ...subItem,
-                                percentageComplete: completedAssessments
-                            };
-                        }
-                        return subItem;
-                    });
-                }
-                return pillar;
-            });
+            jsonData = jsonData.map((pillar)=>({
+                    ...pillar,
+                    subItems: pillar.subItems.map((subItem)=>subItem.dataKey === 'explore-resiliency-program' ? {
+                            ...subItem,
+                            percentageComplete: completedAssessments
+                        } : subItem)
+                }));
         }
         // Attach published blogs count for DTI Tech Blogs
         const blogsData = await readExcelData('dti-tech-blogs');
         if (blogsData) {
             const publishedBlogs = blogsData.rows.length;
-            jsonData = jsonData.map((pillar)=>{
-                if (pillar.id === 'adopting-emerging-technologies') {
-                    pillar.subItems = pillar.subItems.map((subItem)=>{
-                        if (subItem.id === 'blogs-open-source') {
-                            return {
-                                ...subItem,
-                                percentageComplete: publishedBlogs
-                            };
-                        }
-                        return subItem;
-                    });
-                }
-                return pillar;
-            });
+            jsonData = jsonData.map((pillar)=>({
+                    ...pillar,
+                    subItems: pillar.subItems.map((subItem)=>subItem.dataKey === 'blogs-open-source' ? {
+                            ...subItem,
+                            percentageComplete: publishedBlogs
+                        } : subItem)
+                }));
         }
         // Attach hackathons count
         const hackathonsData = await readExcelData('hackathons');
         if (hackathonsData && hackathonsData.rows.length > 0) {
             const hackathonsCount = hackathonsData.rows.length;
-            jsonData = jsonData.map((pillar)=>{
-                if (pillar.id === 'adopting-emerging-technologies') {
-                    pillar.subItems = pillar.subItems.map((subItem)=>{
-                        if (subItem.id === 'hackathons') {
-                            return {
-                                ...subItem,
-                                percentageComplete: hackathonsCount
-                            };
-                        }
-                        return subItem;
-                    });
-                }
-                return pillar;
-            });
+            jsonData = jsonData.map((pillar)=>({
+                    ...pillar,
+                    subItems: pillar.subItems.map((subItem)=>subItem.dataKey === 'hackathons' ? {
+                            ...subItem,
+                            percentageComplete: hackathonsCount
+                        } : subItem)
+                }));
         }
         // Attach industry events count
         const industryEventsData = await readExcelData('industry-events');
         if (industryEventsData && industryEventsData.rows.length > 0) {
             const industryEventsCount = industryEventsData.rows.length;
-            jsonData = jsonData.map((pillar)=>{
-                if (pillar.id === 'adopting-emerging-technologies') {
-                    pillar.subItems = pillar.subItems.map((subItem)=>{
-                        if (subItem.id === 'industry-events') {
-                            return {
-                                ...subItem,
-                                percentageComplete: industryEventsCount
-                            };
-                        }
-                        return subItem;
-                    });
-                }
-                return pillar;
-            });
+            jsonData = jsonData.map((pillar)=>({
+                    ...pillar,
+                    subItems: pillar.subItems.map((subItem)=>subItem.dataKey === 'industry-events' ? {
+                            ...subItem,
+                            percentageComplete: industryEventsCount
+                        } : subItem)
+                }));
         }
         // Attach SQUAD onboarding count
         const squadData = await readExcelData('squad-onboarding');
         if (squadData && squadData.rows.length > 0) {
             const onboardedCount = squadData.rows.length;
-            jsonData = jsonData.map((pillar)=>{
-                if (pillar.id === 'making-design-resilient') {
-                    pillar.subItems = pillar.subItems.map((subItem)=>{
-                        if (subItem.id === 'system-scalability') {
-                            return {
-                                ...subItem,
-                                percentageComplete: onboardedCount
-                            };
-                        }
-                        return subItem;
-                    });
-                }
-                return pillar;
-            });
+            jsonData = jsonData.map((pillar)=>({
+                    ...pillar,
+                    subItems: pillar.subItems.map((subItem)=>subItem.dataKey === 'squad-onboarding' ? {
+                            ...subItem,
+                            percentageComplete: onboardedCount
+                        } : subItem)
+                }));
         }
         // Attach Jira Assistant Adoption data
         const jiraAdoptionData = await readMonthlyData('jira-assistant-adoption');
         if (jiraAdoptionData && Object.keys(jiraAdoptionData).length > 0) {
             const allRows = Object.values(jiraAdoptionData).flatMap((monthData)=>monthData.rows);
             const uniqueUsers = new Set(allRows.map((row)=>row['User ID'])).size;
-            jsonData = jsonData.map((pillar)=>{
-                if (pillar.id === 'making-design-resilient') {
-                    pillar.subItems = pillar.subItems.map((subItem)=>{
-                        if (subItem.id === 'jira-assistant-adoption') {
-                            return {
-                                ...subItem,
-                                percentageComplete: uniqueUsers
-                            };
-                        }
-                        return subItem;
-                    });
-                }
-                return pillar;
-            });
+            jsonData = jsonData.map((pillar)=>({
+                    ...pillar,
+                    subItems: pillar.subItems.map((subItem)=>subItem.dataKey === 'jira-assistant-adoption' ? {
+                            ...subItem,
+                            percentageComplete: uniqueUsers
+                        } : subItem)
+                }));
         }
         // Attach icons back to the data
         return jsonData.map((pillar)=>({
@@ -895,17 +832,21 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$re
 ;
 ;
 ;
+// Mapping dataKey to its corresponding details page path
+const detailPageLinks = {
+    "explore-resiliency-program": "/pillar/adopting-emerging-technologies/explore-resiliency-program",
+    "blogs-open-source": "/pillar/adopting-emerging-technologies/blogs-and-open-source",
+    "tech-sphere-sessions": "/pillar/adopting-emerging-technologies/tech-sphere-sessions",
+    "hackathons": "/pillar/adopting-emerging-technologies/hackathons",
+    "industry-events": "/pillar/adopting-emerging-technologies/industry-events",
+    "squad-onboarding": "/pillar/making-design-resilient/squad-onboarding",
+    "arc-trainings": "/pillar/making-design-resilient/arc-trainings",
+    "app-sherpas": "/pillar/making-design-resilient/app-sherpas",
+    "jira-assistant-adoption": "/pillar/making-design-resilient/jira-assistant-adoption"
+};
 function SubItemCard({ item, pillarName }) {
-    const isExploreResiliency = item.id === "explore-resiliency-program";
-    const isBlogsOpenSource = item.id === "blogs-open-source";
-    const isTechSphere = item.id === "tech-sphere-sessions";
-    const isHackathons = item.id === "hackathons";
-    const isIndustryEvents = item.id === "industry-events";
-    const isSquadOnboarding = item.id === 'system-scalability'; // Corrected ID
-    const isArcTrainings = item.id === 'arc-trainings';
-    const isAppSherpas = item.id === 'app-sherpas';
-    const isJiraAssistantAdoption = item.id === 'jira-assistant-adoption';
     const progressValue = item.annualTarget > 0 ? item.percentageComplete / item.annualTarget * 100 : 0;
+    const detailPagePath = item.dataKey ? detailPageLinks[item.dataKey] : null;
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["Card"], {
         className: "flex flex-col",
         children: [
@@ -916,7 +857,7 @@ function SubItemCard({ item, pillarName }) {
                         children: item.name
                     }, void 0, false, {
                         fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                        lineNumber: 38,
+                        lineNumber: 44,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["CardDescription"], {
@@ -924,13 +865,13 @@ function SubItemCard({ item, pillarName }) {
                         children: item.description
                     }, void 0, false, {
                         fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                        lineNumber: 39,
+                        lineNumber: 45,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                lineNumber: 37,
+                lineNumber: 43,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -944,7 +885,7 @@ function SubItemCard({ item, pillarName }) {
                                 children: item.metricName
                             }, void 0, false, {
                                 fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                                lineNumber: 43,
+                                lineNumber: 49,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -958,39 +899,6 @@ function SubItemCard({ item, pillarName }) {
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                                lineNumber: 44,
-                                columnNumber: 13
-                            }, this)
-                        ]
-                    }, void 0, true, {
-                        fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                        lineNumber: 42,
-                        columnNumber: 9
-                    }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$progress$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["Progress"], {
-                        value: progressValue,
-                        className: "h-2"
-                    }, void 0, false, {
-                        fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                        lineNumber: 46,
-                        columnNumber: 9
-                    }, this),
-                    isTechSphere && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "flex items-center justify-between mt-2",
-                        children: [
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                className: "text-sm font-medium",
-                                children: "Total Participants"
-                            }, void 0, false, {
-                                fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                                lineNumber: 49,
-                                columnNumber: 13
-                            }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                className: "text-sm font-bold",
-                                children: item.totalParticipants
-                            }, void 0, false, {
-                                fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
                                 lineNumber: 50,
                                 columnNumber: 13
                             }, this)
@@ -998,9 +906,17 @@ function SubItemCard({ item, pillarName }) {
                     }, void 0, true, {
                         fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
                         lineNumber: 48,
-                        columnNumber: 11
+                        columnNumber: 9
                     }, this),
-                    isArcTrainings && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$progress$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["Progress"], {
+                        value: progressValue,
+                        className: "h-2"
+                    }, void 0, false, {
+                        fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
+                        lineNumber: 52,
+                        columnNumber: 9
+                    }, this),
+                    item.dataKey === 'tech-sphere-sessions' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                         className: "flex items-center justify-between mt-2",
                         children: [
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1024,11 +940,36 @@ function SubItemCard({ item, pillarName }) {
                         fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
                         lineNumber: 54,
                         columnNumber: 11
+                    }, this),
+                    item.dataKey === 'arc-trainings' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "flex items-center justify-between mt-2",
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                className: "text-sm font-medium",
+                                children: "Total Participants"
+                            }, void 0, false, {
+                                fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
+                                lineNumber: 61,
+                                columnNumber: 13
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                className: "text-sm font-bold",
+                                children: item.totalParticipants
+                            }, void 0, false, {
+                                fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
+                                lineNumber: 62,
+                                columnNumber: 13
+                            }, this)
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
+                        lineNumber: 60,
+                        columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                lineNumber: 41,
+                lineNumber: 47,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["CardFooter"], {
@@ -1038,262 +979,52 @@ function SubItemCard({ item, pillarName }) {
                         status: item.status
                     }, void 0, false, {
                         fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                        lineNumber: 61,
+                        lineNumber: 67,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                         className: "flex items-center gap-2",
-                        children: [
-                            isSquadOnboarding && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["Button"], {
-                                asChild: true,
-                                variant: "outline",
-                                size: "sm",
-                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"], {
-                                    href: "/pillar/making-design-resilient/squad-onboarding",
-                                    children: [
-                                        "View Details",
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$arrow$2d$right$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__$3c$export__default__as__ArrowRight$3e$__["ArrowRight"], {
-                                            className: "ml-2 h-4 w-4"
-                                        }, void 0, false, {
-                                            fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                                            lineNumber: 67,
-                                            columnNumber: 21
-                                        }, this)
-                                    ]
-                                }, void 0, true, {
-                                    fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                                    lineNumber: 65,
-                                    columnNumber: 17
-                                }, this)
-                            }, void 0, false, {
+                        children: detailPagePath && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["Button"], {
+                            asChild: true,
+                            variant: "outline",
+                            size: "sm",
+                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"], {
+                                href: detailPagePath,
+                                children: [
+                                    "View Details",
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$arrow$2d$right$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__$3c$export__default__as__ArrowRight$3e$__["ArrowRight"], {
+                                        className: "ml-2 h-4 w-4"
+                                    }, void 0, false, {
+                                        fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
+                                        lineNumber: 73,
+                                        columnNumber: 17
+                                    }, this)
+                                ]
+                            }, void 0, true, {
                                 fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                                lineNumber: 64,
-                                columnNumber: 14
-                            }, this),
-                            isArcTrainings && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["Button"], {
-                                asChild: true,
-                                variant: "outline",
-                                size: "sm",
-                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"], {
-                                    href: "/pillar/making-design-resilient/arc-trainings",
-                                    children: [
-                                        "View Details",
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$arrow$2d$right$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__$3c$export__default__as__ArrowRight$3e$__["ArrowRight"], {
-                                            className: "ml-2 h-4 w-4"
-                                        }, void 0, false, {
-                                            fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                                            lineNumber: 75,
-                                            columnNumber: 21
-                                        }, this)
-                                    ]
-                                }, void 0, true, {
-                                    fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                                    lineNumber: 73,
-                                    columnNumber: 17
-                                }, this)
-                            }, void 0, false, {
-                                fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                                lineNumber: 72,
-                                columnNumber: 14
-                            }, this),
-                            isAppSherpas && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["Button"], {
-                                asChild: true,
-                                variant: "outline",
-                                size: "sm",
-                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"], {
-                                    href: "/pillar/making-design-resilient/app-sherpas",
-                                    children: [
-                                        "View Details",
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$arrow$2d$right$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__$3c$export__default__as__ArrowRight$3e$__["ArrowRight"], {
-                                            className: "ml-2 h-4 w-4"
-                                        }, void 0, false, {
-                                            fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                                            lineNumber: 83,
-                                            columnNumber: 21
-                                        }, this)
-                                    ]
-                                }, void 0, true, {
-                                    fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                                    lineNumber: 81,
-                                    columnNumber: 17
-                                }, this)
-                            }, void 0, false, {
-                                fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                                lineNumber: 80,
-                                columnNumber: 14
-                            }, this),
-                            isJiraAssistantAdoption && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["Button"], {
-                                asChild: true,
-                                variant: "outline",
-                                size: "sm",
-                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"], {
-                                    href: "/pillar/making-design-resilient/jira-assistant-adoption",
-                                    children: [
-                                        "View Details",
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$arrow$2d$right$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__$3c$export__default__as__ArrowRight$3e$__["ArrowRight"], {
-                                            className: "ml-2 h-4 w-4"
-                                        }, void 0, false, {
-                                            fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                                            lineNumber: 91,
-                                            columnNumber: 21
-                                        }, this)
-                                    ]
-                                }, void 0, true, {
-                                    fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                                    lineNumber: 89,
-                                    columnNumber: 17
-                                }, this)
-                            }, void 0, false, {
-                                fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                                lineNumber: 88,
-                                columnNumber: 14
-                            }, this),
-                            isExploreResiliency && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["Button"], {
-                                asChild: true,
-                                variant: "outline",
-                                size: "sm",
-                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"], {
-                                    href: "/pillar/adopting-emerging-technologies/explore-resiliency-program",
-                                    children: [
-                                        "View Details",
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$arrow$2d$right$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__$3c$export__default__as__ArrowRight$3e$__["ArrowRight"], {
-                                            className: "ml-2 h-4 w-4"
-                                        }, void 0, false, {
-                                            fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                                            lineNumber: 99,
-                                            columnNumber: 21
-                                        }, this)
-                                    ]
-                                }, void 0, true, {
-                                    fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                                    lineNumber: 97,
-                                    columnNumber: 17
-                                }, this)
-                            }, void 0, false, {
-                                fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                                lineNumber: 96,
-                                columnNumber: 14
-                            }, this),
-                            isBlogsOpenSource && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["Button"], {
-                                asChild: true,
-                                variant: "outline",
-                                size: "sm",
-                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"], {
-                                    href: "/pillar/adopting-emerging-technologies/blogs-and-open-source",
-                                    children: [
-                                        "View Details",
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$arrow$2d$right$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__$3c$export__default__as__ArrowRight$3e$__["ArrowRight"], {
-                                            className: "ml-2 h-4 w-4"
-                                        }, void 0, false, {
-                                            fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                                            lineNumber: 107,
-                                            columnNumber: 17
-                                        }, this)
-                                    ]
-                                }, void 0, true, {
-                                    fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                                    lineNumber: 105,
-                                    columnNumber: 15
-                                }, this)
-                            }, void 0, false, {
-                                fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                                lineNumber: 104,
-                                columnNumber: 13
-                            }, this),
-                            isTechSphere && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["Button"], {
-                                asChild: true,
-                                variant: "outline",
-                                size: "sm",
-                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"], {
-                                    href: "/pillar/adopting-emerging-technologies/tech-sphere-sessions",
-                                    children: [
-                                        "View Details",
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$arrow$2d$right$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__$3c$export__default__as__ArrowRight$3e$__["ArrowRight"], {
-                                            className: "ml-2 h-4 w-4"
-                                        }, void 0, false, {
-                                            fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                                            lineNumber: 115,
-                                            columnNumber: 17
-                                        }, this)
-                                    ]
-                                }, void 0, true, {
-                                    fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                                    lineNumber: 113,
-                                    columnNumber: 15
-                                }, this)
-                            }, void 0, false, {
-                                fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                                lineNumber: 112,
-                                columnNumber: 13
-                            }, this),
-                            isHackathons && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["Button"], {
-                                asChild: true,
-                                variant: "outline",
-                                size: "sm",
-                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"], {
-                                    href: "/pillar/adopting-emerging-technologies/hackathons",
-                                    children: [
-                                        "View Details",
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$arrow$2d$right$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__$3c$export__default__as__ArrowRight$3e$__["ArrowRight"], {
-                                            className: "ml-2 h-4 w-4"
-                                        }, void 0, false, {
-                                            fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                                            lineNumber: 123,
-                                            columnNumber: 21
-                                        }, this)
-                                    ]
-                                }, void 0, true, {
-                                    fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                                    lineNumber: 121,
-                                    columnNumber: 17
-                                }, this)
-                            }, void 0, false, {
-                                fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                                lineNumber: 120,
-                                columnNumber: 13
-                            }, this),
-                            isIndustryEvents && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["Button"], {
-                                asChild: true,
-                                variant: "outline",
-                                size: "sm",
-                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"], {
-                                    href: "/pillar/adopting-emerging-technologies/industry-events",
-                                    children: [
-                                        "View Details",
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$arrow$2d$right$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__$3c$export__default__as__ArrowRight$3e$__["ArrowRight"], {
-                                            className: "ml-2 h-4 w-4"
-                                        }, void 0, false, {
-                                            fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                                            lineNumber: 131,
-                                            columnNumber: 21
-                                        }, this)
-                                    ]
-                                }, void 0, true, {
-                                    fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                                    lineNumber: 129,
-                                    columnNumber: 17
-                                }, this)
-                            }, void 0, false, {
-                                fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                                lineNumber: 128,
-                                columnNumber: 13
+                                lineNumber: 71,
+                                columnNumber: 15
                             }, this)
-                        ]
-                    }, void 0, true, {
+                        }, void 0, false, {
+                            fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
+                            lineNumber: 70,
+                            columnNumber: 13
+                        }, this)
+                    }, void 0, false, {
                         fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                        lineNumber: 62,
+                        lineNumber: 68,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                lineNumber: 60,
+                lineNumber: 66,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-        lineNumber: 36,
+        lineNumber: 42,
         columnNumber: 5
     }, this);
 }

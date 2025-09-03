@@ -19,6 +19,7 @@ export type SubItem = {
   metricName: string;
   metricUnit: string;
   totalParticipants?: number;
+  dataKey?: string; // Stable key for data connections
 };
 
 export type Pillar = {
