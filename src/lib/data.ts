@@ -99,7 +99,7 @@ async function readData(): Promise<Pillar[]> {
 
     // Attach published blogs count for DTI Tech Blogs
     const blogsData = await readExcelData('dti-tech-blogs');
-    if (blogsData && blogsData.rows.length > 0) {
+    if (blogsData) { // Check if blogsData is not null
         const publishedBlogs = blogsData.rows.length;
         jsonData = jsonData.map(pillar => {
             if (pillar.id === 'adopting-emerging-technologies') {

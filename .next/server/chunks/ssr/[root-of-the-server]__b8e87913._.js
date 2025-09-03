@@ -366,7 +366,7 @@ async function readData() {
         }
         // Attach published blogs count for DTI Tech Blogs
         const blogsData = await readExcelData('dti-tech-blogs');
-        if (blogsData && blogsData.rows.length > 0) {
+        if (blogsData) {
             const publishedBlogs = blogsData.rows.length;
             jsonData = jsonData.map((pillar)=>{
                 if (pillar.id === 'adopting-emerging-technologies') {
