@@ -901,7 +901,7 @@ function SubItemCard({ item, pillarName }) {
     const isTechSphere = item.id === "tech-sphere-sessions";
     const isHackathons = item.id === "hackathons";
     const isIndustryEvents = item.id === "industry-events";
-    const isSquadOnboarding = item.id === 'system-scalability';
+    const isSquadOnboarding = item.id === 'system-scalability'; // Corrected ID
     const isArcTrainings = item.id === 'arc-trainings';
     const isAppSherpas = item.id === 'app-sherpas';
     const isJiraAssistantAdoption = item.id === 'jira-assistant-adoption';
