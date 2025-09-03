@@ -29,6 +29,7 @@ type Props = {
 }
  
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  await params; // Await params to resolve sync-dynamic-apis error
   const pillar = await getPillarById(params.id);
  
   return {
@@ -44,6 +45,7 @@ export async function generateStaticParams() {
   }
 
 export default async function PillarPage({ params }: { params: { id: string } }) {
+  await params; // Await params to resolve sync-dynamic-apis error
   const pillar = await getPillarById(params.id);
 
   if (!pillar) {

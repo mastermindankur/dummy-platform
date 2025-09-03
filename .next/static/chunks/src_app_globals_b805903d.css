@@ -548,10 +548,6 @@ body {
   margin-top: 1.5rem;
 }
 
-.ml-8 {
-  margin-left: 2rem;
-}
-
 .line-clamp-2 {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -1178,6 +1174,10 @@ body {
   border-bottom-width: 1px;
 }
 
+.border-b-0 {
+  border-bottom-width: 0;
+}
+
 .border-l {
   border-left-width: 1px;
 }
@@ -1188,10 +1188,6 @@ body {
 
 .border-t {
   border-top-width: 1px;
-}
-
-.border-b-0 {
-  border-bottom-width: 0;
 }
 
 .border-t-0 {
@@ -1259,6 +1255,10 @@ body {
   background-color: hsl(var(--background));
 }
 
+.bg-background\/50 {
+  background-color: hsl(var(--background) / .5);
+}
+
 .bg-background\/80 {
   background-color: hsl(var(--background) / .8);
 }
@@ -1317,10 +1317,6 @@ body {
   background-color: hsl(var(--secondary) / .3);
 }
 
-.bg-secondary\/50 {
-  background-color: hsl(var(--secondary) / .5);
-}
-
 .bg-sidebar {
   background-color: hsl(var(--sidebar-background));
 }
@@ -1331,10 +1327,6 @@ body {
 
 .bg-transparent {
   background-color: #0000;
-}
-
-.bg-background\/50 {
-  background-color: hsl(var(--background) / .5);
 }
 
 .fill-current {
@@ -1423,14 +1415,14 @@ body {
   padding-bottom: .5rem;
 }
 
-.py-4 {
-  padding-top: 1rem;
-  padding-bottom: 1rem;
-}
-
 .py-3 {
   padding-top: .75rem;
   padding-bottom: .75rem;
+}
+
+.py-4 {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
 }
 
 .pb-2 {
@@ -2025,6 +2017,10 @@ body {
   color: hsl(var(--accent-foreground));
 }
 
+.hover\:text-destructive:hover {
+  color: hsl(var(--destructive));
+}
+
 .hover\:text-foreground:hover {
   color: hsl(var(--foreground));
 }
@@ -2035,10 +2031,6 @@ body {
 
 .hover\:text-sidebar-accent-foreground:hover {
   color: hsl(var(--sidebar-accent-foreground));
-}
-
-.hover\:text-destructive:hover {
-  color: hsl(var(--destructive));
 }
 
 .hover\:underline:hover {
@@ -2571,7 +2563,7 @@ body {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
-.group[data-side="right"] .group-data-\[side\=right\]\:rotate-180, .group[data-state="open"] .group-data-\[state\=open\]\:rotate-180 {
+.group[data-side="right"] .group-data-\[side\=right\]\:rotate-180 {
   --tw-rotate: 180deg;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
