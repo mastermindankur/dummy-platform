@@ -1157,6 +1157,11 @@ body {
   border-radius: calc(var(--radius)  - 4px);
 }
 
+.rounded-b-md {
+  border-bottom-right-radius: calc(var(--radius)  - 2px);
+  border-bottom-left-radius: calc(var(--radius)  - 2px);
+}
+
 .border {
   border-width: 1px;
 }
@@ -1187,6 +1192,10 @@ body {
 
 .border-b-0 {
   border-bottom-width: 0;
+}
+
+.border-t-0 {
+  border-top-width: 0;
 }
 
 .border-dashed {

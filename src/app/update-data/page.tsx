@@ -369,19 +369,16 @@ export default function UpdateDataPage() {
 
                                       return (
                                         <AccordionItem value={item.id} key={item.id} className="border-b-0">
-                                            <div className="flex items-center group">
-                                                <AccordionTrigger className="flex-1 py-3 hover:no-underline">
-                                                    <div className="flex items-center gap-4">
-                                                        <ChevronsUpDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-180" />
-                                                        <span>{item.name}</span>
-                                                    </div>
+                                            <div className="flex items-center group bg-background rounded-md border">
+                                                <AccordionTrigger className="flex-1 px-4 py-3 hover:no-underline font-medium">
+                                                    <span>{item.name}</span>
                                                 </AccordionTrigger>
-                                                <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={() => removeSubItem(pIndex, sIndex)}>
+                                                <Button variant="ghost" size="icon" className="mr-2 text-destructive hover:text-destructive" onClick={() => removeSubItem(pIndex, sIndex)}>
                                                     <Trash2 className="h-4 w-4" />
                                                 </Button>
                                             </div>
                                             <AccordionContent>
-                                                <div className="border rounded-md p-4 bg-background/50 ml-8 relative">
+                                                <div className="border border-t-0 rounded-b-md p-4 bg-background/50 relative">
                                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                                     <div>
                                                         <Label htmlFor={`item-name-${pIndex}-${sIndex}`}>Name</Label>
@@ -495,7 +492,7 @@ export default function UpdateDataPage() {
                                                                 }
                                                             />
                                                             <p className="text-xs text-muted-foreground mt-1">
-                                                                Stable key that links this item to an Excel upload type. Leave empty if not applicable.
+                                                                Use a permanent key to link this item to an Excel upload. Leave empty if not applicable.
                                                             </p>
                                                         </div>
                                                     </div>
@@ -607,5 +604,3 @@ export default function UpdateDataPage() {
     </div>
   );
 }
-
-    
