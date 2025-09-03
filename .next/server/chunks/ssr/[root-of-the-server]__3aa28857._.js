@@ -830,7 +830,7 @@ function SquadOnboardingPage() {
                 setExcelData(data);
                 if (pillars) {
                     const resilientDesignPillar = pillars.find((p)=>p.id === 'making-design-resilient');
-                    const subItem = resilientDesignPillar?.subItems.find((s)=>s.id === 'system-scalability') || null;
+                    const subItem = resilientDesignPillar?.subItems.find((s)=>s.dataKey === 'squad-onboarding') || null;
                     setSquadSubItem(subItem);
                 }
             } catch (error) {

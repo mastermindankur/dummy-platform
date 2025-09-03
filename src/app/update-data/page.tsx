@@ -19,9 +19,10 @@ import { toast } from '@/hooks/use-toast';
 import type { Pillar, SubItem, Status, ExcelData } from '@/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Loader2, Plus, Trash2, Upload, ArrowRight } from 'lucide-react';
+import { Loader2, Plus, Trash2, Upload, ArrowRight, ChevronsUpDown } from 'lucide-react';
 import { processExcelFile } from '@/lib/excel-utils';
 import Link from 'next/link';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 function ExcelUploadSection({
   title,
@@ -300,9 +301,13 @@ export default function UpdateDataPage() {
       <main className="flex-1 p-4 md:p-8">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-3xl">Update Dashboard Data</CardTitle>
+            <div className="space-y-1">
+                <CardTitle className="text-3xl">Update Dashboard Data</CardTitle>
+                <CardDescription>Modify pillar details, edit sub-items, and upload new data from Excel files.</CardDescription>
+            </div>
             <Button onClick={handleSave} disabled={isSaving || isLoading}>
-              {isSaving ? 'Saving...' : 'Save Changes'}
+              {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+              {isSaving ? 'Saving...' : 'Save All Changes'}
             </Button>
           </CardHeader>
           <CardContent>
@@ -357,139 +362,149 @@ export default function UpdateDataPage() {
                                 </Card>
 
                                 <div>
-                                    <h4 className="text-xl font-semibold mb-4">Sub-Items</h4>
-                                    <div className="space-y-4">
+                                    <h4 className="text-xl font-semibold mb-2">Sub-Items</h4>
+                                    <Accordion type="multiple" className="w-full">
                                     {pillar.subItems.map((item, sIndex) => {
                                       const isAutoCalculated = !!item.dataKey;
 
                                       return (
-                                        <div key={item.id} className="border rounded-md p-4 bg-secondary/50 relative">
-                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                            <div>
-                                                <Label htmlFor={`item-name-${pIndex}-${sIndex}`}>Name</Label>
-                                                <Input
-                                                id={`item-name-${pIndex}-${sIndex}`}
-                                                value={item.name}
-                                                onChange={(e) =>
-                                                    handleSubItemChange(pIndex, sIndex, 'name', e.target.value)
-                                                }
-                                                />
-                                            </div>
-                                            <div>
-                                                <Label htmlFor={`item-status-${pIndex}-${sIndex}`}>Status</Label>
-                                                <Select
-                                                value={item.status}
-                                                onValueChange={(value) =>
-                                                    handleSubItemChange(
-                                                    pIndex,
-                                                    sIndex,
-                                                    'status',
-                                                    value
-                                                    )
-                                                }
-                                                >
-                                                <SelectTrigger id={`item-status-${pIndex}-${sIndex}`}>
-                                                    <SelectValue placeholder="Select status" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="Green">Green</SelectItem>
-                                                    <SelectItem value="Amber">Amber</SelectItem>
-                                                    <SelectItem value="Red">Red</SelectItem>
-                                                </SelectContent>
-                                                </Select>
-                                            </div>
-                                              <div>
-                                                  <Label htmlFor={`item-metric-name-${pIndex}-${sIndex}`}>Metric Name</Label>
-                                                  <Input
-                                                  id={`item-metric-name-${pIndex}-${sIndex}`}
-                                                  value={item.metricName}
-                                                  onChange={(e) =>
-                                                      handleSubItemChange(pIndex, sIndex, 'metricName', e.target.value)
-                                                  }
-                                                  />
-                                              </div>
-                                            </div>
-                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                                              <div>
-                                                  <Label htmlFor={`item-progress-${pIndex}-${sIndex}`}>
-                                                    Current Value {isAutoCalculated && '(Auto)'}
-                                                  </Label>
-                                                  <Input
-                                                  id={`item-progress-${pIndex}-${sIndex}`}
-                                                  type="number"
-                                                  value={item.percentageComplete}
-                                                  onChange={(e) =>
-                                                      handleSubItemChange(pIndex, sIndex, 'percentageComplete', parseInt(e.target.value, 10) || 0)
-                                                  }
-                                                  disabled={isAutoCalculated}
-                                                  />
-                                              </div>
-                                              <div>
-                                                  <Label htmlFor={`item-target-${pIndex}-${sIndex}`}>
-                                                  Annual Target
-                                                  </Label>
-                                                  <Input
-                                                  id={`item-target-${pIndex}-${sIndex}`}
-                                                  type="number"
-                                                  value={item.annualTarget}
-                                                  onChange={(e) =>
-                                                      handleSubItemChange(pIndex, sIndex, 'annualTarget', parseInt(e.target.value, 10) || 0)
-                                                  }
-                                                  />
-                                              </div>
-                                               <div>
-                                                  <Label htmlFor={`item-metric-unit-${pIndex}-${sIndex}`}>Unit</Label>
-                                                  <Input
-                                                  id={`item-metric-unit-${pIndex}-${sIndex}`}
-                                                  value={item.metricUnit}
-                                                  onChange={(e) =>
-                                                      handleSubItemChange(pIndex, sIndex, 'metricUnit', e.target.value)
-                                                  }
-                                                  />
-                                              </div>
-                                            </div>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                                                <div>
-                                                  <Label htmlFor={`item-desc-${pIndex}-${sIndex}`}>
-                                                      Description
-                                                  </Label>
-                                                  <Textarea
-                                                      id={`item-desc-${pIndex}-${sIndex}`}
-                                                      value={item.description}
-                                                      onChange={(e) =>
-                                                      handleSubItemChange(
-                                                          pIndex,
-                                                          sIndex,
-                                                          'description',
-                                                          e.target.value
-                                                      )
-                                                      }
-                                                  />
-                                                </div>
-                                                <div>
-                                                    <Label htmlFor={`item-datakey-${pIndex}-${sIndex}`}>Data Key (for auto-calculation)</Label>
-                                                    <Input
-                                                        id={`item-datakey-${pIndex}-${sIndex}`}
-                                                        value={item.dataKey || ''}
-                                                        placeholder="e.g., dti-tech-blogs"
-                                                        onChange={(e) =>
-                                                            handleSubItemChange(pIndex, sIndex, 'dataKey', e.target.value)
-                                                        }
-                                                    />
-                                                    <p className="text-xs text-muted-foreground mt-1">
-                                                        Stable key that links this item to an Excel upload type.
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <div className="absolute top-4 right-4">
-                                                <Button variant="destructive" size="icon" onClick={() => removeSubItem(pIndex, sIndex)}>
+                                        <AccordionItem value={item.id} key={item.id} className="border-b-0">
+                                            <div className="flex items-center group">
+                                                <AccordionTrigger className="flex-1 py-3 hover:no-underline">
+                                                    <div className="flex items-center gap-4">
+                                                        <ChevronsUpDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-180" />
+                                                        <span>{item.name}</span>
+                                                    </div>
+                                                </AccordionTrigger>
+                                                <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={() => removeSubItem(pIndex, sIndex)}>
                                                     <Trash2 className="h-4 w-4" />
                                                 </Button>
                                             </div>
-                                        </div>
+                                            <AccordionContent>
+                                                <div className="border rounded-md p-4 bg-background/50 ml-8 relative">
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                                    <div>
+                                                        <Label htmlFor={`item-name-${pIndex}-${sIndex}`}>Name</Label>
+                                                        <Input
+                                                        id={`item-name-${pIndex}-${sIndex}`}
+                                                        value={item.name}
+                                                        onChange={(e) =>
+                                                            handleSubItemChange(pIndex, sIndex, 'name', e.target.value)
+                                                        }
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <Label htmlFor={`item-status-${pIndex}-${sIndex}`}>Status</Label>
+                                                        <Select
+                                                        value={item.status}
+                                                        onValueChange={(value) =>
+                                                            handleSubItemChange(
+                                                            pIndex,
+                                                            sIndex,
+                                                            'status',
+                                                            value
+                                                            )
+                                                        }
+                                                        >
+                                                        <SelectTrigger id={`item-status-${pIndex}-${sIndex}`}>
+                                                            <SelectValue placeholder="Select status" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            <SelectItem value="Green">Green</SelectItem>
+                                                            <SelectItem value="Amber">Amber</SelectItem>
+                                                            <SelectItem value="Red">Red</SelectItem>
+                                                        </SelectContent>
+                                                        </Select>
+                                                    </div>
+                                                    <div>
+                                                        <Label htmlFor={`item-metric-name-${pIndex}-${sIndex}`}>Metric Name</Label>
+                                                        <Input
+                                                        id={`item-metric-name-${pIndex}-${sIndex}`}
+                                                        value={item.metricName}
+                                                        onChange={(e) =>
+                                                            handleSubItemChange(pIndex, sIndex, 'metricName', e.target.value)
+                                                        }
+                                                        />
+                                                    </div>
+                                                    </div>
+                                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                                                    <div>
+                                                        <Label htmlFor={`item-progress-${pIndex}-${sIndex}`}>
+                                                            Current Value {isAutoCalculated && '(Auto-calculated)'}
+                                                        </Label>
+                                                        <Input
+                                                        id={`item-progress-${pIndex}-${sIndex}`}
+                                                        type="number"
+                                                        value={item.percentageComplete}
+                                                        onChange={(e) =>
+                                                            handleSubItemChange(pIndex, sIndex, 'percentageComplete', parseInt(e.target.value, 10) || 0)
+                                                        }
+                                                        disabled={isAutoCalculated}
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <Label htmlFor={`item-target-${pIndex}-${sIndex}`}>
+                                                        Annual Target
+                                                        </Label>
+                                                        <Input
+                                                        id={`item-target-${pIndex}-${sIndex}`}
+                                                        type="number"
+                                                        value={item.annualTarget}
+                                                        onChange={(e) =>
+                                                            handleSubItemChange(pIndex, sIndex, 'annualTarget', parseInt(e.target.value, 10) || 0)
+                                                        }
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <Label htmlFor={`item-metric-unit-${pIndex}-${sIndex}`}>Unit</Label>
+                                                        <Input
+                                                        id={`item-metric-unit-${pIndex}-${sIndex}`}
+                                                        value={item.metricUnit}
+                                                        onChange={(e) =>
+                                                            handleSubItemChange(pIndex, sIndex, 'metricUnit', e.target.value)
+                                                        }
+                                                        />
+                                                    </div>
+                                                    </div>
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                                                        <div>
+                                                        <Label htmlFor={`item-desc-${pIndex}-${sIndex}`}>
+                                                            Description
+                                                        </Label>
+                                                        <Textarea
+                                                            id={`item-desc-${pIndex}-${sIndex}`}
+                                                            value={item.description}
+                                                            onChange={(e) =>
+                                                            handleSubItemChange(
+                                                                pIndex,
+                                                                sIndex,
+                                                                'description',
+                                                                e.target.value
+                                                            )
+                                                            }
+                                                        />
+                                                        </div>
+                                                        <div>
+                                                            <Label htmlFor={`item-datakey-${pIndex}-${sIndex}`}>Data Key (for auto-calculation)</Label>
+                                                            <Input
+                                                                id={`item-datakey-${pIndex}-${sIndex}`}
+                                                                value={item.dataKey || ''}
+                                                                placeholder="e.g., dti-tech-blogs"
+                                                                onChange={(e) =>
+                                                                    handleSubItemChange(pIndex, sIndex, 'dataKey', e.target.value)
+                                                                }
+                                                            />
+                                                            <p className="text-xs text-muted-foreground mt-1">
+                                                                Stable key that links this item to an Excel upload type. Leave empty if not applicable.
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </AccordionContent>
+                                        </AccordionItem>
                                       )
                                     })}
-                                    </div>
+                                    </Accordion>
                                     <div className="mt-4">
                                         <Button variant="outline" onClick={() => addSubItem(pIndex)}>
                                             <Plus className="mr-2 h-4 w-4" /> Add Sub-Item
@@ -592,3 +607,5 @@ export default function UpdateDataPage() {
     </div>
   );
 }
+
+    

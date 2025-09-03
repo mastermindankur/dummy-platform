@@ -1096,7 +1096,8 @@ function UpdateDataPage() {
             percentageComplete: 0,
             annualTarget: 100,
             metricName: 'YTD Progress',
-            metricUnit: '%'
+            metricUnit: '%',
+            dataKey: ''
         };
         newData[pillarIndex].subItems.push(newSubItem);
         setData(newData);
@@ -1156,7 +1157,7 @@ function UpdateDataPage() {
         children: [
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$layout$2f$header$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Header"], {}, void 0, false, {
                 fileName: "[project]/src/app/update-data/page.tsx",
-                lineNumber: 298,
+                lineNumber: 299,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("main", {
@@ -1171,7 +1172,7 @@ function UpdateDataPage() {
                                     children: "Update Dashboard Data"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/update-data/page.tsx",
-                                    lineNumber: 302,
+                                    lineNumber: 303,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -1180,13 +1181,13 @@ function UpdateDataPage() {
                                     children: isSaving ? 'Saving...' : 'Save Changes'
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/update-data/page.tsx",
-                                    lineNumber: 303,
+                                    lineNumber: 304,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/update-data/page.tsx",
-                            lineNumber: 301,
+                            lineNumber: 302,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -1197,27 +1198,27 @@ function UpdateDataPage() {
                                         className: "h-10 w-full mb-4"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/update-data/page.tsx",
-                                        lineNumber: 310,
+                                        lineNumber: 311,
                                         columnNumber: 18
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$skeleton$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Skeleton"], {
                                         className: "h-12 w-full"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/update-data/page.tsx",
-                                        lineNumber: 311,
+                                        lineNumber: 312,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$skeleton$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Skeleton"], {
                                         className: "h-48 w-full"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/update-data/page.tsx",
-                                        lineNumber: 312,
+                                        lineNumber: 313,
                                         columnNumber: 17
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/update-data/page.tsx",
-                                lineNumber: 309,
+                                lineNumber: 310,
                                 columnNumber: 15
                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$tabs$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Tabs"], {
                                 value: activeTab,
@@ -1232,12 +1233,12 @@ function UpdateDataPage() {
                                                 children: pillar.name
                                             }, pillar.id, false, {
                                                 fileName: "[project]/src/app/update-data/page.tsx",
-                                                lineNumber: 318,
+                                                lineNumber: 319,
                                                 columnNumber: 29
                                             }, this))
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/update-data/page.tsx",
-                                        lineNumber: 316,
+                                        lineNumber: 317,
                                         columnNumber: 21
                                     }, this),
                                     data?.map((pillar, pIndex)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$tabs$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["TabsContent"], {
@@ -1254,12 +1255,12 @@ function UpdateDataPage() {
                                                                     children: "Pillar Details"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/update-data/page.tsx",
-                                                                    lineNumber: 328,
+                                                                    lineNumber: 329,
                                                                     columnNumber: 41
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/update-data/page.tsx",
-                                                                lineNumber: 327,
+                                                                lineNumber: 328,
                                                                 columnNumber: 37
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -1273,7 +1274,7 @@ function UpdateDataPage() {
                                                                                     children: "Pillar Name"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                    lineNumber: 333,
+                                                                                    lineNumber: 334,
                                                                                     columnNumber: 43
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Input"], {
@@ -1282,13 +1283,13 @@ function UpdateDataPage() {
                                                                                     onChange: (e)=>handlePillarChange(pIndex, 'name', e.target.value)
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                    lineNumber: 334,
+                                                                                    lineNumber: 335,
                                                                                     columnNumber: 43
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/src/app/update-data/page.tsx",
-                                                                            lineNumber: 332,
+                                                                            lineNumber: 333,
                                                                             columnNumber: 41
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1298,7 +1299,7 @@ function UpdateDataPage() {
                                                                                     children: "Pillar Description"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                    lineNumber: 343,
+                                                                                    lineNumber: 344,
                                                                                     columnNumber: 43
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$textarea$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Textarea"], {
@@ -1307,30 +1308,30 @@ function UpdateDataPage() {
                                                                                     onChange: (e)=>handlePillarChange(pIndex, 'description', e.target.value)
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                    lineNumber: 346,
+                                                                                    lineNumber: 347,
                                                                                     columnNumber: 43
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/src/app/update-data/page.tsx",
-                                                                            lineNumber: 342,
+                                                                            lineNumber: 343,
                                                                             columnNumber: 41
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/src/app/update-data/page.tsx",
-                                                                    lineNumber: 331,
+                                                                    lineNumber: 332,
                                                                     columnNumber: 39
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/update-data/page.tsx",
-                                                                lineNumber: 330,
+                                                                lineNumber: 331,
                                                                 columnNumber: 37
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/app/update-data/page.tsx",
-                                                        lineNumber: 326,
+                                                        lineNumber: 327,
                                                         columnNumber: 33
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1340,22 +1341,13 @@ function UpdateDataPage() {
                                                                 children: "Sub-Items"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/update-data/page.tsx",
-                                                                lineNumber: 359,
+                                                                lineNumber: 360,
                                                                 columnNumber: 37
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                                 className: "space-y-4",
                                                                 children: pillar.subItems.map((item, sIndex)=>{
-                                                                    const isAutoCalculated = [
-                                                                        'explore-resiliency-program',
-                                                                        'blogs-open-source',
-                                                                        'hackathons',
-                                                                        'industry-events',
-                                                                        'system-scalability',
-                                                                        'arc-trainings',
-                                                                        'app-sherpas',
-                                                                        'jira-assistant-adoption'
-                                                                    ].includes(item.id);
+                                                                    const isAutoCalculated = !!item.dataKey;
                                                                     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                                         className: "border rounded-md p-4 bg-secondary/50 relative",
                                                                         children: [
@@ -1369,7 +1361,7 @@ function UpdateDataPage() {
                                                                                                 children: "Name"
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                                lineNumber: 377,
+                                                                                                lineNumber: 369,
                                                                                                 columnNumber: 49
                                                                                             }, this),
                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Input"], {
@@ -1378,13 +1370,13 @@ function UpdateDataPage() {
                                                                                                 onChange: (e)=>handleSubItemChange(pIndex, sIndex, 'name', e.target.value)
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                                lineNumber: 378,
+                                                                                                lineNumber: 370,
                                                                                                 columnNumber: 49
                                                                                             }, this)
                                                                                         ]
                                                                                     }, void 0, true, {
                                                                                         fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                        lineNumber: 376,
+                                                                                        lineNumber: 368,
                                                                                         columnNumber: 45
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1394,7 +1386,7 @@ function UpdateDataPage() {
                                                                                                 children: "Status"
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                                lineNumber: 387,
+                                                                                                lineNumber: 379,
                                                                                                 columnNumber: 49
                                                                                             }, this),
                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Select"], {
@@ -1407,12 +1399,12 @@ function UpdateDataPage() {
                                                                                                             placeholder: "Select status"
                                                                                                         }, void 0, false, {
                                                                                                             fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                                            lineNumber: 400,
+                                                                                                            lineNumber: 392,
                                                                                                             columnNumber: 53
                                                                                                         }, this)
                                                                                                     }, void 0, false, {
                                                                                                         fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                                        lineNumber: 399,
+                                                                                                        lineNumber: 391,
                                                                                                         columnNumber: 49
                                                                                                     }, this),
                                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SelectContent"], {
@@ -1422,7 +1414,7 @@ function UpdateDataPage() {
                                                                                                                 children: "Green"
                                                                                                             }, void 0, false, {
                                                                                                                 fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                                                lineNumber: 403,
+                                                                                                                lineNumber: 395,
                                                                                                                 columnNumber: 53
                                                                                                             }, this),
                                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SelectItem"], {
@@ -1430,7 +1422,7 @@ function UpdateDataPage() {
                                                                                                                 children: "Amber"
                                                                                                             }, void 0, false, {
                                                                                                                 fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                                                lineNumber: 404,
+                                                                                                                lineNumber: 396,
                                                                                                                 columnNumber: 53
                                                                                                             }, this),
                                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SelectItem"], {
@@ -1438,25 +1430,25 @@ function UpdateDataPage() {
                                                                                                                 children: "Red"
                                                                                                             }, void 0, false, {
                                                                                                                 fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                                                lineNumber: 405,
+                                                                                                                lineNumber: 397,
                                                                                                                 columnNumber: 53
                                                                                                             }, this)
                                                                                                         ]
                                                                                                     }, void 0, true, {
                                                                                                         fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                                        lineNumber: 402,
+                                                                                                        lineNumber: 394,
                                                                                                         columnNumber: 49
                                                                                                     }, this)
                                                                                                 ]
                                                                                             }, void 0, true, {
                                                                                                 fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                                lineNumber: 388,
+                                                                                                lineNumber: 380,
                                                                                                 columnNumber: 49
                                                                                             }, this)
                                                                                         ]
                                                                                     }, void 0, true, {
                                                                                         fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                        lineNumber: 386,
+                                                                                        lineNumber: 378,
                                                                                         columnNumber: 45
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1466,7 +1458,7 @@ function UpdateDataPage() {
                                                                                                 children: "Metric Name"
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                                lineNumber: 410,
+                                                                                                lineNumber: 402,
                                                                                                 columnNumber: 51
                                                                                             }, this),
                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Input"], {
@@ -1475,19 +1467,19 @@ function UpdateDataPage() {
                                                                                                 onChange: (e)=>handleSubItemChange(pIndex, sIndex, 'metricName', e.target.value)
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                                lineNumber: 411,
+                                                                                                lineNumber: 403,
                                                                                                 columnNumber: 51
                                                                                             }, this)
                                                                                         ]
                                                                                     }, void 0, true, {
                                                                                         fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                        lineNumber: 409,
+                                                                                        lineNumber: 401,
                                                                                         columnNumber: 47
                                                                                     }, this)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                lineNumber: 375,
+                                                                                lineNumber: 367,
                                                                                 columnNumber: 45
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1499,11 +1491,11 @@ function UpdateDataPage() {
                                                                                                 htmlFor: `item-progress-${pIndex}-${sIndex}`,
                                                                                                 children: [
                                                                                                     "Current Value ",
-                                                                                                    isAutoCalculated && '(Auto-calculated)'
+                                                                                                    isAutoCalculated && '(Auto)'
                                                                                                 ]
                                                                                             }, void 0, true, {
                                                                                                 fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                                lineNumber: 422,
+                                                                                                lineNumber: 414,
                                                                                                 columnNumber: 51
                                                                                             }, this),
                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Input"], {
@@ -1514,13 +1506,13 @@ function UpdateDataPage() {
                                                                                                 disabled: isAutoCalculated
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                                lineNumber: 425,
+                                                                                                lineNumber: 417,
                                                                                                 columnNumber: 51
                                                                                             }, this)
                                                                                         ]
                                                                                     }, void 0, true, {
                                                                                         fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                        lineNumber: 421,
+                                                                                        lineNumber: 413,
                                                                                         columnNumber: 47
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1530,7 +1522,7 @@ function UpdateDataPage() {
                                                                                                 children: "Annual Target"
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                                lineNumber: 436,
+                                                                                                lineNumber: 428,
                                                                                                 columnNumber: 51
                                                                                             }, this),
                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Input"], {
@@ -1540,13 +1532,13 @@ function UpdateDataPage() {
                                                                                                 onChange: (e)=>handleSubItemChange(pIndex, sIndex, 'annualTarget', parseInt(e.target.value, 10) || 0)
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                                lineNumber: 439,
+                                                                                                lineNumber: 431,
                                                                                                 columnNumber: 51
                                                                                             }, this)
                                                                                         ]
                                                                                     }, void 0, true, {
                                                                                         fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                        lineNumber: 435,
+                                                                                        lineNumber: 427,
                                                                                         columnNumber: 47
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1556,7 +1548,7 @@ function UpdateDataPage() {
                                                                                                 children: "Unit"
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                                lineNumber: 449,
+                                                                                                lineNumber: 441,
                                                                                                 columnNumber: 51
                                                                                             }, this),
                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Input"], {
@@ -1565,45 +1557,87 @@ function UpdateDataPage() {
                                                                                                 onChange: (e)=>handleSubItemChange(pIndex, sIndex, 'metricUnit', e.target.value)
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                                lineNumber: 450,
+                                                                                                lineNumber: 442,
                                                                                                 columnNumber: 51
                                                                                             }, this)
                                                                                         ]
                                                                                     }, void 0, true, {
                                                                                         fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                        lineNumber: 448,
+                                                                                        lineNumber: 440,
                                                                                         columnNumber: 48
                                                                                     }, this)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                lineNumber: 420,
+                                                                                lineNumber: 412,
                                                                                 columnNumber: 45
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                                className: "mt-4",
+                                                                                className: "grid grid-cols-1 md:grid-cols-2 gap-4 mt-4",
                                                                                 children: [
-                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$label$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Label"], {
-                                                                                        htmlFor: `item-desc-${pIndex}-${sIndex}`,
-                                                                                        children: "Description"
-                                                                                    }, void 0, false, {
+                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                                        children: [
+                                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$label$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Label"], {
+                                                                                                htmlFor: `item-desc-${pIndex}-${sIndex}`,
+                                                                                                children: "Description"
+                                                                                            }, void 0, false, {
+                                                                                                fileName: "[project]/src/app/update-data/page.tsx",
+                                                                                                lineNumber: 453,
+                                                                                                columnNumber: 51
+                                                                                            }, this),
+                                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$textarea$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Textarea"], {
+                                                                                                id: `item-desc-${pIndex}-${sIndex}`,
+                                                                                                value: item.description,
+                                                                                                onChange: (e)=>handleSubItemChange(pIndex, sIndex, 'description', e.target.value)
+                                                                                            }, void 0, false, {
+                                                                                                fileName: "[project]/src/app/update-data/page.tsx",
+                                                                                                lineNumber: 456,
+                                                                                                columnNumber: 51
+                                                                                            }, this)
+                                                                                        ]
+                                                                                    }, void 0, true, {
                                                                                         fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                        lineNumber: 460,
-                                                                                        columnNumber: 45
+                                                                                        lineNumber: 452,
+                                                                                        columnNumber: 49
                                                                                     }, this),
-                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$textarea$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Textarea"], {
-                                                                                        id: `item-desc-${pIndex}-${sIndex}`,
-                                                                                        value: item.description,
-                                                                                        onChange: (e)=>handleSubItemChange(pIndex, sIndex, 'description', e.target.value)
-                                                                                    }, void 0, false, {
+                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                                        children: [
+                                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$label$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Label"], {
+                                                                                                htmlFor: `item-datakey-${pIndex}-${sIndex}`,
+                                                                                                children: "Data Key (for auto-calculation)"
+                                                                                            }, void 0, false, {
+                                                                                                fileName: "[project]/src/app/update-data/page.tsx",
+                                                                                                lineNumber: 470,
+                                                                                                columnNumber: 53
+                                                                                            }, this),
+                                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Input"], {
+                                                                                                id: `item-datakey-${pIndex}-${sIndex}`,
+                                                                                                value: item.dataKey || '',
+                                                                                                placeholder: "e.g., dti-tech-blogs",
+                                                                                                onChange: (e)=>handleSubItemChange(pIndex, sIndex, 'dataKey', e.target.value)
+                                                                                            }, void 0, false, {
+                                                                                                fileName: "[project]/src/app/update-data/page.tsx",
+                                                                                                lineNumber: 471,
+                                                                                                columnNumber: 53
+                                                                                            }, this),
+                                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                                                                className: "text-xs text-muted-foreground mt-1",
+                                                                                                children: "Stable key that links this item to an Excel upload type."
+                                                                                            }, void 0, false, {
+                                                                                                fileName: "[project]/src/app/update-data/page.tsx",
+                                                                                                lineNumber: 479,
+                                                                                                columnNumber: 53
+                                                                                            }, this)
+                                                                                        ]
+                                                                                    }, void 0, true, {
                                                                                         fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                        lineNumber: 463,
-                                                                                        columnNumber: 45
+                                                                                        lineNumber: 469,
+                                                                                        columnNumber: 49
                                                                                     }, this)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                lineNumber: 459,
+                                                                                lineNumber: 451,
                                                                                 columnNumber: 45
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1616,29 +1650,29 @@ function UpdateDataPage() {
                                                                                         className: "h-4 w-4"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                        lineNumber: 478,
+                                                                                        lineNumber: 486,
                                                                                         columnNumber: 53
                                                                                     }, this)
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                    lineNumber: 477,
+                                                                                    lineNumber: 485,
                                                                                     columnNumber: 49
                                                                                 }, this)
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                lineNumber: 476,
+                                                                                lineNumber: 484,
                                                                                 columnNumber: 45
                                                                             }, this)
                                                                         ]
                                                                     }, item.id, true, {
                                                                         fileName: "[project]/src/app/update-data/page.tsx",
-                                                                        lineNumber: 374,
+                                                                        lineNumber: 366,
                                                                         columnNumber: 41
                                                                     }, this);
                                                                 })
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/update-data/page.tsx",
-                                                                lineNumber: 360,
+                                                                lineNumber: 361,
                                                                 columnNumber: 37
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1651,19 +1685,19 @@ function UpdateDataPage() {
                                                                             className: "mr-2 h-4 w-4"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/app/update-data/page.tsx",
-                                                                            lineNumber: 487,
+                                                                            lineNumber: 495,
                                                                             columnNumber: 45
                                                                         }, this),
                                                                         " Add Sub-Item"
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/src/app/update-data/page.tsx",
-                                                                    lineNumber: 486,
+                                                                    lineNumber: 494,
                                                                     columnNumber: 41
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/update-data/page.tsx",
-                                                                lineNumber: 485,
+                                                                lineNumber: 493,
                                                                 columnNumber: 37
                                                             }, this),
                                                             pillar.id === 'making-design-resilient' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Fragment"], {
@@ -1675,7 +1709,7 @@ function UpdateDataPage() {
                                                                         onDataProcessed: handleExcelDataProcessed
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/update-data/page.tsx",
-                                                                        lineNumber: 493,
+                                                                        lineNumber: 501,
                                                                         columnNumber: 45
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(ExcelUploadSection, {
@@ -1685,7 +1719,7 @@ function UpdateDataPage() {
                                                                         onDataProcessed: handleExcelDataProcessed
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/update-data/page.tsx",
-                                                                        lineNumber: 499,
+                                                                        lineNumber: 507,
                                                                         columnNumber: 45
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(ExcelUploadSection, {
@@ -1695,7 +1729,7 @@ function UpdateDataPage() {
                                                                         onDataProcessed: handleExcelDataProcessed
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/update-data/page.tsx",
-                                                                        lineNumber: 505,
+                                                                        lineNumber: 513,
                                                                         columnNumber: 45
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(ExcelUploadSection, {
@@ -1706,7 +1740,7 @@ function UpdateDataPage() {
                                                                         isMonthly: true
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/update-data/page.tsx",
-                                                                        lineNumber: 511,
+                                                                        lineNumber: 519,
                                                                         columnNumber: 45
                                                                     }, this)
                                                                 ]
@@ -1723,20 +1757,20 @@ function UpdateDataPage() {
                                                                                         children: "Manage Hackathons"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                        lineNumber: 525,
+                                                                                        lineNumber: 533,
                                                                                         columnNumber: 53
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
                                                                                         children: "Add, edit, and upload team data for company hackathons."
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                        lineNumber: 526,
+                                                                                        lineNumber: 534,
                                                                                         columnNumber: 53
                                                                                     }, this)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                lineNumber: 524,
+                                                                                lineNumber: 532,
                                                                                 columnNumber: 49
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -1750,29 +1784,29 @@ function UpdateDataPage() {
                                                                                                 className: "ml-2 h-4 w-4"
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                                lineNumber: 534,
+                                                                                                lineNumber: 542,
                                                                                                 columnNumber: 61
                                                                                             }, this)
                                                                                         ]
                                                                                     }, void 0, true, {
                                                                                         fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                        lineNumber: 532,
+                                                                                        lineNumber: 540,
                                                                                         columnNumber: 57
                                                                                     }, this)
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                    lineNumber: 531,
+                                                                                    lineNumber: 539,
                                                                                     columnNumber: 53
                                                                                 }, this)
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                lineNumber: 530,
+                                                                                lineNumber: 538,
                                                                                 columnNumber: 49
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/src/app/update-data/page.tsx",
-                                                                        lineNumber: 523,
+                                                                        lineNumber: 531,
                                                                         columnNumber: 45
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -1785,20 +1819,20 @@ function UpdateDataPage() {
                                                                                         children: "Manage Industry Events"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                        lineNumber: 541,
+                                                                                        lineNumber: 549,
                                                                                         columnNumber: 53
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
                                                                                         children: "Add and manage industry event details."
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                        lineNumber: 542,
+                                                                                        lineNumber: 550,
                                                                                         columnNumber: 53
                                                                                     }, this)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                lineNumber: 540,
+                                                                                lineNumber: 548,
                                                                                 columnNumber: 49
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -1812,29 +1846,29 @@ function UpdateDataPage() {
                                                                                                 className: "ml-2 h-4 w-4"
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                                lineNumber: 550,
+                                                                                                lineNumber: 558,
                                                                                                 columnNumber: 61
                                                                                             }, this)
                                                                                         ]
                                                                                     }, void 0, true, {
                                                                                         fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                        lineNumber: 548,
+                                                                                        lineNumber: 556,
                                                                                         columnNumber: 57
                                                                                     }, this)
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                    lineNumber: 547,
+                                                                                    lineNumber: 555,
                                                                                     columnNumber: 53
                                                                                 }, this)
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/app/update-data/page.tsx",
-                                                                                lineNumber: 546,
+                                                                                lineNumber: 554,
                                                                                 columnNumber: 49
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/src/app/update-data/page.tsx",
-                                                                        lineNumber: 539,
+                                                                        lineNumber: 547,
                                                                         columnNumber: 46
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(ExcelUploadSection, {
@@ -1844,7 +1878,7 @@ function UpdateDataPage() {
                                                                         onDataProcessed: handleExcelDataProcessed
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/update-data/page.tsx",
-                                                                        lineNumber: 555,
+                                                                        lineNumber: 563,
                                                                         columnNumber: 45
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(ExcelUploadSection, {
@@ -1854,7 +1888,7 @@ function UpdateDataPage() {
                                                                         onDataProcessed: handleExcelDataProcessed
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/update-data/page.tsx",
-                                                                        lineNumber: 561,
+                                                                        lineNumber: 569,
                                                                         columnNumber: 45
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(ExcelUploadSection, {
@@ -1864,7 +1898,7 @@ function UpdateDataPage() {
                                                                         onDataProcessed: handleExcelDataProcessed
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/update-data/page.tsx",
-                                                                        lineNumber: 567,
+                                                                        lineNumber: 575,
                                                                         columnNumber: 45
                                                                     }, this)
                                                                 ]
@@ -1872,46 +1906,46 @@ function UpdateDataPage() {
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/app/update-data/page.tsx",
-                                                        lineNumber: 358,
+                                                        lineNumber: 359,
                                                         columnNumber: 33
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/update-data/page.tsx",
-                                                lineNumber: 325,
+                                                lineNumber: 326,
                                                 columnNumber: 29
                                             }, this)
                                         }, pillar.id, false, {
                                             fileName: "[project]/src/app/update-data/page.tsx",
-                                            lineNumber: 324,
+                                            lineNumber: 325,
                                             columnNumber: 25
                                         }, this))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/update-data/page.tsx",
-                                lineNumber: 315,
+                                lineNumber: 316,
                                 columnNumber: 17
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/app/update-data/page.tsx",
-                            lineNumber: 307,
+                            lineNumber: 308,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/app/update-data/page.tsx",
-                    lineNumber: 300,
+                    lineNumber: 301,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/src/app/update-data/page.tsx",
-                lineNumber: 299,
+                lineNumber: 300,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/app/update-data/page.tsx",
-        lineNumber: 297,
+        lineNumber: 298,
         columnNumber: 5
     }, this);
 }

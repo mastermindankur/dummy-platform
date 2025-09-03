@@ -928,7 +928,7 @@ function SquadOnboardingPage() {
                                 "SquadOnboardingPage.useEffect.loadData.resilientDesignPillar": (p)=>p.id === 'making-design-resilient'
                             }["SquadOnboardingPage.useEffect.loadData.resilientDesignPillar"]);
                             const subItem = resilientDesignPillar?.subItems.find({
-                                "SquadOnboardingPage.useEffect.loadData": (s)=>s.id === 'system-scalability'
+                                "SquadOnboardingPage.useEffect.loadData": (s)=>s.dataKey === 'squad-onboarding'
                             }["SquadOnboardingPage.useEffect.loadData"]) || null;
                             setSquadSubItem(subItem);
                         }
