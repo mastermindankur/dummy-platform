@@ -18,7 +18,7 @@ export function Header({ children }: { children?: React.ReactNode }) {
         <div className="ml-auto flex items-center gap-4">
           {children}
            <Button asChild variant="outline" size="sm">
-              <Link href="/update-data" target="_blank">
+              <Link href="/update-data">
                   <PenSquare className="mr-2 h-4 w-4" />
                   Update Data
               </Link>
