@@ -11,3 +11,4 @@ src/lib/tech-sphere-sessions.json
 src/lib/squad-onboarding.json
 src/lib/jira-assistant-adoption
 node_modules
+node_modules/
