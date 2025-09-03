@@ -41,3 +41,4 @@ src/lib/squad-onboarding.json
 src/lib/arc-trainings.json
 src/lib/app-sherpas.json
 src/lib/jira-assistant-adoption/
+node_modules/
