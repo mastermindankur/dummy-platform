@@ -1,14 +1,43 @@
-# Local data files
+# Dependencies
+/node_modules
+/.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# Next.js
+/.next/
+/out/
+
+# Production
+/build
+
+# Miscellaneous
+.DS_Store
+*.pem
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Local environment files
+.env*.local
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+
+# Application Data Files
 src/lib/data.json
 src/lib/dti-tech-blogs.json
 src/lib/explore-resiliency-program.json
+src/lib/tech-sphere-sessions.json
 src/lib/hackathons.json
 src/lib/industry-events.json
+src/lib/squad-onboarding.json
 src/lib/arc-trainings.json
 src/lib/app-sherpas.json
 src/lib/jira-assistant-adoption/
-src/lib/tech-sphere-sessions.json
-src/lib/squad-onboarding.json
-src/lib/jira-assistant-adoption
-node_modules
-node_modules/
