@@ -1,5 +1,7 @@
 {
   "/api/data/route": "app/api/data/route.js",
   "/page": "app/page.js",
+  "/pillar/[id]/page": "app/pillar/[id]/page.js",
+  "/pillar/making-design-resilient/app-sherpas/page": "app/pillar/making-design-resilient/app-sherpas/page.js",
   "/update-data/page": "app/update-data/page.js"
 }

@@ -114,7 +114,7 @@ function ExcelUploadSection({
   };
 
   return (
-      <Card className="bg-secondary/30 mt-6">
+      <Card className="bg-secondary/30">
         <CardHeader>
           <CardTitle className="text-xl">{title}</CardTitle>
           <CardDescription>{description}</CardDescription>
@@ -368,7 +368,7 @@ export default function UpdateDataPage() {
                                       const isAutoCalculated = !!item.dataKey;
 
                                       return (
-                                        <AccordionItem value={item.id} key={item.id} className="border-b-0">
+                                        <AccordionItem value={item.id} key={item.id} className="border-b-0 mb-2">
                                             <div className="flex items-center group bg-background rounded-md border">
                                                 <AccordionTrigger className="flex-1 px-4 py-3 hover:no-underline font-medium">
                                                     <span>{item.name}</span>
@@ -509,7 +509,7 @@ export default function UpdateDataPage() {
                                     </div>
 
                                     {pillar.id === 'making-design-resilient' && (
-                                        <>
+                                        <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
                                             <ExcelUploadSection
                                                 title="SQUAD Onboarding"
                                                 description="Upload the Excel sheet for CAT1/CAT2 app onboarding to SQUAD."
@@ -535,12 +535,12 @@ export default function UpdateDataPage() {
                                                 onDataProcessed={handleExcelDataProcessed}
                                                 isMonthly={true}
                                             />
-                                        </>
+                                        </div>
                                     )}
 
                                     {pillar.id === 'adopting-emerging-technologies' && (
-                                        <>
-                                            <Card className="bg-secondary/30 mt-6">
+                                        <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                            <Card className="bg-secondary/30">
                                                 <CardHeader>
                                                     <CardTitle className="text-xl">Manage Hackathons</CardTitle>
                                                     <CardDescription>
@@ -556,7 +556,7 @@ export default function UpdateDataPage() {
                                                     </Button>
                                                 </CardContent>
                                             </Card>
-                                             <Card className="bg-secondary/30 mt-6">
+                                             <Card className="bg-secondary/30">
                                                 <CardHeader>
                                                     <CardTitle className="text-xl">Manage Industry Events</CardTitle>
                                                     <CardDescription>
@@ -590,7 +590,7 @@ export default function UpdateDataPage() {
                                                 fileKey="tech-sphere-sessions"
                                                 onDataProcessed={handleExcelDataProcessed}
                                             />
-                                        </>
+                                        </div>
                                     )}
                                 </div>
                             </div>
