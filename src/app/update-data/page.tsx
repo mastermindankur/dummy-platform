@@ -76,6 +76,8 @@ function ExcelUploadSection({
             const names = await getExcelSheetNames(dataUri);
             setSheetNames(names);
             if (names.length > 0) {
+                // Automatically select first sheet and process headers
+                await handleSheetChange(names[0]);
                 setSelectedSheet(names[0]);
             }
         } catch (error) {
