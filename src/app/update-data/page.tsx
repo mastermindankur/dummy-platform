@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Header } from '@/components/layout/header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,13 +16,19 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/use-toast';
-import type { Pillar, SubItem, Status, ExcelData } from '@/types';
+import type { Pillar, SubItem, Status, ExcelData, ExcelRow } from '@/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Loader2, Plus, Trash2, Upload, ArrowRight, ChevronsUpDown } from 'lucide-react';
-import { processExcelFile } from '@/lib/excel-utils';
+import { Loader2, Plus, Trash2, Upload, ArrowRight, ChevronsUpDown, Filter, X } from 'lucide-react';
+import { processExcelFile, getExcelSheetNames } from '@/lib/excel-utils';
 import Link from 'next/link';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+
+type FilterState = {
+    id: number;
+    column: string;
+    value: string;
+};
 
 function ExcelUploadSection({
   title,
@@ -38,21 +44,86 @@ function ExcelUploadSection({
   isMonthly?: boolean;
 }) {
   const [file, setFile] = useState<File | null>(null);
+  const [fileDataUri, setFileDataUri] = useState<string>('');
+  const [sheetNames, setSheetNames] = useState<string[]>([]);
+  const [selectedSheet, setSelectedSheet] = useState<string>('');
+  const [headers, setHeaders] = useState<string[]>([]);
+  const [filters, setFilters] = useState<FilterState[]>([]);
+  const [filterCounter, setFilterCounter] = useState(0);
+
   const [isLoading, setIsLoading] = useState(false);
   const [month, setMonth] = useState<string>(isMonthly ? new Date().toISOString().slice(0, 7) : '');
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files && files.length > 0) {
-      setFile(files[0]);
+        const selectedFile = files[0];
+        setFile(selectedFile);
+        // Reset subsequent steps
+        setSheetNames([]);
+        setSelectedSheet('');
+        setHeaders([]);
+        setFilters([]);
+        setIsLoading(true);
+        try {
+            const dataUri = await new Promise<string>((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result as string);
+                reader.onerror = (error) => reject(error);
+                reader.readAsDataURL(selectedFile);
+            });
+            setFileDataUri(dataUri);
+            const names = await getExcelSheetNames(dataUri);
+            setSheetNames(names);
+            if (names.length > 0) {
+                setSelectedSheet(names[0]);
+            }
+        } catch (error) {
+            console.error('Error processing file for sheet names:', error);
+            toast({ title: 'Error reading file', description: 'Could not read sheet names from the file.', variant: 'destructive' });
+        } finally {
+            setIsLoading(false);
+        }
     }
   };
 
-  const handleFileUpload = async () => {
-    if (!file) {
+  const handleSheetChange = async (sheetName: string) => {
+    setSelectedSheet(sheetName);
+    setHeaders([]); // Reset headers and filters if sheet changes
+    setFilters([]);
+    
+    if (!fileDataUri) return;
+    setIsLoading(true);
+    try {
+        const result = await processExcelFile(fileDataUri, sheetName);
+        setHeaders(result.headers);
+    } catch(error) {
+        console.error('Error processing sheet for headers:', error);
+        toast({ title: 'Error reading sheet', description: 'Could not read headers from the selected sheet.', variant: 'destructive' });
+    } finally {
+        setIsLoading(false);
+    }
+  }
+  
+  const handleAddFilter = () => {
+      setFilters([...filters, { id: filterCounter, column: '', value: ''}]);
+      setFilterCounter(prev => prev + 1);
+  }
+  
+  const handleRemoveFilter = (id: number) => {
+      setFilters(filters.filter(f => f.id !== id));
+  }
+
+  const handleFilterChange = (id: number, type: 'column' | 'value', value: string) => {
+      setFilters(filters.map(f => f.id === id ? {...f, [type]: value} : f));
+  }
+
+
+  const handleProcessAndLoad = async () => {
+    if (!file || !fileDataUri || !selectedSheet) {
       toast({
-        title: 'No file selected',
-        description: 'Please select an Excel file to upload.',
+        title: 'Missing information',
+        description: 'Please select a file and a sheet to process.',
         variant: 'destructive',
       });
       return;
@@ -69,47 +140,24 @@ function ExcelUploadSection({
     setIsLoading(true);
 
     try {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = async () => {
-        const fileAsDataUri = reader.result as string;
-        try {
-          const result = await processExcelFile(fileAsDataUri);
-          const finalFileKey = isMonthly ? `${fileKey}:${month}` : fileKey;
-          onDataProcessed(finalFileKey, result);
-           toast({
-             title: `"${file.name}" processed`,
-             description: 'Data loaded from Excel. Remember to save all changes.',
-           });
-        } catch (error) {
-          console.error('Error processing file:', error);
-          toast({
-            title: 'Error',
-            description:
-              'Failed to process the Excel file. Please ensure it is a valid .xlsx or .xls file.',
-            variant: 'destructive',
-          });
-        } finally {
-          setIsLoading(false);
-        }
-      };
-      reader.onerror = (error) => {
-        console.error('Error reading file:', error);
+        const validFilters = filters.filter(f => f.column && f.value).map(({column, value}) => ({column, value}));
+        const result = await processExcelFile(fileDataUri, selectedSheet, validFilters);
+        const finalFileKey = isMonthly ? `${fileKey}:${month}` : fileKey;
+        onDataProcessed(finalFileKey, result);
         toast({
-          title: 'Error',
-          description: 'Failed to read the selected file.',
-          variant: 'destructive',
+            title: `"${file.name}" processed`,
+            description: `${result.rows.length} rows loaded from sheet "${selectedSheet}". Remember to save all changes.`,
         });
-        setIsLoading(false);
-      };
     } catch (error) {
-      console.error('File upload error:', error);
-      toast({
+        console.error('Error processing file:', error);
+        toast({
         title: 'Error',
-        description: 'An unexpected error occurred during file upload.',
+        description:
+            'Failed to process the Excel file. Please ensure it is a valid .xlsx or .xls file.',
         variant: 'destructive',
-      });
-      setIsLoading(false);
+        });
+    } finally {
+        setIsLoading(false);
     }
   };
 
@@ -119,9 +167,9 @@ function ExcelUploadSection({
           <CardTitle className="text-xl">{title}</CardTitle>
           <CardDescription>{description}</CardDescription>
         </CardHeader>
-        <CardContent>
-            {isMonthly && (
-                <div className="mb-4">
+        <CardContent className="space-y-4">
+           {isMonthly && (
+                <div>
                     <Label htmlFor={`month-select-${fileKey}`}>Select Month</Label>
                     <Input 
                         id={`month-select-${fileKey}`} 
@@ -132,28 +180,71 @@ function ExcelUploadSection({
                     />
                 </div>
             )}
-          <div className="grid w-full max-w-sm items-center gap-2">
-            <Label htmlFor={`excel-upload-${fileKey}`}>{`Upload ${title} Data`}</Label>
-            <div className="flex gap-2">
-              <Input
+          <div>
+            <Label htmlFor={`excel-upload-${fileKey}`}>1. Upload Excel File</Label>
+            <Input
                 id={`excel-upload-${fileKey}`}
                 type="file"
                 accept=".xlsx, .xls"
                 onChange={handleFileChange}
-                className="flex-grow"
-              />
-              <Button onClick={handleFileUpload} disabled={isLoading || !file}>
-                {isLoading ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <Upload className="mr-2 h-4 w-4" />
-                )}
-                Process
-              </Button>
-            </div>
-            <p className="text-xs text-muted-foreground">Process the file here, then click the main 'Save Changes' button to update the dashboard.</p>
+            />
           </div>
 
+          {isLoading && !sheetNames.length && <Loader2 className="h-6 w-6 animate-spin" />}
+
+          {sheetNames.length > 0 && (
+              <div className="space-y-4 p-4 border rounded-md bg-background/50">
+                <div>
+                    <Label>2. Select Sheet</Label>
+                    <Select onValueChange={handleSheetChange} value={selectedSheet}>
+                        <SelectTrigger>
+                            <SelectValue placeholder="Select a sheet" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {sheetNames.map(name => (
+                                <SelectItem key={name} value={name}>{name}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+
+                 {isLoading && !headers.length && <Loader2 className="h-6 w-6 animate-spin" />}
+
+                {headers.length > 0 && (
+                    <div className="space-y-4">
+                        <div className="space-y-2">
+                           <div className="flex items-center justify-between">
+                             <Label>3. Filter Data (Optional)</Label>
+                             <Button variant="outline" size="sm" onClick={handleAddFilter}><Filter className="mr-2 h-3 w-3" /> Add Filter</Button>
+                           </div>
+                           {filters.map((filter) => (
+                               <div key={filter.id} className="flex gap-2 items-center">
+                                   <Select onValueChange={(value) => handleFilterChange(filter.id, 'column', value)} value={filter.column}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select Column" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {headers.map(header => <SelectItem key={header} value={header}>{header}</SelectItem>)}
+                                        </SelectContent>
+                                   </Select>
+                                   <Input 
+                                        placeholder="Filter Value" 
+                                        value={filter.value} 
+                                        onChange={(e) => handleFilterChange(filter.id, 'value', e.target.value)}
+                                   />
+                                   <Button variant="ghost" size="icon" onClick={() => handleRemoveFilter(filter.id)}><X className="h-4 w-4 text-destructive"/></Button>
+                               </div>
+                           ))}
+                        </div>
+                        <Button onClick={handleProcessAndLoad} disabled={isLoading || !file}>
+                            {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
+                            Process & Load Data
+                        </Button>
+                        <p className="text-xs text-muted-foreground">Process the file here, then click the main 'Save All Changes' button to update the dashboard.</p>
+                    </div>
+                )}
+              </div>
+          )}
         </CardContent>
       </Card>
   );
@@ -254,10 +345,6 @@ export default function UpdateDataPage() {
 
   const handleExcelDataProcessed = async (key: string, processedData: ExcelData) => {
     setExcelData(prev => ({ ...prev, [key]: processedData }));
-    toast({
-        title: `Data processed for ${key}`,
-        description: 'Click "Save Changes" to update the dashboard.',
-    });
   };
 
   const handleSave = async () => {
