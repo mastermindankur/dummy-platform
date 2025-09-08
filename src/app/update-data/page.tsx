@@ -77,8 +77,8 @@ function ExcelUploadSection({
             setSheetNames(names);
             if (names.length > 0) {
                 // Automatically select first sheet and process headers
-                await handleSheetChange(names[0]);
                 setSelectedSheet(names[0]);
+                await handleSheetChange(names[0], dataUri);
             }
         } catch (error) {
             console.error('Error processing file for sheet names:', error);
@@ -89,15 +89,15 @@ function ExcelUploadSection({
     }
   };
 
-  const handleSheetChange = async (sheetName: string) => {
+  const handleSheetChange = async (sheetName: string, dataUri = fileDataUri) => {
     setSelectedSheet(sheetName);
     setHeaders([]); // Reset headers and filters if sheet changes
     setFilters([]);
     
-    if (!fileDataUri) return;
+    if (!dataUri) return;
     setIsLoading(true);
     try {
-        const result = await processExcelFile(fileDataUri, sheetName);
+        const result = await processExcelFile(dataUri, sheetName);
         setHeaders(result.headers);
     } catch(error) {
         console.error('Error processing sheet for headers:', error);
@@ -198,7 +198,7 @@ function ExcelUploadSection({
               <div className="space-y-4 p-4 border rounded-md bg-background/50">
                 <div>
                     <Label>2. Select Sheet</Label>
-                    <Select onValueChange={handleSheetChange} value={selectedSheet}>
+                    <Select onValueChange={(value) => handleSheetChange(value)} value={selectedSheet}>
                         <SelectTrigger>
                             <SelectValue placeholder="Select a sheet" />
                         </SelectTrigger>
