@@ -1140,7 +1140,7 @@ function JiraAssistantAdoptionPage() {
                                                                         type: "monotone",
                                                                         dataKey: "Total",
                                                                         stroke: "#ff7300",
-                                                                        strokeWidth: 3,
+                                                                        strokeWidth: 4,
                                                                         name: "Total Adoption"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
@@ -1300,7 +1300,7 @@ function JiraAssistantAdoptionPage() {
                                                                         type: "monotone",
                                                                         dataKey: "Total",
                                                                         stroke: "#ff7300",
-                                                                        strokeWidth: 3,
+                                                                        strokeWidth: 4,
                                                                         name: "Total Adoption"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
