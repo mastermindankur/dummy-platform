@@ -704,6 +704,10 @@ body {
   max-height: 100vh;
 }
 
+.max-h-\[600px\] {
+  max-height: 600px;
+}
+
 .min-h-0 {
   min-height: 0;
 }
@@ -722,6 +726,10 @@ body {
 
 .min-h-svh {
   min-height: 100svh;
+}
+
+.min-h-\[300px\] {
+  min-height: 300px;
 }
 
 .w-0 {

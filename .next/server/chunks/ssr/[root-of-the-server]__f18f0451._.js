@@ -401,11 +401,10 @@ async function readData() {
                         } : subItem)
                 }));
         }
-        // Attach row counts for new 'Building Reliable Products' sub-items
+        // Attach row counts for 'Building Reliable Products' sub-items (except Maintenance Screens)
         const newAutoCalcKeys = [
             'regression-testing-automation',
             'junit-adoption',
-            'maintenance-screens',
             'api-performance'
         ];
         for (const key of newAutoCalcKeys){
@@ -420,6 +419,18 @@ async function readData() {
                             } : subItem)
                     }));
             }
+        }
+        // Attach implemented screens count for Maintenance Screens
+        const maintenanceScreensData = dataCache['maintenance-screens'];
+        if (maintenanceScreensData && maintenanceScreensData.rows.length > 0) {
+            const implementedScreens = maintenanceScreensData.rows.filter((row)=>row['Status'] === 'Implemented').length;
+            jsonData = jsonData.map((pillar)=>({
+                    ...pillar,
+                    subItems: pillar.subItems.map((subItem)=>subItem.dataKey === 'maintenance-screens' ? {
+                            ...subItem,
+                            percentageComplete: implementedScreens
+                        } : subItem)
+                }));
         }
         // Attach Jira Assistant Adoption data
         const jiraAdoptionData = await readMonthlyData('jira-assistant-adoption');
@@ -889,7 +900,8 @@ const detailPageLinks = {
     "squad-onboarding": "/pillar/making-design-resilient/squad-onboarding",
     "arc-trainings": "/pillar/making-design-resilient/arc-trainings",
     "app-sherpas": "/pillar/making-design-resilient/app-sherpas",
-    "jira-assistant-adoption": "/pillar/making-design-resilient/jira-assistant-adoption"
+    "jira-assistant-adoption": "/pillar/making-design-resilient/jira-assistant-adoption",
+    "maintenance-screens": "/pillar/building-reliable-products/maintenance-screens"
 };
 function SubItemCard({ item, pillarName }) {
     const progressValue = item.annualTarget > 0 ? item.percentageComplete / item.annualTarget * 100 : 0;
@@ -904,7 +916,7 @@ function SubItemCard({ item, pillarName }) {
                         children: item.name
                     }, void 0, false, {
                         fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                        lineNumber: 44,
+                        lineNumber: 45,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["CardDescription"], {
@@ -912,13 +924,13 @@ function SubItemCard({ item, pillarName }) {
                         children: item.description
                     }, void 0, false, {
                         fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                        lineNumber: 45,
+                        lineNumber: 46,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                lineNumber: 43,
+                lineNumber: 44,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -932,7 +944,7 @@ function SubItemCard({ item, pillarName }) {
                                 children: item.metricName
                             }, void 0, false, {
                                 fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                                lineNumber: 49,
+                                lineNumber: 50,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -946,13 +958,13 @@ function SubItemCard({ item, pillarName }) {
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                                lineNumber: 50,
+                                lineNumber: 51,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                        lineNumber: 48,
+                        lineNumber: 49,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$progress$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["Progress"], {
@@ -960,7 +972,7 @@ function SubItemCard({ item, pillarName }) {
                         className: "h-2"
                     }, void 0, false, {
                         fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                        lineNumber: 52,
+                        lineNumber: 53,
                         columnNumber: 9
                     }, this),
                     item.dataKey === 'tech-sphere-sessions' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -971,7 +983,7 @@ function SubItemCard({ item, pillarName }) {
                                 children: "Total Participants"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                                lineNumber: 55,
+                                lineNumber: 56,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -979,13 +991,13 @@ function SubItemCard({ item, pillarName }) {
                                 children: item.totalParticipants
                             }, void 0, false, {
                                 fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                                lineNumber: 56,
+                                lineNumber: 57,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                        lineNumber: 54,
+                        lineNumber: 55,
                         columnNumber: 11
                     }, this),
                     item.dataKey === 'arc-trainings' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -996,7 +1008,7 @@ function SubItemCard({ item, pillarName }) {
                                 children: "Total Participants"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                                lineNumber: 61,
+                                lineNumber: 62,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1004,19 +1016,19 @@ function SubItemCard({ item, pillarName }) {
                                 children: item.totalParticipants
                             }, void 0, false, {
                                 fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                                lineNumber: 62,
+                                lineNumber: 63,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                        lineNumber: 60,
+                        lineNumber: 61,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                lineNumber: 47,
+                lineNumber: 48,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["CardFooter"], {
@@ -1026,7 +1038,7 @@ function SubItemCard({ item, pillarName }) {
                         status: item.status
                     }, void 0, false, {
                         fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                        lineNumber: 67,
+                        lineNumber: 68,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1043,35 +1055,35 @@ function SubItemCard({ item, pillarName }) {
                                         className: "ml-2 h-4 w-4"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                                        lineNumber: 73,
+                                        lineNumber: 74,
                                         columnNumber: 17
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                                lineNumber: 71,
+                                lineNumber: 72,
                                 columnNumber: 15
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                            lineNumber: 70,
+                            lineNumber: 71,
                             columnNumber: 13
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                        lineNumber: 68,
+                        lineNumber: 69,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-                lineNumber: 66,
+                lineNumber: 67,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/components/dashboard/sub-item-card.tsx",
-        lineNumber: 42,
+        lineNumber: 43,
         columnNumber: 5
     }, this);
 }

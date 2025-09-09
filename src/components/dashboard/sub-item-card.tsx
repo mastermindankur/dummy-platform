@@ -29,7 +29,8 @@ const detailPageLinks: Record<string, string> = {
     "squad-onboarding": "/pillar/making-design-resilient/squad-onboarding",
     "arc-trainings": "/pillar/making-design-resilient/arc-trainings",
     "app-sherpas": "/pillar/making-design-resilient/app-sherpas",
-    "jira-assistant-adoption": "/pillar/making-design-resilient/jira-assistant-adoption"
+    "jira-assistant-adoption": "/pillar/making-design-resilient/jira-assistant-adoption",
+    "maintenance-screens": "/pillar/building-reliable-products/maintenance-screens"
 };
 
 
