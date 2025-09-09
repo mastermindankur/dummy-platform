@@ -107,8 +107,26 @@ async function readData() {
     try {
         const fileContent = await __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["promises"].readFile(dataFilePath('data.json'), 'utf-8');
         let jsonData = JSON.parse(fileContent);
+        const autoCalculatedKeys = [
+            'tech-sphere-sessions',
+            'arc-trainings',
+            'app-sherpas',
+            'explore-resiliency-program',
+            'blogs-open-source',
+            'hackathons',
+            'industry-events',
+            'squad-onboarding',
+            'regression-testing-automation',
+            'junit-adoption',
+            'maintenance-screens',
+            'api-performance'
+        ];
+        const dataCache = {};
+        for (const key of autoCalculatedKeys){
+            dataCache[key] = await readExcelData(key);
+        }
         // Attach total participants for tech sphere sessions
-        const techSessionsData = await readExcelData('tech-sphere-sessions');
+        const techSessionsData = dataCache['tech-sphere-sessions'];
         if (techSessionsData && techSessionsData.rows.length > 0) {
             const totalParticipants = techSessionsData.rows.reduce((sum, row)=>sum + (Number(row['Participation']) || 0), 0);
             jsonData = jsonData.map((pillar)=>({
@@ -120,7 +138,7 @@ async function readData() {
                 }));
         }
         // Attach total participants and session count for ARC trainings
-        const arcTrainingsData = await readExcelData('arc-trainings');
+        const arcTrainingsData = dataCache['arc-trainings'];
         if (arcTrainingsData && arcTrainingsData.rows.length > 0) {
             const totalParticipants = arcTrainingsData.rows.reduce((sum, row)=>sum + (Number(row['Participation']) || 0), 0);
             const sessionsCount = arcTrainingsData.rows.length;
@@ -134,7 +152,7 @@ async function readData() {
                 }));
         }
         // Attach App Sherpas count
-        const appSherpasData = await readExcelData('app-sherpas');
+        const appSherpasData = dataCache['app-sherpas'];
         if (appSherpasData && appSherpasData.rows.length > 0) {
             const sherpasCount = appSherpasData.rows.length;
             jsonData = jsonData.map((pillar)=>({
@@ -146,7 +164,7 @@ async function readData() {
                 }));
         }
         // Attach completed assessment count for Explore Resiliency Program
-        const resiliencyData = await readExcelData('explore-resiliency-program');
+        const resiliencyData = dataCache['explore-resiliency-program'];
         if (resiliencyData && resiliencyData.rows.length > 0) {
             const completedAssessments = resiliencyData.rows.filter((row)=>row['Status'] === 'Assessment Completed').length;
             jsonData = jsonData.map((pillar)=>({
@@ -158,7 +176,7 @@ async function readData() {
                 }));
         }
         // Attach published blogs count for DTI Tech Blogs
-        const blogsData = await readExcelData('dti-tech-blogs');
+        const blogsData = dataCache['blogs-open-source'];
         if (blogsData) {
             const publishedBlogs = blogsData.rows.length;
             jsonData = jsonData.map((pillar)=>({
@@ -170,7 +188,7 @@ async function readData() {
                 }));
         }
         // Attach hackathons count
-        const hackathonsData = await readExcelData('hackathons');
+        const hackathonsData = dataCache['hackathons'];
         if (hackathonsData && hackathonsData.rows.length > 0) {
             const hackathonsCount = hackathonsData.rows.length;
             jsonData = jsonData.map((pillar)=>({
@@ -182,7 +200,7 @@ async function readData() {
                 }));
         }
         // Attach industry events count
-        const industryEventsData = await readExcelData('industry-events');
+        const industryEventsData = dataCache['industry-events'];
         if (industryEventsData && industryEventsData.rows.length > 0) {
             const industryEventsCount = industryEventsData.rows.length;
             jsonData = jsonData.map((pillar)=>({
@@ -194,7 +212,7 @@ async function readData() {
                 }));
         }
         // Attach SQUAD onboarding count
-        const squadData = await readExcelData('squad-onboarding');
+        const squadData = dataCache['squad-onboarding'];
         if (squadData && squadData.rows.length > 0) {
             const onboardedCount = squadData.rows.length;
             jsonData = jsonData.map((pillar)=>({
@@ -204,6 +222,26 @@ async function readData() {
                             percentageComplete: onboardedCount
                         } : subItem)
                 }));
+        }
+        // Attach row counts for new 'Building Reliable Products' sub-items
+        const newAutoCalcKeys = [
+            'regression-testing-automation',
+            'junit-adoption',
+            'maintenance-screens',
+            'api-performance'
+        ];
+        for (const key of newAutoCalcKeys){
+            const data = dataCache[key];
+            if (data && data.rows.length > 0) {
+                const rowCount = data.rows.length;
+                jsonData = jsonData.map((pillar)=>({
+                        ...pillar,
+                        subItems: pillar.subItems.map((subItem)=>subItem.dataKey === key ? {
+                                ...subItem,
+                                percentageComplete: rowCount
+                            } : subItem)
+                    }));
+            }
         }
         // Attach Jira Assistant Adoption data
         const jiraAdoptionData = await readMonthlyData('jira-assistant-adoption');
@@ -416,6 +454,10 @@ async function GET(request) {
             }
             if (fileKey === 'app-sherpas') {
                 const data = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["readExcelData"])('app-sherpas');
+                return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json(data);
+            }
+            if (fileKey === 'regression-testing-automation' || fileKey === 'junit-adoption' || fileKey === 'maintenance-screens' || fileKey === 'api-performance') {
+                const data = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["readExcelData"])(fileKey);
                 return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json(data);
             }
             const data = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["readExcelData"])(fileKey);

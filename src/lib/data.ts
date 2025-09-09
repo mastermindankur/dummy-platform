@@ -154,8 +154,8 @@ async function readData(): Promise<Pillar[]> {
         }));
     }
 
-    // Attach row counts for new 'Building Reliable Products' sub-items
-    const newAutoCalcKeys = ['regression-testing-automation', 'junit-adoption', 'maintenance-screens', 'api-performance'];
+    // Attach row counts for 'Building Reliable Products' sub-items (except Maintenance Screens)
+    const newAutoCalcKeys = ['regression-testing-automation', 'junit-adoption', 'api-performance'];
     for (const key of newAutoCalcKeys) {
         const data = dataCache[key];
         if (data && data.rows.length > 0) {
@@ -169,6 +169,20 @@ async function readData(): Promise<Pillar[]> {
                 ),
             }));
         }
+    }
+    
+    // Attach implemented screens count for Maintenance Screens
+    const maintenanceScreensData = dataCache['maintenance-screens'];
+    if (maintenanceScreensData && maintenanceScreensData.rows.length > 0) {
+        const implementedScreens = maintenanceScreensData.rows.filter(row => row['Status'] === 'Implemented').length;
+        jsonData = jsonData.map(pillar => ({
+            ...pillar,
+            subItems: pillar.subItems.map(subItem => 
+                subItem.dataKey === 'maintenance-screens' 
+                ? { ...subItem, percentageComplete: implementedScreens } 
+                : subItem
+            ),
+        }));
     }
 
 

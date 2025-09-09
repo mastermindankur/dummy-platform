@@ -401,11 +401,10 @@ async function readData() {
                         } : subItem)
                 }));
         }
-        // Attach row counts for new 'Building Reliable Products' sub-items
+        // Attach row counts for 'Building Reliable Products' sub-items (except Maintenance Screens)
         const newAutoCalcKeys = [
             'regression-testing-automation',
             'junit-adoption',
-            'maintenance-screens',
             'api-performance'
         ];
         for (const key of newAutoCalcKeys){
@@ -420,6 +419,18 @@ async function readData() {
                             } : subItem)
                     }));
             }
+        }
+        // Attach implemented screens count for Maintenance Screens
+        const maintenanceScreensData = dataCache['maintenance-screens'];
+        if (maintenanceScreensData && maintenanceScreensData.rows.length > 0) {
+            const implementedScreens = maintenanceScreensData.rows.filter((row)=>row['Status'] === 'Implemented').length;
+            jsonData = jsonData.map((pillar)=>({
+                    ...pillar,
+                    subItems: pillar.subItems.map((subItem)=>subItem.dataKey === 'maintenance-screens' ? {
+                            ...subItem,
+                            percentageComplete: implementedScreens
+                        } : subItem)
+                }));
         }
         // Attach Jira Assistant Adoption data
         const jiraAdoptionData = await readMonthlyData('jira-assistant-adoption');
