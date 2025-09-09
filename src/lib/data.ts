@@ -145,13 +145,28 @@ async function readData(): Promise<Pillar[]> {
     const jiraAdoptionData = await readMonthlyData('jira-assistant-adoption');
     if (jiraAdoptionData && Object.keys(jiraAdoptionData).length > 0) {
         const allRows = Object.values(jiraAdoptionData).flatMap(monthData => monthData.rows);
-        const uniqueUsers = new Set(allRows.map(row => row['User ID'])).size;
+        const totalUsers = new Set<string>();
+        const activeUsers = new Set<string>();
+
+        allRows.forEach(row => {
+            const userId = row['1bankid'] as string;
+            if (userId) {
+                totalUsers.add(userId);
+                if (row['is_created_via_JA'] === 1) {
+                    activeUsers.add(userId);
+                }
+            }
+        });
+
+        const overallAdoption = totalUsers.size > 0 
+            ? Math.round((activeUsers.size / totalUsers.size) * 100)
+            : 0;
 
         jsonData = jsonData.map(pillar => ({
             ...pillar,
             subItems: pillar.subItems.map(subItem => 
                 subItem.dataKey === 'jira-assistant-adoption' 
-                ? { ...subItem, percentageComplete: uniqueUsers } 
+                ? { ...subItem, percentageComplete: overallAdoption } 
                 : subItem
             ),
         }));

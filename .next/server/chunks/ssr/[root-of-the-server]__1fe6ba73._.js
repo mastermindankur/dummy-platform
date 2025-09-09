@@ -736,8 +736,8 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$hooks$2f$use$2d$toast
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/components/ui/button.tsx [app-ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/client/app-dir/link.js [app-ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$chart$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/components/ui/chart.tsx [app-ssr] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$chart$2f$LineChart$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/recharts/es6/chart/LineChart.js [app-ssr] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$Line$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/recharts/es6/cartesian/Line.js [app-ssr] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$chart$2f$BarChart$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/recharts/es6/chart/BarChart.js [app-ssr] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$Bar$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/recharts/es6/cartesian/Bar.js [app-ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$XAxis$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/recharts/es6/cartesian/XAxis.js [app-ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$YAxis$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/recharts/es6/cartesian/YAxis.js [app-ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$CartesianGrid$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/recharts/es6/cartesian/CartesianGrid.js [app-ssr] (ecmascript)");
@@ -1080,7 +1080,7 @@ function JiraAssistantAdoptionPage() {
                                                         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$component$2f$ResponsiveContainer$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["ResponsiveContainer"], {
                                                             width: "100%",
                                                             height: "100%",
-                                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$chart$2f$LineChart$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["LineChart"], {
+                                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$chart$2f$BarChart$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["BarChart"], {
                                                                 data: chartData,
                                                                 margin: {
                                                                     top: 5,
@@ -1136,22 +1136,18 @@ function JiraAssistantAdoptionPage() {
                                                                         lineNumber: 307,
                                                                         columnNumber: 41
                                                                     }, this),
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$Line$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Line"], {
-                                                                        type: "monotone",
+                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$Bar$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Bar"], {
                                                                         dataKey: "Total",
-                                                                        stroke: "#ff7300",
-                                                                        strokeWidth: 4,
+                                                                        fill: "#ff7300",
                                                                         name: "Total Adoption"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
                                                                         lineNumber: 308,
                                                                         columnNumber: 41
                                                                     }, this),
-                                                                    platformKeys.map((key, index)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$Line$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Line"], {
-                                                                            type: "monotone",
+                                                                    platformKeys.map((key, index)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$Bar$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Bar"], {
                                                                             dataKey: key,
-                                                                            stroke: chartColors[index % chartColors.length],
-                                                                            strokeWidth: 2,
+                                                                            fill: chartColors[index % chartColors.length],
                                                                             name: key
                                                                         }, key, false, {
                                                                             fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
@@ -1179,7 +1175,7 @@ function JiraAssistantAdoptionPage() {
                                                         children: "No data available to display chart."
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                        lineNumber: 324,
+                                                        lineNumber: 322,
                                                         columnNumber: 30
                                                     }, this)
                                                 ]
@@ -1202,20 +1198,20 @@ function JiraAssistantAdoptionPage() {
                                                         children: "JA Test Cases Adoption Trend"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                        lineNumber: 332,
+                                                        lineNumber: 330,
                                                         columnNumber: 25
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardDescription"], {
                                                         children: "Month-on-month test case adoption percentage."
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                        lineNumber: 333,
+                                                        lineNumber: 331,
                                                         columnNumber: 25
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                lineNumber: 331,
+                                                lineNumber: 329,
                                                 columnNumber: 21
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -1226,12 +1222,12 @@ function JiraAssistantAdoptionPage() {
                                                             className: "h-8 w-8 animate-spin text-muted-foreground"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                            lineNumber: 338,
+                                                            lineNumber: 336,
                                                             columnNumber: 33
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                        lineNumber: 337,
+                                                        lineNumber: 335,
                                                         columnNumber: 29
                                                     }, this),
                                                     !isLoading && testCaseChartData.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$chart$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["ChartContainer"], {
@@ -1240,7 +1236,7 @@ function JiraAssistantAdoptionPage() {
                                                         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$component$2f$ResponsiveContainer$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["ResponsiveContainer"], {
                                                             width: "100%",
                                                             height: "100%",
-                                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$chart$2f$LineChart$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["LineChart"], {
+                                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$chart$2f$BarChart$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["BarChart"], {
                                                                 data: testCaseChartData,
                                                                 margin: {
                                                                     top: 5,
@@ -1253,14 +1249,14 @@ function JiraAssistantAdoptionPage() {
                                                                         strokeDasharray: "3 3"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                                        lineNumber: 345,
+                                                                        lineNumber: 343,
                                                                         columnNumber: 41
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$XAxis$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["XAxis"], {
                                                                         dataKey: "name"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                                        lineNumber: 346,
+                                                                        lineNumber: 344,
                                                                         columnNumber: 41
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$YAxis$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["YAxis"], {
@@ -1275,7 +1271,7 @@ function JiraAssistantAdoptionPage() {
                                                                         ]
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                                        lineNumber: 347,
+                                                                        lineNumber: 345,
                                                                         columnNumber: 41
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$component$2f$Tooltip$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Tooltip"], {
@@ -1283,55 +1279,51 @@ function JiraAssistantAdoptionPage() {
                                                                             indicator: "dot"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                                            lineNumber: 348,
+                                                                            lineNumber: 346,
                                                                             columnNumber: 59
                                                                         }, void 0)
+                                                                    }, void 0, false, {
+                                                                        fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
+                                                                        lineNumber: 346,
+                                                                        columnNumber: 41
+                                                                    }, this),
+                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$chart$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["ChartLegend"], {}, void 0, false, {
+                                                                        fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
+                                                                        lineNumber: 347,
+                                                                        columnNumber: 41
+                                                                    }, this),
+                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$Bar$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Bar"], {
+                                                                        dataKey: "Total",
+                                                                        fill: "#ff7300",
+                                                                        name: "Total Adoption"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
                                                                         lineNumber: 348,
                                                                         columnNumber: 41
                                                                     }, this),
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$chart$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["ChartLegend"], {}, void 0, false, {
-                                                                        fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                                        lineNumber: 349,
-                                                                        columnNumber: 41
-                                                                    }, this),
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$Line$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Line"], {
-                                                                        type: "monotone",
-                                                                        dataKey: "Total",
-                                                                        stroke: "#ff7300",
-                                                                        strokeWidth: 4,
-                                                                        name: "Total Adoption"
-                                                                    }, void 0, false, {
-                                                                        fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                                        lineNumber: 350,
-                                                                        columnNumber: 41
-                                                                    }, this),
-                                                                    testCasePlatformKeys.map((key, index)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$Line$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Line"], {
-                                                                            type: "monotone",
+                                                                    testCasePlatformKeys.map((key, index)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$Bar$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Bar"], {
                                                                             dataKey: key,
-                                                                            stroke: chartColors[index % chartColors.length],
-                                                                            strokeWidth: 2,
+                                                                            fill: chartColors[index % chartColors.length],
                                                                             name: key
                                                                         }, key, false, {
                                                                             fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                                            lineNumber: 352,
+                                                                            lineNumber: 350,
                                                                             columnNumber: 45
                                                                         }, this))
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                                lineNumber: 344,
+                                                                lineNumber: 342,
                                                                 columnNumber: 37
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                            lineNumber: 343,
+                                                            lineNumber: 341,
                                                             columnNumber: 33
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                        lineNumber: 342,
+                                                        lineNumber: 340,
                                                         columnNumber: 29
                                                     }, this),
                                                     !isLoading && testCaseChartData.length === 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1339,19 +1331,19 @@ function JiraAssistantAdoptionPage() {
                                                         children: "No data available to display chart."
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                        lineNumber: 366,
+                                                        lineNumber: 362,
                                                         columnNumber: 30
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                lineNumber: 335,
+                                                lineNumber: 333,
                                                 columnNumber: 21
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                        lineNumber: 330,
+                                        lineNumber: 328,
                                         columnNumber: 17
                                     }, this)
                                 ]
@@ -1368,20 +1360,20 @@ function JiraAssistantAdoptionPage() {
                                                 children: "User Adoption"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                lineNumber: 376,
+                                                lineNumber: 372,
                                                 columnNumber: 21
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardDescription"], {
                                                 children: "Month-on-month user adoption of Jira Assistant, broken down by platform."
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                lineNumber: 377,
+                                                lineNumber: 373,
                                                 columnNumber: 21
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                        lineNumber: 375,
+                                        lineNumber: 371,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -1392,12 +1384,12 @@ function JiraAssistantAdoptionPage() {
                                                     className: "h-8 w-8 animate-spin text-muted-foreground"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                    lineNumber: 384,
+                                                    lineNumber: 380,
                                                     columnNumber: 25
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                lineNumber: 383,
+                                                lineNumber: 379,
                                                 columnNumber: 21
                                             }, this),
                                             !isLoading && (!monthlyData || Object.keys(monthlyData).length === 0) && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1405,7 +1397,7 @@ function JiraAssistantAdoptionPage() {
                                                 children: "No data has been uploaded for this section yet."
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                lineNumber: 389,
+                                                lineNumber: 385,
                                                 columnNumber: 21
                                             }, this),
                                             !isLoading && monthlyData && Object.keys(monthlyData).length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1422,7 +1414,7 @@ function JiraAssistantAdoptionPage() {
                                                                             children: "Platform"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                                            lineNumber: 399,
+                                                                            lineNumber: 395,
                                                                             columnNumber: 41
                                                                         }, this),
                                                                         sortedMonths.map((month)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TableHead"], {
@@ -1431,13 +1423,13 @@ function JiraAssistantAdoptionPage() {
                                                                                 children: month
                                                                             }, month, false, {
                                                                                 fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                                                lineNumber: 401,
+                                                                                lineNumber: 397,
                                                                                 columnNumber: 45
                                                                             }, this))
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                                    lineNumber: 398,
+                                                                    lineNumber: 394,
                                                                     columnNumber: 37
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TableRow"], {
@@ -1448,7 +1440,7 @@ function JiraAssistantAdoptionPage() {
                                                                                     children: "Total Users"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                                                    lineNumber: 409,
+                                                                                    lineNumber: 405,
                                                                                     columnNumber: 49
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TableHead"], {
@@ -1456,7 +1448,7 @@ function JiraAssistantAdoptionPage() {
                                                                                     children: "Active Users"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                                                    lineNumber: 410,
+                                                                                    lineNumber: 406,
                                                                                     columnNumber: 49
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TableHead"], {
@@ -1464,24 +1456,24 @@ function JiraAssistantAdoptionPage() {
                                                                                     children: "Adoption %"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                                                    lineNumber: 411,
+                                                                                    lineNumber: 407,
                                                                                     columnNumber: 49
                                                                                 }, this)
                                                                             ]
                                                                         }, `${month}-sub`, true, {
                                                                             fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                                            lineNumber: 408,
+                                                                            lineNumber: 404,
                                                                             columnNumber: 45
                                                                         }, this))
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                                    lineNumber: 406,
+                                                                    lineNumber: 402,
                                                                     columnNumber: 38
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                            lineNumber: 397,
+                                                            lineNumber: 393,
                                                             columnNumber: 33
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TableBody"], {
@@ -1493,7 +1485,7 @@ function JiraAssistantAdoptionPage() {
                                                                                 children: item.platform
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                                                lineNumber: 419,
+                                                                                lineNumber: 415,
                                                                                 columnNumber: 45
                                                                             }, this),
                                                                             sortedMonths.map((month)=>{
@@ -1505,7 +1497,7 @@ function JiraAssistantAdoptionPage() {
                                                                                             children: monthData?.totalUsers ?? 'N/A'
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                                                            lineNumber: 424,
+                                                                                            lineNumber: 420,
                                                                                             columnNumber: 57
                                                                                         }, this),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TableCell"], {
@@ -1513,7 +1505,7 @@ function JiraAssistantAdoptionPage() {
                                                                                             children: monthData?.activeUsers ?? 'N/A'
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                                                            lineNumber: 425,
+                                                                                            lineNumber: 421,
                                                                                             columnNumber: 57
                                                                                         }, this),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TableCell"], {
@@ -1521,20 +1513,20 @@ function JiraAssistantAdoptionPage() {
                                                                                             children: monthData?.adoption !== undefined ? `${monthData.adoption.toFixed(2)}%` : 'N/A'
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                                                            lineNumber: 426,
+                                                                                            lineNumber: 422,
                                                                                             columnNumber: 57
                                                                                         }, this)
                                                                                     ]
                                                                                 }, `${item.platform}-${month}`, true, {
                                                                                     fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                                                    lineNumber: 423,
+                                                                                    lineNumber: 419,
                                                                                     columnNumber: 52
                                                                                 }, this);
                                                                             })
                                                                         ]
                                                                     }, item.platform, true, {
                                                                         fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                                        lineNumber: 418,
+                                                                        lineNumber: 414,
                                                                         columnNumber: 41
                                                                     }, this)),
                                                                 totalRow && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TableRow"], {
@@ -1545,7 +1537,7 @@ function JiraAssistantAdoptionPage() {
                                                                             children: totalRow.platform
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                                            lineNumber: 434,
+                                                                            lineNumber: 430,
                                                                             columnNumber: 45
                                                                         }, this),
                                                                         sortedMonths.map((month)=>{
@@ -1557,7 +1549,7 @@ function JiraAssistantAdoptionPage() {
                                                                                         children: monthData?.totalUsers ?? 'N/A'
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                                                        lineNumber: 439,
+                                                                                        lineNumber: 435,
                                                                                         columnNumber: 57
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TableCell"], {
@@ -1565,7 +1557,7 @@ function JiraAssistantAdoptionPage() {
                                                                                         children: monthData?.activeUsers ?? 'N/A'
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                                                        lineNumber: 440,
+                                                                                        lineNumber: 436,
                                                                                         columnNumber: 57
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TableCell"], {
@@ -1573,49 +1565,49 @@ function JiraAssistantAdoptionPage() {
                                                                                         children: monthData?.adoption !== undefined ? `${monthData.adoption.toFixed(2)}%` : 'N/A'
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                                                        lineNumber: 441,
+                                                                                        lineNumber: 437,
                                                                                         columnNumber: 57
                                                                                     }, this)
                                                                                 ]
                                                                             }, `total-${month}`, true, {
                                                                                 fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                                                lineNumber: 438,
+                                                                                lineNumber: 434,
                                                                                 columnNumber: 52
                                                                             }, this);
                                                                         })
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                                    lineNumber: 433,
+                                                                    lineNumber: 429,
                                                                     columnNumber: 41
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                            lineNumber: 416,
+                                                            lineNumber: 412,
                                                             columnNumber: 33
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                    lineNumber: 396,
+                                                    lineNumber: 392,
                                                     columnNumber: 29
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                lineNumber: 395,
+                                                lineNumber: 391,
                                                 columnNumber: 25
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                        lineNumber: 381,
+                                        lineNumber: 377,
                                         columnNumber: 17
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                lineNumber: 374,
+                                lineNumber: 370,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
@@ -1626,20 +1618,20 @@ function JiraAssistantAdoptionPage() {
                                                 children: "Jira Assist Test Cases Adoption"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                lineNumber: 456,
+                                                lineNumber: 452,
                                                 columnNumber: 21
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardDescription"], {
                                                 children: "Month-on-month test case adoption of Jira Assistant, broken down by Platform."
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                lineNumber: 457,
+                                                lineNumber: 453,
                                                 columnNumber: 21
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                        lineNumber: 455,
+                                        lineNumber: 451,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -1650,12 +1642,12 @@ function JiraAssistantAdoptionPage() {
                                                     className: "h-8 w-8 animate-spin text-muted-foreground"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                    lineNumber: 462,
+                                                    lineNumber: 458,
                                                     columnNumber: 29
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                lineNumber: 461,
+                                                lineNumber: 457,
                                                 columnNumber: 25
                                             }, this),
                                             !isLoading && testCaseReportData.length === 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1663,7 +1655,7 @@ function JiraAssistantAdoptionPage() {
                                                 children: "No test case data is available to display."
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                lineNumber: 466,
+                                                lineNumber: 462,
                                                 columnNumber: 26
                                             }, this),
                                             !isLoading && testCaseReportData.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1680,7 +1672,7 @@ function JiraAssistantAdoptionPage() {
                                                                             children: "Platform"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                                            lineNumber: 475,
+                                                                            lineNumber: 471,
                                                                             columnNumber: 41
                                                                         }, this),
                                                                         sortedMonths.map((month)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TableHead"], {
@@ -1689,13 +1681,13 @@ function JiraAssistantAdoptionPage() {
                                                                                 children: month
                                                                             }, month, false, {
                                                                                 fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                                                lineNumber: 477,
+                                                                                lineNumber: 473,
                                                                                 columnNumber: 45
                                                                             }, this))
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                                    lineNumber: 474,
+                                                                    lineNumber: 470,
                                                                     columnNumber: 37
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TableRow"], {
@@ -1706,7 +1698,7 @@ function JiraAssistantAdoptionPage() {
                                                                                     children: "Total Cases"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                                                    lineNumber: 485,
+                                                                                    lineNumber: 481,
                                                                                     columnNumber: 49
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TableHead"], {
@@ -1714,7 +1706,7 @@ function JiraAssistantAdoptionPage() {
                                                                                     children: "JA Cases"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                                                    lineNumber: 486,
+                                                                                    lineNumber: 482,
                                                                                     columnNumber: 49
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TableHead"], {
@@ -1722,24 +1714,24 @@ function JiraAssistantAdoptionPage() {
                                                                                     children: "Adoption %"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                                                    lineNumber: 487,
+                                                                                    lineNumber: 483,
                                                                                     columnNumber: 49
                                                                                 }, this)
                                                                             ]
                                                                         }, `${month}-sub-test`, true, {
                                                                             fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                                            lineNumber: 484,
+                                                                            lineNumber: 480,
                                                                             columnNumber: 45
                                                                         }, this))
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                                    lineNumber: 482,
+                                                                    lineNumber: 478,
                                                                     columnNumber: 38
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                            lineNumber: 473,
+                                                            lineNumber: 469,
                                                             columnNumber: 33
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TableBody"], {
@@ -1751,7 +1743,7 @@ function JiraAssistantAdoptionPage() {
                                                                                 children: item.platform
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                                                lineNumber: 495,
+                                                                                lineNumber: 491,
                                                                                 columnNumber: 45
                                                                             }, this),
                                                                             sortedMonths.map((month)=>{
@@ -1763,7 +1755,7 @@ function JiraAssistantAdoptionPage() {
                                                                                             children: monthData?.totalCases ?? 'N/A'
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                                                            lineNumber: 500,
+                                                                                            lineNumber: 496,
                                                                                             columnNumber: 57
                                                                                         }, this),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TableCell"], {
@@ -1771,7 +1763,7 @@ function JiraAssistantAdoptionPage() {
                                                                                             children: monthData?.jaCases ?? 'N/A'
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                                                            lineNumber: 501,
+                                                                                            lineNumber: 497,
                                                                                             columnNumber: 57
                                                                                         }, this),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TableCell"], {
@@ -1779,20 +1771,20 @@ function JiraAssistantAdoptionPage() {
                                                                                             children: monthData?.adoption !== undefined ? `${monthData.adoption.toFixed(2)}%` : 'N/A'
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                                                            lineNumber: 502,
+                                                                                            lineNumber: 498,
                                                                                             columnNumber: 57
                                                                                         }, this)
                                                                                     ]
                                                                                 }, `${item.platform}-${month}`, true, {
                                                                                     fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                                                    lineNumber: 499,
+                                                                                    lineNumber: 495,
                                                                                     columnNumber: 52
                                                                                 }, this);
                                                                             })
                                                                         ]
                                                                     }, item.platform, true, {
                                                                         fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                                        lineNumber: 494,
+                                                                        lineNumber: 490,
                                                                         columnNumber: 41
                                                                     }, this)),
                                                                 testCaseTotalRow && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TableRow"], {
@@ -1803,7 +1795,7 @@ function JiraAssistantAdoptionPage() {
                                                                             children: testCaseTotalRow.platform
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                                            lineNumber: 510,
+                                                                            lineNumber: 506,
                                                                             columnNumber: 45
                                                                         }, this),
                                                                         sortedMonths.map((month)=>{
@@ -1815,7 +1807,7 @@ function JiraAssistantAdoptionPage() {
                                                                                         children: monthData?.totalCases ?? 'N/A'
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                                                        lineNumber: 515,
+                                                                                        lineNumber: 511,
                                                                                         columnNumber: 57
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TableCell"], {
@@ -1823,7 +1815,7 @@ function JiraAssistantAdoptionPage() {
                                                                                         children: monthData?.jaCases ?? 'N/A'
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                                                        lineNumber: 516,
+                                                                                        lineNumber: 512,
                                                                                         columnNumber: 57
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TableCell"], {
@@ -1831,49 +1823,49 @@ function JiraAssistantAdoptionPage() {
                                                                                         children: monthData?.adoption !== undefined ? `${monthData.adoption.toFixed(2)}%` : 'N/A'
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                                                        lineNumber: 517,
+                                                                                        lineNumber: 513,
                                                                                         columnNumber: 57
                                                                                     }, this)
                                                                                 ]
                                                                             }, `total-test-${month}`, true, {
                                                                                 fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                                                lineNumber: 514,
+                                                                                lineNumber: 510,
                                                                                 columnNumber: 52
                                                                             }, this);
                                                                         })
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                                    lineNumber: 509,
+                                                                    lineNumber: 505,
                                                                     columnNumber: 41
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                            lineNumber: 492,
+                                                            lineNumber: 488,
                                                             columnNumber: 33
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                    lineNumber: 472,
+                                                    lineNumber: 468,
                                                     columnNumber: 28
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                                lineNumber: 471,
+                                                lineNumber: 467,
                                                 columnNumber: 26
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                        lineNumber: 459,
+                                        lineNumber: 455,
                                         columnNumber: 17
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/pillar/making-design-resilient/jira-assistant-adoption/page.tsx",
-                                lineNumber: 454,
+                                lineNumber: 450,
                                 columnNumber: 13
                             }, this)
                         ]
