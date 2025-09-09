@@ -28,8 +28,21 @@ async function readData(): Promise<Pillar[]> {
     const fileContent = await fs.readFile(dataFilePath('data.json'), 'utf-8');
     let jsonData: Omit<Pillar, 'icon'>[] = JSON.parse(fileContent);
 
+    const autoCalculatedKeys = [
+        'tech-sphere-sessions', 'arc-trainings', 'app-sherpas', 
+        'explore-resiliency-program', 'blogs-open-source', 'hackathons', 
+        'industry-events', 'squad-onboarding', 'regression-testing-automation',
+        'junit-adoption', 'maintenance-screens', 'api-performance'
+    ];
+
+    const dataCache: Record<string, ExcelData | null> = {};
+
+    for (const key of autoCalculatedKeys) {
+        dataCache[key] = await readExcelData(key);
+    }
+    
     // Attach total participants for tech sphere sessions
-    const techSessionsData = await readExcelData('tech-sphere-sessions');
+    const techSessionsData = dataCache['tech-sphere-sessions'];
     if (techSessionsData && techSessionsData.rows.length > 0) {
       const totalParticipants = techSessionsData.rows.reduce((sum, row) => sum + (Number(row['Participation']) || 0), 0);
       jsonData = jsonData.map(pillar => ({
@@ -43,7 +56,7 @@ async function readData(): Promise<Pillar[]> {
     }
 
     // Attach total participants and session count for ARC trainings
-    const arcTrainingsData = await readExcelData('arc-trainings');
+    const arcTrainingsData = dataCache['arc-trainings'];
     if (arcTrainingsData && arcTrainingsData.rows.length > 0) {
         const totalParticipants = arcTrainingsData.rows.reduce((sum, row) => sum + (Number(row['Participation']) || 0), 0);
         const sessionsCount = arcTrainingsData.rows.length;
@@ -58,7 +71,7 @@ async function readData(): Promise<Pillar[]> {
     }
 
     // Attach App Sherpas count
-    const appSherpasData = await readExcelData('app-sherpas');
+    const appSherpasData = dataCache['app-sherpas'];
     if (appSherpasData && appSherpasData.rows.length > 0) {
         const sherpasCount = appSherpasData.rows.length;
         jsonData = jsonData.map(pillar => ({
@@ -72,7 +85,7 @@ async function readData(): Promise<Pillar[]> {
     }
     
     // Attach completed assessment count for Explore Resiliency Program
-    const resiliencyData = await readExcelData('explore-resiliency-program');
+    const resiliencyData = dataCache['explore-resiliency-program'];
     if (resiliencyData && resiliencyData.rows.length > 0) {
         const completedAssessments = resiliencyData.rows.filter(row => row['Status'] === 'Assessment Completed').length;
         jsonData = jsonData.map(pillar => ({
@@ -86,7 +99,7 @@ async function readData(): Promise<Pillar[]> {
     }
 
     // Attach published blogs count for DTI Tech Blogs
-    const blogsData = await readExcelData('dti-tech-blogs');
+    const blogsData = dataCache['blogs-open-source'];
     if (blogsData) { // Check if blogsData is not null
         const publishedBlogs = blogsData.rows.length;
         jsonData = jsonData.map(pillar => ({
@@ -100,7 +113,7 @@ async function readData(): Promise<Pillar[]> {
     }
 
     // Attach hackathons count
-    const hackathonsData = await readExcelData('hackathons');
+    const hackathonsData = dataCache['hackathons'];
     if (hackathonsData && hackathonsData.rows.length > 0) {
         const hackathonsCount = hackathonsData.rows.length;
         jsonData = jsonData.map(pillar => ({
@@ -114,7 +127,7 @@ async function readData(): Promise<Pillar[]> {
     }
 
      // Attach industry events count
-    const industryEventsData = await readExcelData('industry-events');
+    const industryEventsData = dataCache['industry-events'];
     if (industryEventsData && industryEventsData.rows.length > 0) {
         const industryEventsCount = industryEventsData.rows.length;
         jsonData = jsonData.map(pillar => ({
@@ -128,7 +141,7 @@ async function readData(): Promise<Pillar[]> {
     }
     
     // Attach SQUAD onboarding count
-    const squadData = await readExcelData('squad-onboarding');
+    const squadData = dataCache['squad-onboarding'];
     if (squadData && squadData.rows.length > 0) {
         const onboardedCount = squadData.rows.length;
         jsonData = jsonData.map(pillar => ({
@@ -140,6 +153,24 @@ async function readData(): Promise<Pillar[]> {
             ),
         }));
     }
+
+    // Attach row counts for new 'Building Reliable Products' sub-items
+    const newAutoCalcKeys = ['regression-testing-automation', 'junit-adoption', 'maintenance-screens', 'api-performance'];
+    for (const key of newAutoCalcKeys) {
+        const data = dataCache[key];
+        if (data && data.rows.length > 0) {
+            const rowCount = data.rows.length;
+            jsonData = jsonData.map(pillar => ({
+                ...pillar,
+                subItems: pillar.subItems.map(subItem => 
+                    subItem.dataKey === key 
+                    ? { ...subItem, percentageComplete: rowCount } 
+                    : subItem
+                ),
+            }));
+        }
+    }
+
 
     // Attach Jira Assistant Adoption data
     const jiraAdoptionData = await readMonthlyData('jira-assistant-adoption');

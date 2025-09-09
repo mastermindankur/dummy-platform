@@ -262,6 +262,10 @@ export default function UpdateDataPage() {
       'arc-trainings': null,
       'app-sherpas': null,
       'jira-assistant-adoption': null,
+      'regression-testing-automation': null,
+      'junit-adoption': null,
+      'maintenance-screens': null,
+      'api-performance': null,
   });
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -596,6 +600,35 @@ export default function UpdateDataPage() {
                                             <Plus className="mr-2 h-4 w-4" /> Add Sub-Item
                                         </Button>
                                     </div>
+
+                                    {pillar.id === 'building-reliable-products' && (
+                                        <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                            <ExcelUploadSection
+                                                title="Regression Testing Automation"
+                                                description="Upload Excel sheet for Regression Testing Automation."
+                                                fileKey="regression-testing-automation"
+                                                onDataProcessed={handleExcelDataProcessed}
+                                            />
+                                             <ExcelUploadSection
+                                                title="JUnit Adoption"
+                                                description="Upload Excel sheet for JUnit Adoption."
+                                                fileKey="junit-adoption"
+                                                onDataProcessed={handleExcelDataProcessed}
+                                            />
+                                             <ExcelUploadSection
+                                                title="Maintenance Screens"
+                                                description="Upload Excel sheet for Maintenance Screens."
+                                                fileKey="maintenance-screens"
+                                                onDataProcessed={handleExcelDataProcessed}
+                                            />
+                                             <ExcelUploadSection
+                                                title="API Performance"
+                                                description="Upload Excel sheet for API Performance."
+                                                fileKey="api-performance"
+                                                onDataProcessed={handleExcelDataProcessed}
+                                            />
+                                        </div>
+                                    )}
 
                                     {pillar.id === 'making-design-resilient' && (
                                         <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
