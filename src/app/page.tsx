@@ -22,7 +22,6 @@ export default async function Home() {
 
   const comingSoonPillarIds = [
     "improving-productivity",
-    "building-reliable-products",
     "world-class-corporate-governance",
   ];
 
