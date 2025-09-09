@@ -52,7 +52,7 @@ export default async function PillarPage({ params }: { params: { id: string } })
     notFound();
   }
 
-  const useCardLayout = pillar.id === 'adopting-emerging-technologies' || pillar.id === 'making-design-resilient';
+  const useCardLayout = pillar.id === 'adopting-emerging-technologies' || pillar.id === 'making-design-resilient' || pillar.id === 'building-reliable-products';
 
   return (
     <div className="flex min-h-screen w-full flex-col">
