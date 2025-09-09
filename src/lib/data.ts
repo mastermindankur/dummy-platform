@@ -174,7 +174,7 @@ async function readData(): Promise<Pillar[]> {
     // Attach implemented screens count for Maintenance Screens
     const maintenanceScreensData = dataCache['maintenance-screens'];
     if (maintenanceScreensData && maintenanceScreensData.rows.length > 0) {
-        const implementedScreens = maintenanceScreensData.rows.filter(row => row['Status'] === 'Implemented').length;
+        const implementedScreens = maintenanceScreensData.rows.filter(row => String(row['Status'] || '').toLowerCase().includes('live')).length;
         jsonData = jsonData.map(pillar => ({
             ...pillar,
             subItems: pillar.subItems.map(subItem => 

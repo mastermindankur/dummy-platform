@@ -88,11 +88,15 @@ export default function MaintenanceScreensPage() {
     
     const statusCounts: { [key: string]: number } = {};
     const lobtCounts: { [key: string]: number } = {};
+    let liveCount = 0;
 
     excelData.rows.forEach((row: ExcelRow) => {
         const status = row['Status'] as string;
         if (status) {
             statusCounts[status] = (statusCounts[status] || 0) + 1;
+            if (String(status).toLowerCase().includes('live')) {
+              liveCount++;
+            }
         }
 
         const lobt = row['LOBT'] as string;
@@ -104,7 +108,7 @@ export default function MaintenanceScreensPage() {
     return {
         statusDistribution: Object.entries(statusCounts).map(([name, value]) => ({ name, value })),
         lobtDistribution: Object.entries(lobtCounts).map(([name, value]) => ({ name, value })),
-        implementedCount: statusCounts['Implemented'] || 0
+        implementedCount: liveCount
     };
   }, [excelData]);
   
