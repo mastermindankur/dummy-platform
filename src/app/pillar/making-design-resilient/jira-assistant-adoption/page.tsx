@@ -24,7 +24,7 @@ import type { MonthlyExcelData, ExcelRow } from '@/types';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend } from '@/components/ui/chart';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from 'recharts';
 
 const fetchAdoptionData = async (): Promise<MonthlyExcelData | null> => {
   const res = await fetch('/api/data?key=jira-assistant-adoption');
@@ -299,24 +299,22 @@ export default function JiraAssistantAdoptionPage() {
                         {!isLoading && chartData.length > 0 && (
                             <ChartContainer config={{}} className="h-[400px] w-full">
                                 <ResponsiveContainer width="100%" height="100%">
-                                    <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                                    <BarChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                                         <CartesianGrid strokeDasharray="3 3" />
                                         <XAxis dataKey="name" />
                                         <YAxis label={{ value: 'Adoption %', angle: -90, position: 'insideLeft' }} domain={[0, 100]}/>
                                         <Tooltip content={<ChartTooltipContent indicator="dot" />} />
                                         <ChartLegend />
-                                        <Line type="monotone" dataKey="Total" stroke="#ff7300" strokeWidth={4} name="Total Adoption" />
+                                        <Bar dataKey="Total" fill="#ff7300" name="Total Adoption" />
                                         {platformKeys.map((key, index) => (
-                                            <Line 
+                                            <Bar 
                                                 key={key} 
-                                                type="monotone" 
                                                 dataKey={key} 
-                                                stroke={chartColors[index % chartColors.length]} 
-                                                strokeWidth={2}
+                                                fill={chartColors[index % chartColors.length]}
                                                 name={key}
                                             />
                                         ))}
-                                    </LineChart>
+                                    </BarChart>
                                 </ResponsiveContainer>
                             </ChartContainer>
                         )}
@@ -341,24 +339,22 @@ export default function JiraAssistantAdoptionPage() {
                         {!isLoading && testCaseChartData.length > 0 && (
                             <ChartContainer config={{}} className="h-[400px] w-full">
                                 <ResponsiveContainer width="100%" height="100%">
-                                    <LineChart data={testCaseChartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                                    <BarChart data={testCaseChartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                                         <CartesianGrid strokeDasharray="3 3" />
                                         <XAxis dataKey="name" />
                                         <YAxis label={{ value: 'Adoption %', angle: -90, position: 'insideLeft' }} domain={[0, 100]}/>
                                         <Tooltip content={<ChartTooltipContent indicator="dot" />} />
                                         <ChartLegend />
-                                        <Line type="monotone" dataKey="Total" stroke="#ff7300" strokeWidth={4} name="Total Adoption" />
+                                        <Bar dataKey="Total" fill="#ff7300" name="Total Adoption" />
                                         {testCasePlatformKeys.map((key, index) => (
-                                            <Line 
+                                            <Bar
                                                 key={key} 
-                                                type="monotone" 
                                                 dataKey={key} 
-                                                stroke={chartColors[index % chartColors.length]} 
-                                                strokeWidth={2}
+                                                fill={chartColors[index % chartColors.length]} 
                                                 name={key}
                                             />
                                         ))}
-                                    </LineChart>
+                                    </BarChart>
                                 </ResponsiveContainer>
                             </ChartContainer>
                         )}
