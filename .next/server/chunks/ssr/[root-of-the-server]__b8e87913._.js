@@ -386,24 +386,23 @@ async function readData() {
         // Attach Jira Assistant Adoption data
         const jiraAdoptionData = await readMonthlyData('jira-assistant-adoption');
         if (jiraAdoptionData && Object.keys(jiraAdoptionData).length > 0) {
-            const allRows = Object.values(jiraAdoptionData).flatMap((monthData)=>monthData.rows);
-            const totalUsers = new Set();
-            const activeUsers = new Set();
-            allRows.forEach((row)=>{
-                const userId = row['1bankid'];
-                if (userId) {
-                    totalUsers.add(userId);
-                    if (row['is_created_via_JA'] === 1) {
-                        activeUsers.add(userId);
-                    }
+            const latestMonth = Object.keys(jiraAdoptionData).sort().pop();
+            let latestMonthAdoption = 0;
+            if (latestMonth && jiraAdoptionData[latestMonth]) {
+                const latestMonthRows = jiraAdoptionData[latestMonth].rows;
+                const testCases = latestMonthRows.filter((row)=>row['issue_type'] === 'Test');
+                const totalTestCases = testCases.length;
+                const jaTestCases = testCases.filter((row)=>row['is_created_via_JA'] === 1).length;
+                if (totalTestCases > 0) {
+                    latestMonthAdoption = Math.round(jaTestCases / totalTestCases * 100);
                 }
-            });
-            const overallAdoption = totalUsers.size > 0 ? Math.round(activeUsers.size / totalUsers.size * 100) : 0;
+            }
             jsonData = jsonData.map((pillar)=>({
                     ...pillar,
                     subItems: pillar.subItems.map((subItem)=>subItem.dataKey === 'jira-assistant-adoption' ? {
                             ...subItem,
-                            percentageComplete: overallAdoption
+                            percentageComplete: latestMonthAdoption,
+                            metricName: `Latest Month Test Case Adoption`
                         } : subItem)
                 }));
         }
