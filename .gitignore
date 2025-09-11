@@ -2,10 +2,19 @@
 
 # dependencies
 /node_modules
+/.pnp
+.pnp.js
+.yarn/install-state.gz
 
-# build
+# testing
+/coverage
+
+# next.js
 /.next/
 /out/
+
+# production
+/build
 
 # misc
 .DS_Store
@@ -18,23 +27,18 @@ yarn-error.log*
 pnpm-debug.log*
 
 # local env files
-.env
 .env*.local
 
 # vercel
 .vercel
 
-# turbo
-.turbo
+# typescript
+*.tsbuildinfo
+next-env.d.ts
 
-# data files
-src/lib/data.json
-src/lib/dti-tech-blogs.json
-src/lib/explore-resiliency-program.json
-src/lib/tech-sphere-sessions.json
-src/lib/hackathons.json
-src/lib/industry-events.json
-src/lib/squad-onboarding.json
-src/lib/arc-trainings.json
-src/lib/app-sherpas.json
+# studio
+.studio
+
+# Local data files
+src/lib/*.json
 src/lib/jira-assistant-adoption/

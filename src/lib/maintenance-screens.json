@@ -180,7 +180,7 @@
       "UAT Start Date": "03-Mar-25",
       "UAT End Date": "12-Mar-25",
       "Live Date": "25-Mar-25",
-      "Status": "Completed"
+      "Status": "Live"
     },
     {
       "#": 14,
@@ -193,7 +193,7 @@
       "UAT Start Date": "06-Mar-25",
       "UAT End Date": "15-Mar-25",
       "Live Date": "28-Mar-25",
-      "Status": "Completed"
+      "Status": "Tech Live"
     },
     {
       "#": 15,
@@ -232,7 +232,7 @@
       "UAT Start Date": "12-Mar-25",
       "UAT End Date": "23-Mar-25",
       "Live Date": "05-Apr-25",
-      "Status": "In Progress"
+      "Status": "Live"
     },
     {
       "#": 18,
@@ -258,7 +258,7 @@
       "UAT Start Date": "16-Mar-25",
       "UAT End Date": "27-Mar-25",
       "Live Date": "09-Apr-25",
-      "Status": "On Hold"
+      "Status": "Tech Live"
     },
     {
       "#": 20,
@@ -271,7 +271,7 @@
       "UAT Start Date": "18-Mar-25",
       "UAT End Date": "29-Mar-25",
       "Live Date": "11-Apr-25",
-      "Status": "Completed"
+      "Status": "Live"
     }
   ]
 }
