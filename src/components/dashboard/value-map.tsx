@@ -185,14 +185,14 @@ export function ValueMap({
              <svg ref={svgRef} className="absolute top-0 left-0 w-full h-full pointer-events-none" aria-hidden="true">
                 <defs>
                     <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
-                        <polygon points="0 0, 10 3.5, 0 7" fill="hsl(var(--border))" />
+                        <polygon points="0 0, 10 3.5, 0 7" fill="hsl(var(--muted-foreground))" />
                     </marker>
                 </defs>
                 {driverLeverConnections.map(conn => (
                     <line
                         key={`line-ld-${conn.leverId}-${conn.driverId}`}
                         id={`line-ld-${conn.leverId}-${conn.driverId}`}
-                        stroke="hsl(var(--border))"
+                        stroke="hsl(var(--muted-foreground))"
                         strokeWidth="1.5"
                         markerEnd="url(#arrowhead)"
                         className={cn('transition-opacity', getLineOpacityClass(conn))}
@@ -202,7 +202,7 @@ export function ValueMap({
                      <line
                         key={`line-do-${conn.driverId}-${conn.outcomeId}`}
                         id={`line-do-${conn.driverId}-${conn.outcomeId}`}
-                        stroke="hsl(var(--border))"
+                        stroke="hsl(var(--muted-foreground))"
                         strokeWidth="1.5"
                         markerEnd="url(#arrowhead)"
                         className={cn('transition-opacity', getLineOpacityClass(conn))}
