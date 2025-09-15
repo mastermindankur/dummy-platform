@@ -1,12 +1,30 @@
 
 import { NextResponse } from 'next/server';
-import { getPillars, writeData, readExcelData, writeExcelData, readMonthlyData, writeMonthlyData } from '@/lib/data';
+import { 
+    getPillars, 
+    writeData, 
+    readExcelData, 
+    writeExcelData, 
+    readMonthlyData, 
+    writeMonthlyData,
+    getValueMapData,
+    writeValueMapData,
+} from '@/lib/data';
 import type { Pillar } from '@/types';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const fileKey = searchParams.get('key');
   const month = searchParams.get('month'); // e.g., '2024-08'
+
+  if (fileKey === 'value-map') {
+      try {
+          const data = await getValueMapData();
+          return NextResponse.json(data);
+      } catch (error) {
+          return new NextResponse('Internal Server Error', { status: 500 });
+      }
+  }
 
   if (fileKey === 'jira-assistant-adoption') {
       try {
@@ -69,6 +87,9 @@ export async function POST(request: Request) {
 
     if (body.pillars) {
         await writeData(body.pillars);
+    }
+    if (body.valueMap) {
+        await writeValueMapData(body.valueMap);
     }
     if (body.excelData) {
         for (const key in body.excelData) {

@@ -5,28 +5,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { StatusIndicator } from '@/components/dashboard/status-indicator';
-import type { Status } from '@/types';
-
-type ValueMapItem = {
-    id: string;
-    name: string;
-    status?: Status;
-    description?: string;
-};
+import type { Status, ValueMapItem, OutcomeDriverConnection, DriverLeverConnection } from '@/types';
 
 type Outcome = ValueMapItem;
 type Driver = ValueMapItem;
 type Lever = ValueMapItem;
-
-type OutcomeDriverConnection = {
-    outcomeId: string;
-    driverId: string;
-}
-
-type DriverLeverConnection = {
-    driverId: string;
-    leverId: string;
-}
 
 type ValueMapProps = {
     outcomes: Outcome[];
@@ -265,7 +248,7 @@ export function ValueMap({
                         )}>
                         <CardHeader className="p-3">
                             <CardTitle className="text-base">{driver.name}</CardTitle>
-                            {driver.status && <StatusIndicator status={driver.status} className="text-xs" />}
+                             {driver.description && <CardDescription className="text-xs line-clamp-2">{driver.description}</CardDescription>}
                         </CardHeader>
                     </Card>
                 ))}

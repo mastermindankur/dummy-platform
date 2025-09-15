@@ -6,7 +6,7 @@ import {
   Cpu,
   Landmark,
 } from "lucide-react";
-import type { Pillar, SubItem, ExcelData, MonthlyExcelData } from "@/types";
+import type { Pillar, SubItem, ExcelData, MonthlyExcelData, ValueMapData } from "@/types";
 import { promises as fs } from 'fs';
 import path from 'path';
 
@@ -337,5 +337,36 @@ export async function writeMonthlyData(dir: string, month: string, data: ExcelDa
     } catch (error) {
         console.error(`Could not write to ${dir}/${month}.json:`, error);
         throw new Error(`Failed to save ${dir} data for ${month}.`);
+    }
+}
+
+// Value Map Data Functions
+export async function getValueMapData(): Promise<ValueMapData> {
+    const filePath = dataFilePath('value-map.json');
+    try {
+        const fileContent = await fs.readFile(filePath, 'utf-8');
+        return JSON.parse(fileContent) as ValueMapData;
+    } catch (error) {
+        if (error instanceof Error && (error as NodeJS.ErrnoException).code === 'ENOENT') {
+            const defaultData: ValueMapData = {
+                outcomes: [],
+                drivers: [],
+                levers: [],
+            };
+            await writeValueMapData(defaultData);
+            return defaultData;
+        }
+        console.error("Could not read or parse value-map.json:", error);
+        throw new Error("Failed to read Value Map data.");
+    }
+}
+
+export async function writeValueMapData(data: ValueMapData) {
+    try {
+        const filePath = dataFilePath('value-map.json');
+        await fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf-8');
+    } catch (error) {
+        console.error("Could not write to value-map.json:", error);
+        throw new Error("Failed to save Value Map data.");
     }
 }

@@ -1,6 +1,8 @@
 
+'use client';
+import { useState, useEffect } from "react";
 import { Header } from "@/components/layout/header";
-import { getPillars } from "@/lib/data";
+import { getValueMapData } from "@/lib/data";
 import { ValueMap } from "@/components/dashboard/value-map";
 import {
   Card,
@@ -9,41 +11,40 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import type { ValueMapData, DriverLeverConnection, OutcomeDriverConnection } from "@/types";
 
-export default async function ExecutivePage() {
-  const pillars = await getPillars();
+export default function ExecutivePage() {
+  const [valueMapData, setValueMapData] = useState<ValueMapData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const reliableProductsPillar = pillars.find(p => p.id === 'building-reliable-products');
-  
-  // Flattened data structure for many-to-many relationships
-  const outcomes = reliableProductsPillar ? [{
-      id: reliableProductsPillar.id,
-      name: reliableProductsPillar.name,
-      description: reliableProductsPillar.description,
-  }] : [];
+  useEffect(() => {
+    async function fetchData() {
+      setIsLoading(true);
+      try {
+        const res = await fetch('/api/data?key=value-map');
+        const data = await res.json();
+        setValueMapData(data);
+      } catch (error) {
+        console.error("Failed to fetch value map data", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchData();
+  }, []);
 
-  const drivers = reliableProductsPillar ? reliableProductsPillar.subItems.map(si => ({
-      id: si.id,
-      name: si.name,
-      status: si.status,
-  })) : [];
-  
-  const levers = reliableProductsPillar ? reliableProductsPillar.subItems.flatMap(si => ([
-      { id: `${si.id}-lever-1`, name: `Tool Adoption for ${si.name}`, status: 'Green' },
-      { id: `${si.id}-lever-2`, name: `Training & Enablement`, status: 'Amber' },
-  ])) : [];
-
-  // Define connections
-  const driverLeverConnections = reliableProductsPillar ? reliableProductsPillar.subItems.flatMap(si => ([
-      { driverId: si.id, leverId: `${si.id}-lever-1` },
-      { driverId: si.id, leverId: `${si.id}-lever-2` },
-  ])) : [];
-
-  const outcomeDriverConnections = reliableProductsPillar ? reliableProductsPillar.subItems.map(si => ({
-      outcomeId: reliableProductsPillar.id,
-      driverId: si.id,
-  })) : [];
-
+  const { outcomes, drivers, levers, outcomeDriverConnections, driverLeverConnections } = {
+    outcomes: valueMapData?.outcomes || [],
+    drivers: valueMapData?.drivers || [],
+    levers: valueMapData?.levers || [],
+    outcomeDriverConnections: valueMapData?.outcomes.flatMap(o => 
+        (o.connectedDriverIds || []).map(driverId => ({ outcomeId: o.id, driverId }))
+    ) || [],
+    driverLeverConnections: valueMapData?.drivers.flatMap(d => 
+        (d.connectedLeverIds || []).map(leverId => ({ driverId: d.id, leverId }))
+    ) || [],
+  };
 
   return (
     <div className="flex min-h-screen w-full flex-col">
@@ -57,13 +58,21 @@ export default async function ExecutivePage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ValueMap 
-              outcomes={outcomes}
-              drivers={drivers}
-              levers={levers}
-              outcomeDriverConnections={outcomeDriverConnections}
-              driverLeverConnections={driverLeverConnections}
-            />
+            {isLoading ? (
+                <div className="space-y-4">
+                    <Skeleton className="h-24 w-full" />
+                    <Skeleton className="h-24 w-full" />
+                    <Skeleton className="h-24 w-full" />
+                </div>
+            ) : (
+                <ValueMap 
+                  outcomes={outcomes}
+                  drivers={drivers}
+                  levers={levers}
+                  outcomeDriverConnections={outcomeDriverConnections}
+                  driverLeverConnections={driverLeverConnections}
+                />
+            )}
           </CardContent>
         </Card>
       </main>

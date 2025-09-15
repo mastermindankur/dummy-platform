@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Header } from '@/components/layout/header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,22 +13,329 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/use-toast';
-import type { Pillar, SubItem, Status, ExcelData, ExcelRow } from '@/types';
+import type { Pillar, SubItem, Status, ExcelData, ValueMapData, ValueMapItem, ValueMapLever, ValueMapDriver, ValueMapOutcome } from '@/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Loader2, Plus, Trash2, Upload, ArrowRight, ChevronsUpDown, Filter, X } from 'lucide-react';
+import { Loader2, Plus, Trash2, Upload, ArrowRight, ChevronsUpDown, Filter, X, Edit, GripVertical } from 'lucide-react';
 import { processExcelFile, getExcelSheetNames } from '@/lib/excel-utils';
 import Link from 'next/link';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogTrigger,
+  DialogClose,
+} from '@/components/ui/dialog';
 
 type FilterState = {
     id: number;
     column: string;
     value: string;
 };
+
+// ## VALUE MAP SECTION ##
+
+function ValueMapManager() {
+    const [valueMapData, setValueMapData] = useState<ValueMapData>({ outcomes: [], drivers: [], levers: [] });
+    const [isLoading, setIsLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            setIsLoading(true);
+            try {
+                const res = await fetch('/api/data?key=value-map');
+                const data = await res.json();
+                setValueMapData(data);
+            } catch (e) {
+                toast({ title: 'Error fetching value map data', variant: 'destructive' });
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchData();
+    }, []);
+
+    const handleSave = async () => {
+        setIsSaving(true);
+        try {
+            const res = await fetch('/api/data', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ valueMap: valueMapData }),
+            });
+            if (!res.ok) throw new Error('Failed to save');
+            toast({ title: 'Value Map Saved!' });
+        } catch (e) {
+            toast({ title: 'Error saving value map', variant: 'destructive' });
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    const handleItemChange = <T extends ValueMapItem>(
+        type: 'outcomes' | 'drivers' | 'levers',
+        updatedItem: T
+    ) => {
+        setValueMapData(prev => ({
+            ...prev,
+            [type]: prev[type].map((item: T) => item.id === updatedItem.id ? updatedItem : item),
+        }));
+    };
+    
+    const handleItemAdd = (type: 'outcomes' | 'drivers' | 'levers') => {
+        const newItem: ValueMapItem = {
+            id: `${type.slice(0, -1)}-${Date.now()}`,
+            name: `New ${type.slice(0, -1)}`,
+            description: '',
+        };
+        
+        if (type === 'outcomes') {
+            (newItem as ValueMapOutcome).connectedDriverIds = [];
+        } else if (type === 'drivers') {
+            (newItem as ValueMapDriver).connectedLeverIds = [];
+        }
+
+        setValueMapData(prev => ({
+            ...prev,
+            [type]: [...prev[type], newItem],
+        }));
+    };
+
+    const handleItemDelete = (type: 'outcomes' | 'drivers' | 'levers', id: string) => {
+        setValueMapData(prev => ({
+            ...prev,
+            [type]: prev[type].filter((item: ValueMapItem) => item.id !== id),
+            // Also remove connections
+            ...(type === 'levers' && {
+                drivers: prev.drivers.map(d => ({...d, connectedLeverIds: d.connectedLeverIds.filter(leverId => leverId !== id) }))
+            }),
+            ...(type === 'drivers' && {
+                outcomes: prev.outcomes.map(o => ({...o, connectedDriverIds: o.connectedDriverIds.filter(driverId => driverId !== id) }))
+            }),
+        }));
+    };
+
+    if (isLoading) {
+        return <Skeleton className="h-96 w-full" />;
+    }
+
+    return (
+        <div className="space-y-6">
+            <div className="flex justify-end">
+                <Button onClick={handleSave} disabled={isSaving}>
+                    {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Save Value Map Changes
+                </Button>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+                <ValueMapColumn
+                    title="Levers"
+                    items={valueMapData.levers}
+                    onAdd={() => handleItemAdd('levers')}
+                    onDelete={(id) => handleItemDelete('levers', id)}
+                    onUpdate={(item) => handleItemChange('levers', item as ValueMapLever)}
+                />
+                 <ValueMapColumn
+                    title="Drivers"
+                    items={valueMapData.drivers}
+                    onAdd={() => handleItemAdd('drivers')}
+                    onDelete={(id) => handleItemDelete('drivers', id)}
+                    onUpdate={(item) => handleItemChange('drivers', item as ValueMapDriver)}
+                    levers={valueMapData.levers}
+                />
+                 <ValueMapColumn
+                    title="Outcomes"
+                    items={valueMapData.outcomes}
+                    onAdd={() => handleItemAdd('outcomes')}
+                    onDelete={(id) => handleItemDelete('outcomes', id)}
+                    onUpdate={(item) => handleItemChange('outcomes', item as ValueMapOutcome)}
+                    drivers={valueMapData.drivers}
+                />
+            </div>
+        </div>
+    );
+}
+
+function ValueMapColumn({ title, items, onAdd, onDelete, onUpdate, drivers, levers }: {
+    title: 'Outcomes' | 'Drivers' | 'Levers';
+    items: ValueMapItem[];
+    onAdd: () => void;
+    onDelete: (id: string) => void;
+    onUpdate: (item: ValueMapItem) => void;
+    drivers?: ValueMapDriver[];
+    levers?: ValueMapLever[];
+}) {
+    return (
+        <Card className="bg-secondary/30">
+            <CardHeader>
+                <CardTitle className="flex justify-between items-center">
+                    {title}
+                    <Button size="icon" variant="ghost" onClick={onAdd}><Plus className="h-4 w-4" /></Button>
+                </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+                {items.map(item => (
+                    <div key={item.id} className="group flex items-center gap-2">
+                         <ValueMapItemCard
+                            item={item}
+                            onUpdate={onUpdate}
+                            onDelete={onDelete}
+                            levers={levers}
+                            drivers={drivers}
+                         />
+                    </div>
+                ))}
+                {items.length === 0 && <p className="text-sm text-muted-foreground text-center py-4">No {title.toLowerCase()} yet.</p>}
+            </CardContent>
+        </Card>
+    );
+}
+
+function ValueMapItemCard({ item, onUpdate, onDelete, levers, drivers }: {
+    item: ValueMapItem;
+    onUpdate: (item: any) => void;
+    onDelete: (id: string) => void;
+    levers?: ValueMapLever[];
+    drivers?: ValueMapDriver[];
+}) {
+    const [isEditing, setIsEditing] = useState(false);
+    const [editedItem, setEditedItem] = useState(item);
+
+    const isOutcome = 'connectedDriverIds' in item;
+    const isDriver = 'connectedLeverIds' in item;
+
+    const handleSave = () => {
+        onUpdate(editedItem);
+        setIsEditing(false);
+    };
+
+    const handleCancel = () => {
+        setEditedItem(item);
+        setIsEditing(false);
+    };
+
+    const handleCheckboxChange = (type: 'drivers' | 'levers', id: string, checked: boolean) => {
+        if (isOutcome && type === 'drivers') {
+            const currentIds = (editedItem as ValueMapOutcome).connectedDriverIds || [];
+            const newIds = checked ? [...currentIds, id] : currentIds.filter(driverId => driverId !== id);
+            setEditedItem(prev => ({...prev, connectedDriverIds: newIds }));
+        }
+        if (isDriver && type === 'levers') {
+            const currentIds = (editedItem as ValueMapDriver).connectedLeverIds || [];
+            const newIds = checked ? [...currentIds, id] : currentIds.filter(leverId => leverId !== id);
+            setEditedItem(prev => ({...prev, connectedLeverIds: newIds }));
+        }
+    };
+    
+    return (
+        <Dialog open={isEditing} onOpenChange={setIsEditing}>
+            <Card className="flex-1 cursor-pointer bg-background">
+                <div className="flex items-center justify-between p-3">
+                    <p className="font-medium text-sm flex-1">{item.name}</p>
+                    <div className="flex">
+                        <DialogTrigger asChild>
+                            <Button variant="ghost" size="icon"><Edit className="h-4 w-4"/></Button>
+                        </DialogTrigger>
+                         <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={() => onDelete(item.id)}>
+                            <Trash2 className="h-4 w-4"/>
+                        </Button>
+                    </div>
+                </div>
+            </Card>
+
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Edit {item.name}</DialogTitle>
+                    <DialogDescription>Update the details and connections for this item.</DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                    <div>
+                        <Label>Name</Label>
+                        <Input value={editedItem.name} onChange={e => setEditedItem({...editedItem, name: e.target.value })}/>
+                    </div>
+                    <div>
+                        <Label>Description</Label>
+                        <Textarea value={editedItem.description} onChange={e => setEditedItem({...editedItem, description: e.target.value })}/>
+                    </div>
+                    
+                    {isOutcome && drivers && (
+                        <div>
+                            <Label>Connected Drivers</Label>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="outline" className="w-full justify-start">
+                                        {(editedItem as ValueMapOutcome).connectedDriverIds?.length || 0} selected
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent className="w-64">
+                                    {drivers.map(d => (
+                                        <DropdownMenuItem key={d.id} onSelect={(e) => e.preventDefault()}>
+                                            <div className="flex items-center space-x-2 w-full" onClick={() => handleCheckboxChange('drivers', d.id, !((editedItem as ValueMapOutcome).connectedDriverIds || []).includes(d.id))}>
+                                                <Checkbox
+                                                    checked={((editedItem as ValueMapOutcome).connectedDriverIds || []).includes(d.id)}
+                                                    onCheckedChange={(checked) => handleCheckboxChange('drivers', d.id, !!checked)}
+                                                />
+                                                <Label className="flex-1 cursor-pointer">{d.name}</Label>
+                                            </div>
+                                        </DropdownMenuItem>
+                                    ))}
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </div>
+                    )}
+
+                    {isDriver && levers && (
+                        <div>
+                            <Label>Connected Levers</Label>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="outline" className="w-full justify-start">
+                                        {(editedItem as ValueMapDriver).connectedLeverIds?.length || 0} selected
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent className="w-64">
+                                    {levers.map(l => (
+                                        <DropdownMenuItem key={l.id} onSelect={(e) => e.preventDefault()}>
+                                            <div className="flex items-center space-x-2" onClick={() => handleCheckboxChange('levers', l.id, !((editedItem as ValueMapDriver).connectedLeverIds || []).includes(l.id))}>
+                                                <Checkbox
+                                                    checked={((editedItem as ValueMapDriver).connectedLeverIds || []).includes(l.id)}
+                                                    onCheckedChange={(checked) => handleCheckboxChange('levers', l.id, !!checked)}
+                                                />
+                                                <Label className="flex-1 cursor-pointer">{l.name}</Label>
+                                            </div>
+                                        </DropdownMenuItem>
+                                    ))}
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </div>
+                    )}
+                </div>
+                <DialogFooter>
+                    <DialogClose asChild><Button variant="ghost" onClick={handleCancel}>Cancel</Button></DialogClose>
+                    <Button onClick={handleSave}>Save</Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
+
+// ## EXCEL UPLOAD SECTION ##
 
 function ExcelUploadSection({
   title,
@@ -269,7 +576,7 @@ export default function UpdateDataPage() {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
+  const [activeTab, setActiveTab] = useState<string | undefined>('value-map');
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -278,9 +585,6 @@ export default function UpdateDataPage() {
       if (!res.ok) throw new Error('Failed to fetch data');
       const jsonData = await res.json();
       setData(jsonData);
-      if (jsonData.length > 0) {
-          setActiveTab(jsonData[0].id);
-      }
     } catch (error) {
       console.error(error);
       toast({
@@ -359,6 +663,7 @@ export default function UpdateDataPage() {
       const payload: {
         pillars: Pillar[] | null;
         excelData: Record<string, any>;
+        valueMap?: ValueMapData;
       } = {
         pillars: data,
         excelData: excelData
@@ -393,10 +698,10 @@ export default function UpdateDataPage() {
       <Header />
       <main className="flex-1 p-4 md:p-8">
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
+          <CardHeader className="flex flex-row items-start sm:items-center justify-between">
             <div className="space-y-1">
                 <CardTitle className="text-3xl">Update Dashboard Data</CardTitle>
-                <CardDescription>Modify pillar details, edit sub-items, and upload new data from Excel files.</CardDescription>
+                <CardDescription>Modify pillar details, sub-items, value map, and upload new data from Excel files.</CardDescription>
             </div>
             <Button onClick={handleSave} disabled={isSaving || isLoading}>
               {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
@@ -412,13 +717,19 @@ export default function UpdateDataPage() {
               </div>
             ) : (
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                    <TabsList className="grid w-full grid-cols-1 md:grid-cols-5 h-auto mb-6">
+                    <TabsList className="grid w-full grid-cols-2 md:grid-cols-6 h-auto mb-6">
+                        <TabsTrigger value="value-map">Value Map</TabsTrigger>
                         {data?.map((pillar) => (
-                            <TabsTrigger key={pillar.id} value={pillar.id} className="text-xs md:text-sm">
+                            <TabsTrigger key={pillar.id} value={pillar.id} className="text-xs sm:text-sm">
                                 {pillar.name}
                             </TabsTrigger>
                         ))}
                     </TabsList>
+
+                    <TabsContent value="value-map">
+                        <ValueMapManager />
+                    </TabsContent>
+
                     {data?.map((pillar, pIndex) => (
                         <TabsContent key={pillar.id} value={pillar.id}>
                             <div className="space-y-6">

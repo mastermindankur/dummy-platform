@@ -72,3 +72,37 @@ export type IndustryEvent = {
     description: string;
     type: 'internal' | 'external';
 };
+
+// Value Map Types
+export type ValueMapItem = {
+    id: string;
+    name: string;
+    description: string;
+    status?: Status;
+};
+
+export type ValueMapOutcome = ValueMapItem & {
+    connectedDriverIds: string[];
+};
+export type ValueMapDriver = ValueMapItem & {
+    connectedLeverIds: string[];
+};
+export type ValueMapLever = ValueMapItem;
+
+
+export type OutcomeDriverConnection = {
+    outcomeId: string;
+    driverId: string;
+};
+
+export type DriverLeverConnection = {
+    driverId: string;
+    leverId: string;
+};
+
+export type ValueMapData = {
+    outcomes: ValueMapOutcome[];
+    drivers: ValueMapDriver[];
+    levers: ValueMapLever[];
+};
+
