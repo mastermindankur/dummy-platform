@@ -1345,6 +1345,10 @@ body {
   background-color: #0000;
 }
 
+.bg-background\/70 {
+  background-color: hsl(var(--background) / .7);
+}
+
 .fill-current {
   fill: currentColor;
 }
@@ -1740,6 +1744,10 @@ body {
 
 .opacity-20 {
   opacity: .2;
+}
+
+.opacity-30 {
+  opacity: .3;
 }
 
 .shadow-\[0_0_0_1px_hsl\(var\(--sidebar-border\)\)\] {
