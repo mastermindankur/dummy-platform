@@ -3,11 +3,5 @@
   "/executive/page": "app/executive/page.js",
   "/favicon.ico/route": "app/favicon.ico/route.js",
   "/page": "app/page.js",
-  "/pillar/[id]/page": "app/pillar/[id]/page.js",
-  "/pillar/adopting-emerging-technologies/blogs-and-open-source/page": "app/pillar/adopting-emerging-technologies/blogs-and-open-source/page.js",
-  "/pillar/adopting-emerging-technologies/explore-resiliency-program/page": "app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.js",
-  "/pillar/adopting-emerging-technologies/hackathons/page": "app/pillar/adopting-emerging-technologies/hackathons/page.js",
-  "/pillar/adopting-emerging-technologies/industry-events/page": "app/pillar/adopting-emerging-technologies/industry-events/page.js",
-  "/pillar/adopting-emerging-technologies/tech-sphere-sessions/page": "app/pillar/adopting-emerging-technologies/tech-sphere-sessions/page.js",
   "/update-data/page": "app/update-data/page.js"
 }

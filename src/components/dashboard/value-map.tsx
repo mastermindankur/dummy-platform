@@ -294,6 +294,12 @@ export function ValueMap({
                 ))}
             </div>
         </div>
+        <div className="flex justify-end pt-4 pr-4">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <Badge variant="secondary">WCE</Badge>
+                <span>Part of WCE 2025 Book of Work</span>
+            </div>
+        </div>
     </div>
   );
 }
