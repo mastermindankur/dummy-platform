@@ -616,6 +616,10 @@ body {
   height: .625rem;
 }
 
+.h-24 {
+  height: 6rem;
+}
+
 .h-3 {
   height: .75rem;
 }
@@ -652,6 +656,10 @@ body {
   height: 2.25rem;
 }
 
+.h-96 {
+  height: 24rem;
+}
+
 .h-\[1px\] {
   height: 1px;
 }
@@ -686,14 +694,6 @@ body {
 
 .h-svh {
   height: 100svh;
-}
-
-.h-24 {
-  height: 6rem;
-}
-
-.h-96 {
-  height: 24rem;
 }
 
 .max-h-96 {
@@ -740,16 +740,16 @@ body {
   min-height: 100svh;
 }
 
-.min-h-\[60vh\] {
-  min-height: 60vh;
-}
-
 .w-0 {
   width: 0;
 }
 
 .w-1 {
   width: .25rem;
+}
+
+.w-1\/3 {
+  width: 33.3333%;
 }
 
 .w-10 {
@@ -830,10 +830,6 @@ body {
 
 .w-full {
   width: 100%;
-}
-
-.w-1\/3 {
-  width: 33.3333%;
 }
 
 .min-w-0 {
@@ -981,10 +977,6 @@ body {
 
 .select-none {
   user-select: none;
-}
-
-.resize {
-  resize: both;
 }
 
 .list-disc {
@@ -1287,6 +1279,10 @@ body {
   background-color: hsl(var(--background) / .5);
 }
 
+.bg-background\/70 {
+  background-color: hsl(var(--background) / .7);
+}
+
 .bg-background\/80 {
   background-color: hsl(var(--background) / .8);
 }
@@ -1355,10 +1351,6 @@ body {
 
 .bg-transparent {
   background-color: #0000;
-}
-
-.bg-background\/70 {
-  background-color: hsl(var(--background) / .7);
 }
 
 .fill-current {
@@ -1730,6 +1722,14 @@ body {
   opacity: 0;
 }
 
+.opacity-100 {
+  opacity: 1;
+}
+
+.opacity-30 {
+  opacity: .3;
+}
+
 .opacity-50 {
   opacity: .5;
 }
@@ -1744,22 +1744,6 @@ body {
 
 .opacity-90 {
   opacity: .9;
-}
-
-.opacity-10 {
-  opacity: .1;
-}
-
-.opacity-100 {
-  opacity: 1;
-}
-
-.opacity-20 {
-  opacity: .2;
-}
-
-.opacity-30 {
-  opacity: .3;
 }
 
 .shadow-\[0_0_0_1px_hsl\(var\(--sidebar-border\)\)\] {
@@ -2793,10 +2777,6 @@ body {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
-  .md\:grid-cols-5 {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-  }
-
   .md\:grid-cols-6 {
     grid-template-columns: repeat(6, minmax(0, 1fr));
   }
@@ -2811,10 +2791,6 @@ body {
 
   .md\:justify-between {
     justify-content: space-between;
-  }
-
-  .md\:gap-8 {
-    gap: 2rem;
   }
 
   .md\:p-8 {
