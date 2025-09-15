@@ -82,7 +82,7 @@ export function ValueMap({ outcomes }: ValueMapProps) {
                      const isOutcomeDimmed = getOpacityClass(outcome.id, 'outcome') !== 'opacity-100';
                      
                      return (
-                        <>
+                        <React.Fragment key={`lines-for-driver-${driver.id}`}>
                             {/* Driver -> Outcome lines */}
                             <line 
                                 key={`line-do-${driver.id}`}
@@ -114,7 +114,7 @@ export function ValueMap({ outcomes }: ValueMapProps) {
                                     />
                                 )
                             })}
-                        </>
+                        </React.Fragment>
                      )
                 })
             )}
