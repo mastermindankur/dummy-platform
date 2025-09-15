@@ -121,7 +121,7 @@ export function ValueMap({
     };
 
     const getHighlightedIds = () => {
-        if (!selectedItem) return { levers: [], drivers: [], outcomes: [] };
+        if (!selectedItem) return { lever: [], driver: [], outcome: [] };
 
         let highlightedLevers: string[] = [];
         let highlightedDrivers: string[] = [];
@@ -167,9 +167,9 @@ export function ValueMap({
         }
 
         return { 
-            levers: [...new Set(highlightedLevers)], 
-            drivers: [...new Set(highlightedDrivers)], 
-            outcomes: [...new Set(highlightedOutcomes)]
+            lever: [...new Set(highlightedLevers)], 
+            driver: [...new Set(highlightedDrivers)], 
+            outcome: [...new Set(highlightedOutcomes)]
         };
     };
 
@@ -185,11 +185,11 @@ export function ValueMap({
 
         const isDriverLever = 'leverId' in conn;
 
-        if (highlighted.drivers.includes(conn.driverId)) {
+        if (highlighted.driver.includes(conn.driverId)) {
             if (isDriverLever) {
-                return highlighted.levers.includes(conn.leverId) ? 'opacity-100' : 'opacity-30';
+                return highlighted.lever.includes(conn.leverId) ? 'opacity-100' : 'opacity-30';
             } else { // OutcomeDriverConnection
-                return highlighted.outcomes.includes(conn.outcomeId) ? 'opacity-100' : 'opacity-30';
+                return highlighted.outcome.includes(conn.outcomeId) ? 'opacity-100' : 'opacity-30';
             }
         }
         return 'opacity-30';
