@@ -14,7 +14,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ListChecks, CheckCircle2, AlertTriangle, XCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { ListChecks, CheckCircle2, AlertTriangle, XCircle, ArrowRight } from "lucide-react";
 import { StatusIndicator } from "@/components/dashboard/status-indicator";
 
 export default async function Home() {
@@ -41,6 +43,23 @@ export default async function Home() {
     <div className="flex min-h-screen w-full flex-col">
       <Header />
       <main className="flex-1 p-4 md:p-8">
+        <Card className="mb-6 bg-secondary/30">
+          <CardHeader>
+            <CardTitle className="text-2xl">Executive Value Map</CardTitle>
+            <CardDescription className="max-w-prose pt-2">
+              This was the origin with which we started the WCE 2025, it is the brain child. The Value Map connects our strategic outcomes to the drivers and levers that enable them.
+            </CardDescription>
+          </CardHeader>
+          <CardFooter>
+            <Button asChild>
+              <Link href="/executive">
+                View Value Map
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </CardFooter>
+        </Card>
+
         <div className="mb-6 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
