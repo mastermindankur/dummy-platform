@@ -13,25 +13,37 @@ import {
 export default async function ExecutivePage() {
   const pillars = await getPillars();
 
-  // For this example, we'll use the "Building Reliable Products" pillar
-  // as the first Outcome for the Value Map.
   const reliableProductsPillar = pillars.find(p => p.id === 'building-reliable-products');
   
+  // Flattened data structure for many-to-many relationships
   const outcomes = reliableProductsPillar ? [{
       id: reliableProductsPillar.id,
       name: reliableProductsPillar.name,
       description: reliableProductsPillar.description,
-      drivers: reliableProductsPillar.subItems.map(si => ({
-          id: si.id,
-          name: si.name,
-          status: si.status,
-          levers: [
-            // Placeholder Levers
-            { id: `${si.id}-lever-1`, name: `Tool Adoption for ${si.name}`, status: 'Green' },
-            { id: `${si.id}-lever-2`, name: `Training & Enablement`, status: 'Amber' },
-          ]
-      }))
   }] : [];
+
+  const drivers = reliableProductsPillar ? reliableProductsPillar.subItems.map(si => ({
+      id: si.id,
+      name: si.name,
+      status: si.status,
+  })) : [];
+  
+  const levers = reliableProductsPillar ? reliableProductsPillar.subItems.flatMap(si => ([
+      { id: `${si.id}-lever-1`, name: `Tool Adoption for ${si.name}`, status: 'Green' },
+      { id: `${si.id}-lever-2`, name: `Training & Enablement`, status: 'Amber' },
+  ])) : [];
+
+  // Define connections
+  const driverLeverConnections = reliableProductsPillar ? reliableProductsPillar.subItems.flatMap(si => ([
+      { driverId: si.id, leverId: `${si.id}-lever-1` },
+      { driverId: si.id, leverId: `${si.id}-lever-2` },
+  ])) : [];
+
+  const outcomeDriverConnections = reliableProductsPillar ? reliableProductsPillar.subItems.map(si => ({
+      outcomeId: reliableProductsPillar.id,
+      driverId: si.id,
+  })) : [];
+
 
   return (
     <div className="flex min-h-screen w-full flex-col">
@@ -45,7 +57,13 @@ export default async function ExecutivePage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ValueMap outcomes={outcomes} />
+            <ValueMap 
+              outcomes={outcomes}
+              drivers={drivers}
+              levers={levers}
+              outcomeDriverConnections={outcomeDriverConnections}
+              driverLeverConnections={driverLeverConnections}
+            />
           </CardContent>
         </Card>
       </main>
