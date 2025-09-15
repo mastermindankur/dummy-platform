@@ -1,6 +1,7 @@
 {
   "/api/data/route": "app/api/data/route.js",
   "/executive/page": "app/executive/page.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
   "/page": "app/page.js",
   "/pillar/[id]/page": "app/pillar/[id]/page.js",
   "/pillar/adopting-emerging-technologies/blogs-and-open-source/page": "app/pillar/adopting-emerging-technologies/blogs-and-open-source/page.js",
