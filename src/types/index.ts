@@ -79,6 +79,7 @@ export type ValueMapItem = {
     name: string;
     description: string;
     status?: Status;
+    isWceBookOfWork?: boolean;
 };
 
 export type ValueMapOutcome = ValueMapItem & {
@@ -105,4 +106,3 @@ export type ValueMapData = {
     drivers: ValueMapDriver[];
     levers: ValueMapLever[];
 };
-

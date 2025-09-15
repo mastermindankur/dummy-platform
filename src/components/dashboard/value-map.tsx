@@ -3,9 +3,10 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
-import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { StatusIndicator } from '@/components/dashboard/status-indicator';
 import type { ValueMapItem, OutcomeDriverConnection, DriverLeverConnection, ValueMapDriver, ValueMapOutcome, ValueMapLever } from '@/types';
+import { Badge } from '@/components/ui/badge';
 
 type ValueMapProps = {
     outcomes: ValueMapOutcome[];
@@ -46,7 +47,7 @@ export function ValueMap({
             const containerRect = containerRef.current.getBoundingClientRect();
 
             const createCurvePath = (x1: number, y1: number, x2: number, y2: number) => {
-                const horizontalOffset = 60; // Increased for a more pronounced curve
+                const horizontalOffset = 80; // Increased for a more pronounced curve
                 const controlPoint1 = { x: x1 + horizontalOffset, y: y1 };
                 const controlPoint2 = { x: x2 - horizontalOffset, y: y2 };
                 return `M${x1},${y1} C${controlPoint1.x},${controlPoint1.y} ${controlPoint2.x},${controlPoint2.y} ${x2},${y2}`;
@@ -200,7 +201,7 @@ export function ValueMap({
                         id={`path-ld-${conn.leverId}-${conn.driverId}`}
                         fill="none"
                         stroke="hsl(var(--muted-foreground))"
-                        strokeWidth="1.5"
+                        strokeWidth="1.2"
                         markerEnd="url(#arrowhead)"
                         className={cn('transition-opacity', getLineOpacityClass(conn))}
                     />
@@ -211,7 +212,7 @@ export function ValueMap({
                         id={`path-do-${conn.driverId}-${conn.outcomeId}`}
                         fill="none"
                         stroke="hsl(var(--muted-foreground))"
-                        strokeWidth="1.5"
+                        strokeWidth="1.2"
                         markerEnd="url(#arrowhead)"
                         className={cn('transition-opacity', getLineOpacityClass(conn))}
                     />
@@ -237,6 +238,11 @@ export function ValueMap({
                             <CardTitle className="text-sm">{lever.name}</CardTitle>
                             {lever.status && <StatusIndicator status={lever.status} className="text-xs" />}
                         </CardHeader>
+                        {lever.isWceBookOfWork && (
+                            <CardContent className="p-3 pt-0">
+                                <Badge variant="secondary">WCE</Badge>
+                            </CardContent>
+                        )}
                     </Card>
                 ))}
             </div>
@@ -258,6 +264,11 @@ export function ValueMap({
                             <CardTitle className="text-base">{driver.name}</CardTitle>
                              {driver.description && <CardDescription className="text-xs line-clamp-2">{driver.description}</CardDescription>}
                         </CardHeader>
+                         {driver.isWceBookOfWork && (
+                            <CardContent className="p-3 pt-0">
+                                <Badge variant="secondary">WCE</Badge>
+                            </CardContent>
+                        )}
                     </Card>
                 ))}
             </div>

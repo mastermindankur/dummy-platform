@@ -40,6 +40,7 @@ import {
   DialogTrigger,
   DialogClose,
 } from '@/components/ui/dialog';
+import { Switch } from '@/components/ui/switch';
 
 type FilterState = {
     id: number;
@@ -102,6 +103,7 @@ function ValueMapManager() {
             id: `${type.slice(0, -1)}-${Date.now()}`,
             name: `New ${type.slice(0, -1)}`,
             description: '',
+            isWceBookOfWork: false,
         };
         
         if (type === 'outcomes') {
@@ -271,6 +273,14 @@ function ValueMapItemCard({ item, onUpdate, onDelete, levers, drivers }: {
                     <div>
                         <Label>Description</Label>
                         <Textarea value={editedItem.description} onChange={e => setEditedItem({...editedItem, description: e.target.value })}/>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <Switch
+                            id={`wce-switch-${editedItem.id}`}
+                            checked={editedItem.isWceBookOfWork}
+                            onCheckedChange={checked => setEditedItem({...editedItem, isWceBookOfWork: checked})}
+                        />
+                        <Label htmlFor={`wce-switch-${editedItem.id}`}>Part of WCE 2025 Book of Work</Label>
                     </div>
                     
                     {isOutcome && drivers && (
