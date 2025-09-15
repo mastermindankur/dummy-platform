@@ -30,7 +30,7 @@ async function readData(): Promise<Pillar[]> {
 
     const autoCalculatedKeys = [
         'tech-sphere-sessions', 'arc-trainings', 'app-sherpas', 
-        'explore-resiliency-program', 'blogs-open-source', 'hackathons', 
+        'explore-resiliency-program', 'dti-tech-blogs', 'hackathons', 
         'industry-events', 'squad-onboarding', 'regression-testing-automation',
         'junit-adoption', 'maintenance-screens', 'api-performance'
     ];
@@ -99,13 +99,13 @@ async function readData(): Promise<Pillar[]> {
     }
 
     // Attach published blogs count for DTI Tech Blogs
-    const blogsData = dataCache['blogs-open-source'];
+    const blogsData = dataCache['dti-tech-blogs'];
     if (blogsData) { // Check if blogsData is not null
         const publishedBlogs = blogsData.rows.length;
         jsonData = jsonData.map(pillar => ({
             ...pillar,
             subItems: pillar.subItems.map(subItem => 
-                subItem.dataKey === 'blogs-open-source' 
+                subItem.dataKey === 'dti-tech-blogs' 
                 ? { ...subItem, percentageComplete: publishedBlogs } 
                 : subItem
             ),

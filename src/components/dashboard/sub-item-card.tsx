@@ -22,7 +22,7 @@ type Props = {
 // Mapping dataKey to its corresponding details page path
 const detailPageLinks: Record<string, string> = {
     "explore-resiliency-program": "/pillar/adopting-emerging-technologies/explore-resiliency-program",
-    "blogs-open-source": "/pillar/adopting-emerging-technologies/blogs-and-open-source",
+    "dti-tech-blogs": "/pillar/adopting-emerging-technologies/blogs-and-open-source",
     "tech-sphere-sessions": "/pillar/adopting-emerging-technologies/tech-sphere-sessions",
     "hackathons": "/pillar/adopting-emerging-technologies/hackathons",
     "industry-events": "/pillar/adopting-emerging-technologies/industry-events",

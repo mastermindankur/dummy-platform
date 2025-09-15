@@ -290,7 +290,7 @@ async function readData() {
             'arc-trainings',
             'app-sherpas',
             'explore-resiliency-program',
-            'blogs-open-source',
+            'dti-tech-blogs',
             'hackathons',
             'industry-events',
             'squad-onboarding',
@@ -354,12 +354,12 @@ async function readData() {
                 }));
         }
         // Attach published blogs count for DTI Tech Blogs
-        const blogsData = dataCache['blogs-open-source'];
+        const blogsData = dataCache['dti-tech-blogs'];
         if (blogsData) {
             const publishedBlogs = blogsData.rows.length;
             jsonData = jsonData.map((pillar)=>({
                     ...pillar,
-                    subItems: pillar.subItems.map((subItem)=>subItem.dataKey === 'blogs-open-source' ? {
+                    subItems: pillar.subItems.map((subItem)=>subItem.dataKey === 'dti-tech-blogs' ? {
                             ...subItem,
                             percentageComplete: publishedBlogs
                         } : subItem)
@@ -423,7 +423,7 @@ async function readData() {
         // Attach implemented screens count for Maintenance Screens
         const maintenanceScreensData = dataCache['maintenance-screens'];
         if (maintenanceScreensData && maintenanceScreensData.rows.length > 0) {
-            const implementedScreens = maintenanceScreensData.rows.filter((row)=>row['Status'] === 'Implemented').length;
+            const implementedScreens = maintenanceScreensData.rows.filter((row)=>String(row['Status'] || '').toLowerCase().includes('live')).length;
             jsonData = jsonData.map((pillar)=>({
                     ...pillar,
                     subItems: pillar.subItems.map((subItem)=>subItem.dataKey === 'maintenance-screens' ? {
@@ -893,7 +893,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$re
 // Mapping dataKey to its corresponding details page path
 const detailPageLinks = {
     "explore-resiliency-program": "/pillar/adopting-emerging-technologies/explore-resiliency-program",
-    "blogs-open-source": "/pillar/adopting-emerging-technologies/blogs-and-open-source",
+    "dti-tech-blogs": "/pillar/adopting-emerging-technologies/blogs-and-open-source",
     "tech-sphere-sessions": "/pillar/adopting-emerging-technologies/tech-sphere-sessions",
     "hackathons": "/pillar/adopting-emerging-technologies/hackathons",
     "industry-events": "/pillar/adopting-emerging-technologies/industry-events",

@@ -290,7 +290,7 @@ async function readData() {
             'arc-trainings',
             'app-sherpas',
             'explore-resiliency-program',
-            'blogs-open-source',
+            'dti-tech-blogs',
             'hackathons',
             'industry-events',
             'squad-onboarding',
@@ -354,12 +354,12 @@ async function readData() {
                 }));
         }
         // Attach published blogs count for DTI Tech Blogs
-        const blogsData = dataCache['blogs-open-source'];
+        const blogsData = dataCache['dti-tech-blogs'];
         if (blogsData) {
             const publishedBlogs = blogsData.rows.length;
             jsonData = jsonData.map((pillar)=>({
                     ...pillar,
-                    subItems: pillar.subItems.map((subItem)=>subItem.dataKey === 'blogs-open-source' ? {
+                    subItems: pillar.subItems.map((subItem)=>subItem.dataKey === 'dti-tech-blogs' ? {
                             ...subItem,
                             percentageComplete: publishedBlogs
                         } : subItem)
