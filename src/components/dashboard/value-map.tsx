@@ -5,16 +5,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { StatusIndicator } from '@/components/dashboard/status-indicator';
-import type { Status, ValueMapItem, OutcomeDriverConnection, DriverLeverConnection } from '@/types';
-
-type Outcome = ValueMapItem;
-type Driver = ValueMapItem;
-type Lever = ValueMapItem;
+import type { ValueMapItem, OutcomeDriverConnection, DriverLeverConnection, ValueMapDriver, ValueMapOutcome, ValueMapLever } from '@/types';
 
 type ValueMapProps = {
-    outcomes: Outcome[];
-    drivers: Driver[];
-    levers: Lever[];
+    outcomes: ValueMapOutcome[];
+    drivers: ValueMapDriver[];
+    levers: ValueMapLever[];
     outcomeDriverConnections: OutcomeDriverConnection[];
     driverLeverConnections: DriverLeverConnection[];
 };
@@ -49,18 +45,27 @@ export function ValueMap({
             
             const containerRect = containerRef.current.getBoundingClientRect();
 
+            const createCurvePath = (x1: number, y1: number, x2: number, y2: number) => {
+                const horizontalOffset = 40;
+                const controlPoint1 = { x: x1 + horizontalOffset, y: y1 };
+                const controlPoint2 = { x: x2 - horizontalOffset, y: y2 };
+                return `M${x1},${y1} C${controlPoint1.x},${controlPoint1.y} ${controlPoint2.x},${controlPoint2.y} ${x2},${y2}`;
+            };
+
+
             driverLeverConnections.forEach(conn => {
                 const leverCard = document.getElementById(`card-${conn.leverId}`);
                 const driverCard = document.getElementById(`card-${conn.driverId}`);
                 if(leverCard && driverCard) {
-                    const line = svg.querySelector(`#line-ld-${conn.leverId}-${conn.driverId}`);
-                    if(line) {
+                    const path = svg.querySelector(`#path-ld-${conn.leverId}-${conn.driverId}`);
+                    if(path) {
                         const rect1 = leverCard.getBoundingClientRect();
                         const rect2 = driverCard.getBoundingClientRect();
-                        line.setAttribute('x1', `${rect1.right - containerRect.left}`);
-                        line.setAttribute('y1', `${(rect1.top - containerRect.top) + rect1.height / 2}`);
-                        line.setAttribute('x2', `${rect2.left - containerRect.left}`);
-                        line.setAttribute('y2', `${(rect2.top - containerRect.top) + rect2.height / 2}`);
+                        const x1 = rect1.right - containerRect.left;
+                        const y1 = (rect1.top - containerRect.top) + rect1.height / 2;
+                        const x2 = rect2.left - containerRect.left;
+                        const y2 = (rect2.top - containerRect.top) + rect2.height / 2;
+                        path.setAttribute('d', createCurvePath(x1, y1, x2, y2));
                     }
                 }
             });
@@ -69,14 +74,15 @@ export function ValueMap({
                 const driverCard = document.getElementById(`card-${conn.driverId}`);
                 const outcomeCard = document.getElementById(`card-${conn.outcomeId}`);
                  if(driverCard && outcomeCard) {
-                    const line = svg.querySelector(`#line-do-${conn.driverId}-${conn.outcomeId}`);
-                    if(line) {
+                    const path = svg.querySelector(`#path-do-${conn.driverId}-${conn.outcomeId}`);
+                    if(path) {
                         const rect1 = driverCard.getBoundingClientRect();
                         const rect2 = outcomeCard.getBoundingClientRect();
-                        line.setAttribute('x1', `${rect1.right - containerRect.left}`);
-                        line.setAttribute('y1', `${(rect1.top - containerRect.top) + rect1.height / 2}`);
-                        line.setAttribute('x2', `${rect2.left - containerRect.left}`);
-                        line.setAttribute('y2', `${(rect2.top - containerRect.top) + rect2.height / 2}`);
+                        const x1 = rect1.right - containerRect.left;
+                        const y1 = (rect1.top - containerRect.top) + rect1.height / 2;
+                        const x2 = rect2.left - containerRect.left;
+                        const y2 = (rect2.top - containerRect.top) + rect2.height / 2;
+                        path.setAttribute('d', createCurvePath(x1, y1, x2, y2));
                     }
                 }
             })
@@ -189,9 +195,10 @@ export function ValueMap({
                     </marker>
                 </defs>
                 {driverLeverConnections.map(conn => (
-                    <line
-                        key={`line-ld-${conn.leverId}-${conn.driverId}`}
-                        id={`line-ld-${conn.leverId}-${conn.driverId}`}
+                    <path
+                        key={`path-ld-${conn.leverId}-${conn.driverId}`}
+                        id={`path-ld-${conn.leverId}-${conn.driverId}`}
+                        fill="none"
                         stroke="hsl(var(--muted-foreground))"
                         strokeWidth="1.5"
                         markerEnd="url(#arrowhead)"
@@ -199,9 +206,10 @@ export function ValueMap({
                     />
                 ))}
                 {outcomeDriverConnections.map(conn => (
-                     <line
-                        key={`line-do-${conn.driverId}-${conn.outcomeId}`}
-                        id={`line-do-${conn.driverId}-${conn.outcomeId}`}
+                     <path
+                        key={`path-do-${conn.driverId}-${conn.outcomeId}`}
+                        id={`path-do-${conn.driverId}-${conn.outcomeId}`}
+                        fill="none"
                         stroke="hsl(var(--muted-foreground))"
                         strokeWidth="1.5"
                         markerEnd="url(#arrowhead)"
@@ -278,3 +286,5 @@ export function ValueMap({
     </div>
   );
 }
+
+    
