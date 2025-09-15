@@ -46,7 +46,7 @@ export function ValueMap({
             const containerRect = containerRef.current.getBoundingClientRect();
 
             const createCurvePath = (x1: number, y1: number, x2: number, y2: number) => {
-                const horizontalOffset = 40;
+                const horizontalOffset = 60; // Increased for a more pronounced curve
                 const controlPoint1 = { x: x1 + horizontalOffset, y: y1 };
                 const controlPoint2 = { x: x2 - horizontalOffset, y: y2 };
                 return `M${x1},${y1} C${controlPoint1.x},${controlPoint1.y} ${controlPoint2.x},${controlPoint2.y} ${x2},${y2}`;
@@ -286,5 +286,3 @@ export function ValueMap({
     </div>
   );
 }
-
-    
