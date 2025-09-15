@@ -18,12 +18,6 @@ type Outcome = ValueMapItem;
 type Driver = ValueMapItem;
 type Lever = ValueMapItem;
 
-type Connection = {
-    outcomeId?: string;
-    driverId: string;
-    leverId?: string;
-};
-
 type OutcomeDriverConnection = {
     outcomeId: string;
     driverId: string;
@@ -42,6 +36,11 @@ type ValueMapProps = {
     driverLeverConnections: DriverLeverConnection[];
 };
 
+type SelectedItem = {
+    id: string;
+    type: 'lever' | 'driver' | 'outcome';
+} | null;
+
 export function ValueMap({ 
     outcomes, 
     drivers, 
@@ -49,7 +48,7 @@ export function ValueMap({
     outcomeDriverConnections,
     driverLeverConnections,
 }: ValueMapProps) {
-    const [selectedDriver, setSelectedDriver] = useState<string | null>(null);
+    const [selectedItem, setSelectedItem] = useState<SelectedItem>(null);
     const [isClient, setIsClient] = useState(false);
     const svgRef = useRef<SVGSVGElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -67,7 +66,6 @@ export function ValueMap({
             
             const containerRect = containerRef.current.getBoundingClientRect();
 
-            // Draw Lever -> Driver lines
             driverLeverConnections.forEach(conn => {
                 const leverCard = document.getElementById(`card-${conn.leverId}`);
                 const driverCard = document.getElementById(`card-${conn.driverId}`);
@@ -84,7 +82,6 @@ export function ValueMap({
                 }
             });
 
-            // Draw Driver -> Outcome lines
             outcomeDriverConnections.forEach(conn => {
                 const driverCard = document.getElementById(`card-${conn.driverId}`);
                 const outcomeCard = document.getElementById(`card-${conn.outcomeId}`);
@@ -117,21 +114,90 @@ export function ValueMap({
             }
             clearTimeout(timeoutId);
         };
-    }, [isClient, selectedDriver, outcomes, drivers, levers, outcomeDriverConnections, driverLeverConnections]);
+    }, [isClient, selectedItem, outcomes, drivers, levers, outcomeDriverConnections, driverLeverConnections]);
 
-    const handleDriverClick = (driverId: string) => {
-        setSelectedDriver(prev => (prev === driverId ? null : driverId));
+    const handleItemClick = (id: string, type: 'lever' | 'driver' | 'outcome') => {
+        setSelectedItem(prev => (prev?.id === id && prev?.type === type ? null : { id, type }));
     };
 
-    const getOpacityClass = (driverId: string) => {
-        if (!selectedDriver) return 'opacity-100';
-        return selectedDriver === driverId ? 'opacity-100' : 'opacity-30';
+    const getHighlightedIds = () => {
+        if (!selectedItem) return { levers: [], drivers: [], outcomes: [] };
+
+        let highlightedLevers: string[] = [];
+        let highlightedDrivers: string[] = [];
+        let highlightedOutcomes: string[] = [];
+
+        if (selectedItem.type === 'lever') {
+            highlightedLevers.push(selectedItem.id);
+            const connectedDriverIds = driverLeverConnections
+                .filter(c => c.leverId === selectedItem.id)
+                .map(c => c.driverId);
+            highlightedDrivers.push(...connectedDriverIds);
+
+            const connectedOutcomeIds = outcomeDriverConnections
+                .filter(c => connectedDriverIds.includes(c.driverId))
+                .map(c => c.outcomeId);
+            highlightedOutcomes.push(...connectedOutcomeIds);
+        }
+
+        if (selectedItem.type === 'driver') {
+            highlightedDrivers.push(selectedItem.id);
+            const connectedLeverIds = driverLeverConnections
+                .filter(c => c.driverId === selectedItem.id)
+                .map(c => c.leverId);
+            highlightedLevers.push(...connectedLeverIds);
+
+            const connectedOutcomeIds = outcomeDriverConnections
+                .filter(c => c.driverId === selectedItem.id)
+                .map(c => c.outcomeId);
+            highlightedOutcomes.push(...connectedOutcomeIds);
+        }
+        
+        if (selectedItem.type === 'outcome') {
+            highlightedOutcomes.push(selectedItem.id);
+            const connectedDriverIds = outcomeDriverConnections
+                .filter(c => c.outcomeId === selectedItem.id)
+                .map(c => c.driverId);
+            highlightedDrivers.push(...connectedDriverIds);
+
+            const connectedLeverIds = driverLeverConnections
+                .filter(c => connectedDriverIds.includes(c.driverId))
+                .map(c => c.leverId);
+            highlightedLevers.push(...connectedLeverIds);
+        }
+
+        return { 
+            levers: [...new Set(highlightedLevers)], 
+            drivers: [...new Set(highlightedDrivers)], 
+            outcomes: [...new Set(highlightedOutcomes)]
+        };
+    };
+
+    const highlighted = getHighlightedIds();
+
+    const getOpacityClass = (id: string, type: 'lever' | 'driver' | 'outcome') => {
+        if (!selectedItem) return 'opacity-100';
+        return highlighted[type].includes(id) ? 'opacity-100' : 'opacity-30';
+    };
+
+    const getLineOpacityClass = (conn: DriverLeverConnection | OutcomeDriverConnection) => {
+        if (!selectedItem) return 'opacity-100';
+
+        const isDriverLever = 'leverId' in conn;
+
+        if (highlighted.drivers.includes(conn.driverId)) {
+            if (isDriverLever) {
+                return highlighted.levers.includes(conn.leverId) ? 'opacity-100' : 'opacity-30';
+            } else { // OutcomeDriverConnection
+                return highlighted.outcomes.includes(conn.outcomeId) ? 'opacity-100' : 'opacity-30';
+            }
+        }
+        return 'opacity-30';
     };
 
 
   return (
     <div ref={containerRef} className="relative w-full space-y-4">
-        {/* Connecting Lines Layer */}
         {isClient && (
              <svg ref={svgRef} className="absolute top-0 left-0 w-full h-full pointer-events-none" aria-hidden="true">
                 <defs>
@@ -146,7 +212,7 @@ export function ValueMap({
                         stroke="hsl(var(--border))"
                         strokeWidth="1.5"
                         markerEnd="url(#arrowhead)"
-                        className={cn('transition-opacity', getOpacityClass(conn.driverId))}
+                        className={cn('transition-opacity', getLineOpacityClass(conn))}
                     />
                 ))}
                 {outcomeDriverConnections.map(conn => (
@@ -156,21 +222,25 @@ export function ValueMap({
                         stroke="hsl(var(--border))"
                         strokeWidth="1.5"
                         markerEnd="url(#arrowhead)"
-                        className={cn('transition-opacity', getOpacityClass(conn.driverId))}
+                        className={cn('transition-opacity', getLineOpacityClass(conn))}
                     />
                 ))}
             </svg>
         )}
 
-        {/* Columns Layout */}
         <div className="flex w-full justify-between">
             {/* Levers Column */}
             <div className="w-1/3 px-4 space-y-2">
                 <h2 className="text-xl font-semibold text-center mb-4">Levers</h2>
                 {levers.map(lever => (
-                    <Card key={lever.id} id={`card-${lever.id}`} className={cn(
-                        "bg-background/70 transition-opacity",
-                        !selectedDriver ? 'opacity-100' : driverLeverConnections.some(c => c.leverId === lever.id && c.driverId === selectedDriver) ? 'opacity-100' : 'opacity-30'
+                    <Card 
+                        key={lever.id} 
+                        id={`card-${lever.id}`} 
+                        onClick={() => handleItemClick(lever.id, 'lever')}
+                        className={cn(
+                            "bg-background/70 transition-all duration-300 cursor-pointer",
+                            getOpacityClass(lever.id, 'lever'),
+                            selectedItem?.id === lever.id && 'bg-card border-primary shadow-lg'
                         )}>
                         <CardHeader className="p-3">
                             <CardTitle className="text-sm">{lever.name}</CardTitle>
@@ -184,10 +254,14 @@ export function ValueMap({
             <div className="w-1/3 px-4 space-y-2">
                  <h2 className="text-xl font-semibold text-center mb-4">Drivers</h2>
                 {drivers.map(driver => (
-                    <Card key={driver.id} id={`card-${driver.id}`} onClick={() => handleDriverClick(driver.id)} className={cn(
+                    <Card 
+                        key={driver.id} 
+                        id={`card-${driver.id}`} 
+                        onClick={() => handleItemClick(driver.id, 'driver')}
+                        className={cn(
                         "bg-background/70 transition-all duration-300 cursor-pointer", 
-                        getOpacityClass(driver.id),
-                        selectedDriver === driver.id && 'bg-card border-primary shadow-lg'
+                        getOpacityClass(driver.id, 'driver'),
+                        selectedItem?.id === driver.id && 'bg-card border-primary shadow-lg'
                         )}>
                         <CardHeader className="p-3">
                             <CardTitle className="text-base">{driver.name}</CardTitle>
@@ -201,9 +275,14 @@ export function ValueMap({
             <div className="w-1/3 px-4 space-y-2">
                 <h2 className="text-xl font-semibold text-center mb-4">Outcomes</h2>
                 {outcomes.map(outcome => (
-                    <Card key={outcome.id} id={`card-${outcome.id}`} className={cn(
-                        "bg-background/70 transition-opacity",
-                        !selectedDriver ? 'opacity-100' : outcomeDriverConnections.some(c => c.outcomeId === outcome.id && c.driverId === selectedDriver) ? 'opacity-100' : 'opacity-30'
+                    <Card 
+                        key={outcome.id} 
+                        id={`card-${outcome.id}`} 
+                        onClick={() => handleItemClick(outcome.id, 'outcome')}
+                        className={cn(
+                        "bg-background/70 transition-all duration-300 cursor-pointer",
+                        getOpacityClass(outcome.id, 'outcome'),
+                        selectedItem?.id === outcome.id && 'bg-card border-primary shadow-lg'
                         )}>
                         <CardHeader className="p-3">
                             <CardTitle className="text-base">{outcome.name}</CardTitle>
