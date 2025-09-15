@@ -2,7 +2,6 @@
 'use client';
 import { useState, useEffect } from "react";
 import { Header } from "@/components/layout/header";
-import { getValueMapData } from "@/lib/data";
 import { ValueMap } from "@/components/dashboard/value-map";
 import {
   Card,
@@ -34,17 +33,17 @@ export default function ExecutivePage() {
     fetchData();
   }, []);
 
-  const { outcomes, drivers, levers, outcomeDriverConnections, driverLeverConnections } = {
-    outcomes: valueMapData?.outcomes || [],
-    drivers: valueMapData?.drivers || [],
-    levers: valueMapData?.levers || [],
-    outcomeDriverConnections: valueMapData?.outcomes.flatMap(o => 
-        (o.connectedDriverIds || []).map(driverId => ({ outcomeId: o.id, driverId }))
-    ) || [],
-    driverLeverConnections: valueMapData?.drivers.flatMap(d => 
-        (d.connectedLeverIds || []).map(leverId => ({ driverId: d.id, leverId }))
-    ) || [],
-  };
+  const outcomes = valueMapData?.outcomes || [];
+  const drivers = valueMapData?.drivers || [];
+  const levers = valueMapData?.levers || [];
+
+  const outcomeDriverConnections: OutcomeDriverConnection[] = outcomes.flatMap(o =>
+    (o.connectedDriverIds || []).map(driverId => ({ outcomeId: o.id, driverId }))
+  );
+
+  const driverLeverConnections: DriverLeverConnection[] = drivers.flatMap(d =>
+    (d.connectedLeverIds || []).map(leverId => ({ driverId: d.id, leverId }))
+  );
 
   return (
     <div className="flex min-h-screen w-full flex-col">
