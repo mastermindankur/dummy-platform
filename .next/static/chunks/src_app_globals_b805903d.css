@@ -560,6 +560,10 @@ body {
   margin-top: 1.5rem;
 }
 
+.mr-1 {
+  margin-right: .25rem;
+}
+
 .line-clamp-2 {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -712,6 +716,14 @@ body {
   height: 100svh;
 }
 
+.h-60 {
+  height: 15rem;
+}
+
+.h-64 {
+  height: 16rem;
+}
+
 .max-h-96 {
   max-height: 24rem;
 }
@@ -846,6 +858,14 @@ body {
 
 .w-full {
   width: 100%;
+}
+
+.w-\[120px\] {
+  width: 120px;
+}
+
+.w-\[40\%\] {
+  width: 40%;
 }
 
 .min-w-0 {
@@ -1171,6 +1191,10 @@ body {
 
 .overflow-x-auto {
   overflow-x: auto;
+}
+
+.overflow-y-auto {
+  overflow-y: auto;
 }
 
 .whitespace-nowrap {
@@ -2191,6 +2215,10 @@ body {
 
 .hover\:bg-sidebar-accent:hover {
   background-color: hsl(var(--sidebar-accent));
+}
+
+.hover\:bg-muted:hover {
+  background-color: hsl(var(--muted));
 }
 
 .hover\:text-accent-foreground:hover {

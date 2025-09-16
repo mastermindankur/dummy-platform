@@ -130,4 +130,6 @@ export type ActionItem = {
     originalDueDate?: string;
     status: 'Open' | 'Completed' | 'Delayed';
     pillarId: string;
+    createdAt: string;
 };
+
