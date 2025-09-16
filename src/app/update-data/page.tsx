@@ -41,6 +41,7 @@ import {
   DialogClose,
 } from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 type FilterState = {
     id: number;
@@ -402,17 +403,19 @@ function ValueMapItemCard({ item, onUpdate, onDelete, levers, drivers, driverGro
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent className="w-64">
-                                    {drivers.map(d => (
-                                        <DropdownMenuItem key={d.id} onSelect={(e) => e.preventDefault()}>
-                                            <div className="flex items-center space-x-2 w-full" onClick={() => handleCheckboxChange('drivers', d.id, !((editedItem as ValueMapOutcome).connectedDriverIds || []).includes(d.id))}>
-                                                <Checkbox
-                                                    checked={((editedItem as ValueMapOutcome).connectedDriverIds || []).includes(d.id)}
-                                                    onCheckedChange={(checked) => handleCheckboxChange('drivers', d.id, !!checked)}
-                                                />
-                                                <Label className="flex-1 cursor-pointer">{d.name}</Label>
-                                            </div>
-                                        </DropdownMenuItem>
-                                    ))}
+                                    <ScrollArea className="h-72">
+                                        {drivers.map(d => (
+                                            <DropdownMenuItem key={d.id} onSelect={(e) => e.preventDefault()}>
+                                                <div className="flex items-center space-x-2 w-full" onClick={() => handleCheckboxChange('drivers', d.id, !((editedItem as ValueMapOutcome).connectedDriverIds || []).includes(d.id))}>
+                                                    <Checkbox
+                                                        checked={((editedItem as ValueMapOutcome).connectedDriverIds || []).includes(d.id)}
+                                                        onCheckedChange={(checked) => handleCheckboxChange('drivers', d.id, !!checked)}
+                                                    />
+                                                    <Label className="flex-1 cursor-pointer">{d.name}</Label>
+                                                </div>
+                                            </DropdownMenuItem>
+                                        ))}
+                                    </ScrollArea>
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         </div>
@@ -443,17 +446,19 @@ function ValueMapItemCard({ item, onUpdate, onDelete, levers, drivers, driverGro
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent className="w-64">
-                                    {levers.map(l => (
-                                        <DropdownMenuItem key={l.id} onSelect={(e) => e.preventDefault()}>
-                                            <div className="flex items-center space-x-2" onClick={() => handleCheckboxChange('levers', l.id, !((editedItem as ValueMapDriver).connectedLeverIds || []).includes(l.id))}>
-                                                <Checkbox
-                                                    checked={((editedItem as ValueMapDriver).connectedLeverIds || []).includes(l.id)}
-                                                    onCheckedChange={(checked) => handleCheckboxChange('levers', l.id, !!checked)}
-                                                />
-                                                <Label className="flex-1 cursor-pointer">{l.name}</Label>
-                                            </div>
-                                        </DropdownMenuItem>
-                                    ))}
+                                    <ScrollArea className="h-72">
+                                        {levers.map(l => (
+                                            <DropdownMenuItem key={l.id} onSelect={(e) => e.preventDefault()}>
+                                                <div className="flex items-center space-x-2" onClick={() => handleCheckboxChange('levers', l.id, !((editedItem as ValueMapDriver).connectedLeverIds || []).includes(l.id))}>
+                                                    <Checkbox
+                                                        checked={((editedItem as ValueMapDriver).connectedLeverIds || []).includes(l.id)}
+                                                        onCheckedChange={(checked) => handleCheckboxChange('levers', l.id, !!checked)}
+                                                    />
+                                                    <Label className="flex-1 cursor-pointer">{l.name}</Label>
+                                                </div>
+                                            </DropdownMenuItem>
+                                        ))}
+                                    </ScrollArea>
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         </div>
@@ -1188,3 +1193,5 @@ export default function UpdateDataPage() {
     </div>
   );
 }
+
+    
