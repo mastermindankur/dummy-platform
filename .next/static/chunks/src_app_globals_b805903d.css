@@ -1298,6 +1298,10 @@ body {
   border-color: #0369a166;
 }
 
+.border-foreground {
+  border-color: hsl(var(--foreground));
+}
+
 .border-l-transparent {
   border-left-color: #0000;
 }
