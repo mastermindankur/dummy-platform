@@ -51,20 +51,19 @@ export default function LandingPage() {
               </Card>
             </Link>
             
-            <Card className="h-full flex flex-col justify-between bg-card/50 text-muted-foreground border-dashed">
-                <CardHeader className="text-center">
-                    <div className="flex justify-center mb-4">
-                        <ArrowRight className="h-12 w-12 text-muted-foreground/50" />
-                    </div>
-                    <CardTitle className="text-card-foreground/60">Action Items & Status</CardTitle>
-                    <CardDescription className="text-sm">
-                        Track key actions and their completion status.
-                    </CardDescription>
-                </CardHeader>
-                <CardFooter className="flex justify-center">
-                     <Badge variant="outline">Coming Soon</Badge>
-                </CardFooter>
-            </Card>
+            <Link href="/action-items">
+              <Card className="h-full hover:border-primary hover:shadow-lg transition-all duration-300">
+                  <CardHeader className="text-center">
+                      <div className="flex justify-center mb-4">
+                          <ArrowRight className="h-12 w-12 text-accent" />
+                      </div>
+                      <CardTitle>Action Items & Status</CardTitle>
+                      <CardDescription className="text-sm">
+                          Track key actions and their completion status.
+                      </CardDescription>
+                  </CardHeader>
+              </Card>
+            </Link>
 
             </div>
         </div>
