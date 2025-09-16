@@ -122,6 +122,7 @@ function CreateActionItemDialog({ users, pillars, onActionItemCreate }: { users:
                                 {pillars.map(pillar => (
                                     <SelectItem key={pillar.id} value={pillar.id}>{pillar.name}</SelectItem>
                                 ))}
+                                <SelectItem value="other">Other</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
@@ -252,7 +253,11 @@ function ActionItemsDataManagement({
     };
     
     const getUserName = (email: string) => users.find(u => u.email === email)?.name || email;
-    const getPillarName = (pillarId: string) => pillars.find(p => p.id === pillarId)?.name || 'Unknown Pillar';
+    const getPillarName = (pillarId: string) => {
+        if (pillarId === 'other') return 'Other';
+        return pillars.find(p => p.id === pillarId)?.name || 'Unknown Pillar';
+    };
+
 
     return (
         <div className="space-y-6">
@@ -1616,6 +1621,7 @@ export default function UpdateDataPage() {
     </div>
   );
 }
+
 
 
 

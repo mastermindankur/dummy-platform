@@ -56,7 +56,11 @@ export default function ActionItemsPage() {
   }, []);
 
   const getUserName = (email: string) => users.find(u => u.email === email)?.name || email;
-  const getPillarName = (pillarId: string) => pillars.find(p => p.id === pillarId)?.name || 'Unknown Pillar';
+  const getPillarName = (pillarId: string) => {
+    if (pillarId === 'other') return 'Other';
+    return pillars.find(p => p.id === pillarId)?.name || 'Unknown Pillar';
+  };
+
 
   return (
     <div className="flex min-h-screen w-full flex-col">
