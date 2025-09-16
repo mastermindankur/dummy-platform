@@ -135,20 +135,22 @@ function CreateActionItemDialog({ users, pillars, onActionItemCreate }: { users:
                                 </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-auto p-0" align="start">
-                                <div className="p-2 space-y-1 h-60 overflow-y-auto">
-                                {users.map(user => (
-                                    <div key={user.email} className="flex items-center space-x-2 p-2 hover:bg-muted rounded-md">
-                                        <Checkbox
-                                            id={`user-assign-${user.email}`}
-                                            checked={assignedTo.includes(user.email)}
-                                            onCheckedChange={(checked) => {
-                                                setAssignedTo(prev => checked ? [...prev, user.email] : prev.filter(email => email !== user.email));
-                                            }}
-                                        />
-                                        <Label htmlFor={`user-assign-${user.email}`} className="flex-1 cursor-pointer">{user.name} <span className="text-xs text-muted-foreground">({user.email})</span></Label>
+                                <ScrollArea className="h-60">
+                                    <div className="p-2 space-y-1">
+                                    {users.map(user => (
+                                        <div key={user.email} className="flex items-center space-x-2 p-2 hover:bg-muted rounded-md">
+                                            <Checkbox
+                                                id={`user-assign-${user.email}`}
+                                                checked={assignedTo.includes(user.email)}
+                                                onCheckedChange={(checked) => {
+                                                    setAssignedTo(prev => checked ? [...prev, user.email] : prev.filter(email => email !== user.email));
+                                                }}
+                                            />
+                                            <Label htmlFor={`user-assign-${user.email}`} className="flex-1 cursor-pointer">{user.name} <span className="text-xs text-muted-foreground">({user.email})</span></Label>
+                                        </div>
+                                    ))}
                                     </div>
-                                ))}
-                                </div>
+                                </ScrollArea>
                             </PopoverContent>
                         </Popover>
                          {assignedTo.length > 0 && (
@@ -246,7 +248,13 @@ function ActionItemsDataManagement({
     const handleDueDateChange = (id: string, newDueDate: string) => {
         onActionItemsChange(actionItems.map(item => {
             if (item.id === id) {
-                return {...item, dueDate: newDueDate, originalDueDate: item.originalDueDate || item.dueDate };
+                // If the new due date is different from the current one, and there's no original due date set yet,
+                // set the current due date as the original.
+                if (item.dueDate !== newDueDate && !item.originalDueDate) {
+                    return {...item, dueDate: newDueDate, originalDueDate: item.dueDate };
+                }
+                // If an original due date already exists, just update the due date.
+                return {...item, dueDate: newDueDate };
             }
             return item;
         }));
@@ -1621,10 +1629,3 @@ export default function UpdateDataPage() {
     </div>
   );
 }
-
-
-
-
-
-
-
