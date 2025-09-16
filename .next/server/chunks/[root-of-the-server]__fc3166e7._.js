@@ -428,7 +428,9 @@ async function getValueMapData() {
             const defaultData = {
                 outcomes: [],
                 drivers: [],
-                levers: []
+                levers: [],
+                outcomeGroups: [],
+                driverGroups: []
             };
             await writeValueMapData(defaultData);
             return defaultData;

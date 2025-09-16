@@ -50,12 +50,22 @@ const ItemCard = ({ item, type, onClick, isHighlighted, isSelected }: {
     </Card>
 );
 
-const GroupContainer = ({ group, children, title }: { group?: ValueMapGroup, children: React.ReactNode, title: string }) => {
+const groupColorClasses = [
+    'bg-blue-900/10 border-blue-700/40',
+    'bg-purple-900/10 border-purple-700/40',
+    'bg-green-900/10 border-green-700/40',
+    'bg-rose-900/10 border-rose-700/40',
+    'bg-sky-900/10 border-sky-700/40',
+];
+
+const GroupContainer = ({ group, children, title, index }: { group?: ValueMapGroup, children: React.ReactNode, title: string, index: number }) => {
     if (!group) return <>{children}</>;
+    
+    const colorClass = groupColorClasses[index % groupColorClasses.length];
 
     return (
-        <div id={`group-${group.id}`} className="border rounded-lg p-3 bg-secondary/20 relative">
-            <h3 className="text-sm font-semibold text-muted-foreground absolute -top-2.5 left-3 bg-card px-2">{group.name}</h3>
+        <div id={`group-${group.id}`} className={cn("border rounded-lg p-3 relative", colorClass)}>
+            <h3 className="text-sm font-semibold text-muted-foreground absolute -top-2.5 left-3 bg-background px-2">{group.name}</h3>
             <div className="space-y-2 pt-2">
                 {children}
             </div>
@@ -234,8 +244,8 @@ export function ValueMap({
         
         return (
             <>
-                {groups.map(group => (
-                    <GroupContainer key={group.id} group={group} title={`${type} Group`}>
+                {groups.map((group, index) => (
+                    <GroupContainer key={group.id} group={group} title={`${type} Group`} index={index}>
                         {groupedItems
                             .filter(item => item.groupId === group.id)
                             .map(item => (
@@ -337,3 +347,5 @@ export function ValueMap({
     </div>
   );
 }
+
+    
