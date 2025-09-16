@@ -75,12 +75,12 @@ export default function ExecutivePage() {
                       <AlertTitle>How to Read Our Value Map</AlertTitle>
                       <AlertDescription>
                         <p className="mb-2">
-                          Our Value Map flows from left to right – starting with the Levers we can pull, which influence our Drivers, and ultimately deliver our strategic Outcomes.
+                          Our Value Map is read from right to left – starting with the Outcomes we want to achieve, then looking at the Drivers that influence those outcomes, and finally the Levers we can pull to make it happen.
                         </p>
                         <ul className="list-disc pl-5 space-y-1">
-                          <li><span className="font-semibold">Levers:</span> The actions we can take.</li>
-                          <li><span className="font-semibold">Drivers:</span> What makes success possible.</li>
                           <li><span className="font-semibold">Outcomes:</span> What success looks like.</li>
+                          <li><span className="font-semibold">Drivers:</span> What makes success possible.</li>
+                          <li><span className="font-semibold">Levers:</span> The actions we can take.</li>
                         </ul>
                       </AlertDescription>
                     </Alert>
