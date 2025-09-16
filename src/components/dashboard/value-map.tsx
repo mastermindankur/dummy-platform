@@ -23,6 +23,12 @@ type SelectedItem = {
     type: 'lever' | 'driver' | 'outcome';
 } | null;
 
+const itemColorClasses = {
+    lever: 'bg-blue-950/30',
+    driver: 'bg-green-950/30',
+    outcome: 'bg-purple-950/30',
+};
+
 const ItemCard = ({ item, type, onClick, isHighlighted, isSelected }: {
     item: ValueMapItem;
     type: 'lever' | 'driver' | 'outcome';
@@ -34,9 +40,10 @@ const ItemCard = ({ item, type, onClick, isHighlighted, isSelected }: {
         id={`card-${item.id}`} 
         onClick={onClick}
         className={cn(
-            "bg-background/70 transition-all duration-300 cursor-pointer",
+            "transition-all duration-300 cursor-pointer",
+            itemColorClasses[type],
             isHighlighted ? 'opacity-100' : 'opacity-30',
-            isSelected && 'bg-card border-primary shadow-lg'
+            isSelected && 'border-primary shadow-lg'
         )}>
         <CardHeader className="p-3">
             <CardTitle className="text-sm">{item.name}</CardTitle>

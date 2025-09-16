@@ -1425,6 +1425,18 @@ body {
   background-color: #0c4a6e1a;
 }
 
+.bg-blue-950\/30 {
+  background-color: #1725544d;
+}
+
+.bg-green-950\/30 {
+  background-color: #052e164d;
+}
+
+.bg-purple-950\/30 {
+  background-color: #3b07644d;
+}
+
 .fill-current {
   fill: currentColor;
 }
