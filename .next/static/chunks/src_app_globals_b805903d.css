@@ -1846,6 +1846,10 @@ body {
   color: rgb(59 7 100 / var(--tw-text-opacity, 1));
 }
 
+.text-inherit {
+  color: inherit;
+}
+
 .underline-offset-4 {
   text-underline-offset: 4px;
 }
