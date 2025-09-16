@@ -91,9 +91,10 @@ export default function ActionItemsPage() {
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead className="w-[40%]">Task</TableHead>
+                                    <TableHead className="w-[35%]">Task</TableHead>
                                     <TableHead>Pillar</TableHead>
                                     <TableHead>Assigned To</TableHead>
+                                    <TableHead>Created</TableHead>
                                     <TableHead>Due Date</TableHead>
                                     <TableHead>Status</TableHead>
                                 </TableRow>
@@ -108,6 +109,7 @@ export default function ActionItemsPage() {
                                                 <Badge key={email} variant="secondary" className="mr-1">{getUserName(email)}</Badge>
                                             ))}
                                         </TableCell>
+                                        <TableCell>{format(new Date(item.createdAt), "PPP")}</TableCell>
                                         <TableCell>
                                             <span className={cn(new Date(item.dueDate) < new Date() && item.status !== 'Completed' && 'text-destructive')}>
                                                 {format(new Date(item.dueDate), "PPP")}
