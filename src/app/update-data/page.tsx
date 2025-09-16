@@ -77,6 +77,10 @@ function ActionItemsDataManagement({
             toast({ title: "Missing fields", description: "Please fill in all fields to add a user.", variant: "destructive" });
             return;
         }
+        if (users.some(u => u.email === newUserEmail)) {
+            toast({ title: "User exists", description: "A user with this email already exists.", variant: "destructive" });
+            return;
+        }
         const newUser: User = {
             name: newUserName,
             email: newUserEmail,
@@ -107,9 +111,9 @@ function ActionItemsDataManagement({
                     <CardDescription>View, add, or remove users from the list.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <div className="border rounded-md">
+                    <div className="border rounded-md max-h-96 overflow-auto">
                         <Table>
-                            <TableHeader>
+                            <TableHeader className="sticky top-0 bg-secondary">
                                 <TableRow>
                                     <TableHead>Name</TableHead>
                                     <TableHead>Email</TableHead>
@@ -118,8 +122,8 @@ function ActionItemsDataManagement({
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {users.map((user) => (
-                                    <TableRow key={user.email}>
+                                {users.map((user, index) => (
+                                    <TableRow key={`${user.email}-${index}`}>
                                         <TableCell>{user.name}</TableCell>
                                         <TableCell>{user.email}</TableCell>
                                         <TableCell>{user.lobt}</TableCell>
@@ -850,7 +854,7 @@ export default function UpdateDataPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [activeTab, setActiveTab] = useState<string | undefined>('value-map');
+  const [activeTab, setActiveTab] = useState<string | undefined>('action-items');
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -944,13 +948,16 @@ export default function UpdateDataPage() {
             email: row['Email'],
             lobt: row['LOBT'],
         }));
-        // Merge with existing users, giving precedence to the newly uploaded file
-        // and removing duplicates based on email.
-        const existingEmails = new Set(newUsers.map(u => u.email));
-        const combinedUsers = [
-            ...newUsers,
-            ...users.filter(u => !existingEmails.has(u.email)),
-        ];
+        
+        // De-duplicate: Create a Set of emails from the newly uploaded users
+        const newEmails = new Set(newUsers.map(u => u.email));
+        
+        // Filter out users from the existing list that are present in the new list
+        const uniqueExistingUsers = users.filter(u => !newEmails.has(u.email));
+
+        // Combine the unique existing users with the new users
+        const combinedUsers = [...uniqueExistingUsers, ...newUsers];
+        
         setUsers(combinedUsers);
     } else {
         setExcelData(prev => ({ ...prev, [key]: processedData }));
@@ -963,7 +970,6 @@ export default function UpdateDataPage() {
       const payload: {
         pillars: Pillar[] | null;
         excelData: Record<string, any>;
-        valueMap?: ValueMapData;
       } = {
         pillars: data,
         excelData: {
@@ -1353,7 +1359,3 @@ export default function UpdateDataPage() {
     </div>
   );
 }
-
-    
-
-    
