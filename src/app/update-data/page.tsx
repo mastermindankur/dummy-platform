@@ -138,31 +138,29 @@ function CreateActionItemDialog({ users, pillars, onActionItemCreate }: { users:
                     </div>
                      <div>
                         <Label>Assign To</Label>
-                        <Popover>
-                            <PopoverTrigger asChild>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
                                 <Button variant="outline" className="w-full justify-start text-left font-normal">
                                     {assignedTo.length > 0 ? `${assignedTo.length} user(s) selected` : "Select users"}
                                 </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0" align="start">
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="w-64" align="start">
                                 <ScrollArea className="h-60">
-                                    <div className="p-2 space-y-1">
                                     {users.map(user => (
-                                        <div key={user.email} className="flex items-center space-x-2 p-2 hover:bg-muted rounded-md">
-                                            <Checkbox
-                                                id={`user-assign-${user.email}`}
-                                                checked={assignedTo.includes(user.email)}
-                                                onCheckedChange={(checked) => {
-                                                   handleUserSelect(user.email, !!checked);
-                                                }}
-                                            />
-                                            <Label htmlFor={`user-assign-${user.email}`} className="flex-1 cursor-pointer font-normal">{user.name} <span className="text-xs text-muted-foreground">({user.email})</span></Label>
-                                        </div>
+                                        <DropdownMenuItem key={user.email} onSelect={(e) => e.preventDefault()}>
+                                            <div className="flex items-center space-x-2 w-full" onClick={() => handleUserSelect(user.email, !assignedTo.includes(user.email))}>
+                                                <Checkbox
+                                                    id={`user-assign-${user.email}`}
+                                                    checked={assignedTo.includes(user.email)}
+                                                    onCheckedChange={(checked) => handleUserSelect(user.email, !!checked)}
+                                                />
+                                                <Label htmlFor={`user-assign-${user.email}`} className="flex-1 cursor-pointer font-normal">{user.name} <span className="text-xs text-muted-foreground">({user.email})</span></Label>
+                                            </div>
+                                        </DropdownMenuItem>
                                     ))}
-                                    </div>
                                 </ScrollArea>
-                            </PopoverContent>
-                        </Popover>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                          {assignedTo.length > 0 && (
                             <div className="p-2 mt-2 border rounded-md text-sm">
                                 {assignedTo.map(email => <Badge key={email} variant="secondary" className="mr-1 mb-1">{getUserName(email)}</Badge>)}
