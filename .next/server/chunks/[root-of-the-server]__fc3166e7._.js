@@ -75,14 +75,18 @@ module.exports = mod;
 var { g: global, __dirname } = __turbopack_context__;
 {
 __turbopack_context__.s({
+    "getActionItems": (()=>getActionItems),
     "getPillarById": (()=>getPillarById),
     "getPillars": (()=>getPillars),
+    "getUsers": (()=>getUsers),
     "getValueMapData": (()=>getValueMapData),
     "readExcelData": (()=>readExcelData),
     "readMonthlyData": (()=>readMonthlyData),
+    "writeActionItems": (()=>writeActionItems),
     "writeData": (()=>writeData),
     "writeExcelData": (()=>writeExcelData),
     "writeMonthlyData": (()=>writeMonthlyData),
+    "writeUsers": (()=>writeUsers),
     "writeValueMapData": (()=>writeValueMapData)
 });
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$trending$2d$up$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__$3c$export__default__as__TrendingUp$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/trending-up.js [app-route] (ecmascript) <export default as TrendingUp>");
@@ -448,6 +452,34 @@ async function writeValueMapData(data) {
         throw new Error("Failed to save Value Map data.");
     }
 }
+// User and Action Item data functions
+async function readJsonFile(fileName, defaultValue) {
+    const filePath = dataFilePath(fileName);
+    try {
+        const fileContent = await __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["promises"].readFile(filePath, 'utf-8');
+        return JSON.parse(fileContent);
+    } catch (error) {
+        if (error instanceof Error && error.code === 'ENOENT') {
+            await writeJsonFile(fileName, defaultValue);
+            return defaultValue;
+        }
+        console.error(`Could not read or parse ${fileName}:`, error);
+        throw new Error(`Failed to read ${fileName}.`);
+    }
+}
+async function writeJsonFile(fileName, data) {
+    try {
+        const filePath = dataFilePath(fileName);
+        await __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["promises"].writeFile(filePath, JSON.stringify(data, null, 2), 'utf-8');
+    } catch (error) {
+        console.error(`Could not write to ${fileName}:`, error);
+        throw new Error(`Failed to save ${fileName}.`);
+    }
+}
+const getUsers = ()=>readJsonFile('users.json', []);
+const writeUsers = (data)=>writeJsonFile('users.json', data);
+const getActionItems = ()=>readJsonFile('action-items.json', []);
+const writeActionItems = (data)=>writeJsonFile('action-items.json', data);
 }}),
 "[project]/src/app/api/data/route.ts [app-route] (ecmascript)": ((__turbopack_context__) => {
 "use strict";
@@ -466,6 +498,26 @@ async function GET(request) {
     const { searchParams } = new URL(request.url);
     const fileKey = searchParams.get('key');
     const month = searchParams.get('month'); // e.g., '2024-08'
+    if (fileKey === 'users') {
+        try {
+            const data = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["getUsers"])();
+            return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json(data);
+        } catch (error) {
+            return new __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"]('Internal Server Error', {
+                status: 500
+            });
+        }
+    }
+    if (fileKey === 'action-items') {
+        try {
+            const data = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["getActionItems"])();
+            return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json(data);
+        } catch (error) {
+            return new __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"]('Internal Server Error', {
+                status: 500
+            });
+        }
+    }
     if (fileKey === 'value-map') {
         try {
             const data = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["getValueMapData"])();
@@ -545,6 +597,12 @@ async function POST(request) {
         }
         if (body.valueMap) {
             await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["writeValueMapData"])(body.valueMap);
+        }
+        if (body.users) {
+            await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["writeUsers"])(body.users);
+        }
+        if (body.actionItems) {
+            await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["writeActionItems"])(body.actionItems);
         }
         if (body.excelData) {
             for(const key in body.excelData){
