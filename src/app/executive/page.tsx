@@ -10,10 +10,18 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Info } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { ValueMapData, DriverLeverConnection, OutcomeDriverConnection } from "@/types";
+import { Button } from "@/components/ui/button";
+import { HelpCircle } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 export default function ExecutivePage() {
   const [valueMapData, setValueMapData] = useState<ValueMapData | null>(null);
@@ -56,10 +64,37 @@ export default function ExecutivePage() {
       <main className="flex-1 p-4 md:p-8">
         <Card>
           <CardHeader>
-            <CardTitle className="text-3xl">Executive Value Map</CardTitle>
-            <CardDescription>
-              Connecting strategic outcomes to the drivers and levers that enable them.
-            </CardDescription>
+            <div className="flex items-center justify-between">
+                <div>
+                    <CardTitle className="text-3xl">Executive Value Map</CardTitle>
+                    <CardDescription>
+                      Connecting strategic outcomes to the drivers and levers that enable them.
+                    </CardDescription>
+                </div>
+                <Dialog>
+                    <DialogTrigger asChild>
+                        <Button variant="outline" size="icon">
+                            <HelpCircle className="h-4 w-4" />
+                            <span className="sr-only">How to read the value map</span>
+                        </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>How to Read Our Value Map</DialogTitle>
+                            <DialogDescription>
+                                <p className="mb-2 mt-4">
+                                Our Value Map is read from right to left – starting with the Outcomes we want to achieve, then looking at the Drivers that influence those outcomes, and finally the Levers we can pull to make it happen.
+                                </p>
+                                <ul className="list-disc pl-5 space-y-1">
+                                <li><span className="font-semibold">Outcomes:</span> What success looks like.</li>
+                                <li><span className="font-semibold">Drivers:</span> What makes success possible.</li>
+                                <li><span className="font-semibold">Levers:</span> The actions we can take.</li>
+                                </ul>
+                            </DialogDescription>
+                        </DialogHeader>
+                    </DialogContent>
+                </Dialog>
+            </div>
           </CardHeader>
           <CardContent>
             {isLoading ? (
@@ -70,20 +105,6 @@ export default function ExecutivePage() {
                 </div>
             ) : (
                 <div className="space-y-6">
-                    <Alert>
-                      <Info className="h-4 w-4" />
-                      <AlertTitle>How to Read Our Value Map</AlertTitle>
-                      <AlertDescription>
-                        <p className="mb-2">
-                          Our Value Map is read from right to left – starting with the Outcomes we want to achieve, then looking at the Drivers that influence those outcomes, and finally the Levers we can pull to make it happen.
-                        </p>
-                        <ul className="list-disc pl-5 space-y-1">
-                          <li><span className="font-semibold">Outcomes:</span> What success looks like.</li>
-                          <li><span className="font-semibold">Drivers:</span> What makes success possible.</li>
-                          <li><span className="font-semibold">Levers:</span> The actions we can take.</li>
-                        </ul>
-                      </AlertDescription>
-                    </Alert>
                     <ValueMap 
                       outcomes={outcomes}
                       drivers={drivers}
