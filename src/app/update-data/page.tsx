@@ -105,67 +105,76 @@ function ActionItemsDataManagement({
                 onDataProcessed={onDataProcessed}
             />
 
-            <Card>
-                <CardHeader>
-                    <CardTitle>Manage Users</CardTitle>
-                    <CardDescription>View, add, or remove users from the list.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <div className="border rounded-md max-h-96 overflow-auto">
-                        <Table>
-                            <TableHeader className="sticky top-0 bg-secondary">
-                                <TableRow>
-                                    <TableHead>Name</TableHead>
-                                    <TableHead>Email</TableHead>
-                                    <TableHead>LOBT</TableHead>
-                                    <TableHead className="text-right">Actions</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {users.map((user, index) => (
-                                    <TableRow key={`${user.email}-${index}`}>
-                                        <TableCell>{user.name}</TableCell>
-                                        <TableCell>{user.email}</TableCell>
-                                        <TableCell>{user.lobt}</TableCell>
-                                        <TableCell className="text-right">
-                                            <Button variant="ghost" size="icon" onClick={() => handleRemoveUser(user.email)}>
-                                                <Trash2 className="h-4 w-4 text-destructive" />
-                                            </Button>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </div>
-                     {users.length === 0 && (
-                        <div className="text-center p-4 text-muted-foreground">
-                            No users loaded. Upload an Excel file or add them manually.
-                        </div>
-                    )}
-                </CardContent>
-                <CardFooter className="flex flex-col items-start gap-4">
-                     <div className="w-full">
-                        <h4 className="font-medium text-lg">Add New User</h4>
-                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-2">
-                             <div>
-                                 <Label>Name</Label>
-                                 <Input value={newUserName} onChange={e => setNewUserName(e.target.value)} placeholder="John Doe" />
-                             </div>
-                             <div>
-                                 <Label>Email</Label>
-                                 <Input type="email" value={newUserEmail} onChange={e => setNewUserEmail(e.target.value)} placeholder="john.doe@example.com" />
-                             </div>
-                              <div>
-                                 <Label>LOBT</Label>
-                                 <Input value={newUserLOBT} onChange={e => setNewUserLOBT(e.target.value)} placeholder="e.g., GB & WM" />
-                             </div>
-                             <div className="self-end">
-                                 <Button onClick={handleAddUser} className="w-full sm:w-auto"><Plus className="mr-2"/>Add User</Button>
-                             </div>
-                         </div>
-                    </div>
-                </CardFooter>
-            </Card>
+            <Accordion type="single" collapsible className="w-full">
+                <AccordionItem value="manage-users">
+                    <AccordionTrigger>
+                        <h3 className="text-lg font-medium">Manage Users ({users.length})</h3>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>User List</CardTitle>
+                                <CardDescription>View, add, or remove users from the list.</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="border rounded-md max-h-96 overflow-auto">
+                                    <Table>
+                                        <TableHeader className="sticky top-0 bg-secondary">
+                                            <TableRow>
+                                                <TableHead>Name</TableHead>
+                                                <TableHead>Email</TableHead>
+                                                <TableHead>LOBT</TableHead>
+                                                <TableHead className="text-right">Actions</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {users.map((user) => (
+                                                <TableRow key={user.email}>
+                                                    <TableCell>{user.name}</TableCell>
+                                                    <TableCell>{user.email}</TableCell>
+                                                    <TableCell>{user.lobt}</TableCell>
+                                                    <TableCell className="text-right">
+                                                        <Button variant="ghost" size="icon" onClick={() => handleRemoveUser(user.email)}>
+                                                            <Trash2 className="h-4 w-4 text-destructive" />
+                                                        </Button>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </div>
+                                {users.length === 0 && (
+                                    <div className="text-center p-4 text-muted-foreground">
+                                        No users loaded. Upload an Excel file or add them manually.
+                                    </div>
+                                )}
+                            </CardContent>
+                            <CardFooter className="flex flex-col items-start gap-4">
+                                <div className="w-full">
+                                    <h4 className="font-medium text-lg">Add New User</h4>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-2">
+                                        <div>
+                                            <Label>Name</Label>
+                                            <Input value={newUserName} onChange={e => setNewUserName(e.target.value)} placeholder="John Doe" />
+                                        </div>
+                                        <div>
+                                            <Label>Email</Label>
+                                            <Input type="email" value={newUserEmail} onChange={e => setNewUserEmail(e.target.value)} placeholder="john.doe@example.com" />
+                                        </div>
+                                        <div>
+                                            <Label>LOBT</Label>
+                                            <Input value={newUserLOBT} onChange={e => setNewUserLOBT(e.target.value)} placeholder="e.g., GB & WM" />
+                                        </div>
+                                        <div className="self-end">
+                                            <Button onClick={handleAddUser} className="w-full sm:w-auto"><Plus className="mr-2"/>Add User</Button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardFooter>
+                        </Card>
+                    </AccordionContent>
+                </AccordionItem>
+            </Accordion>
         </div>
     )
 }
@@ -947,15 +956,12 @@ export default function UpdateDataPage() {
             name: row['Name'],
             email: row['Email'],
             lobt: row['LOBT'],
-        }));
+        })).filter(u => u.name && u.email && u.lobt);
         
-        // De-duplicate: Create a Set of emails from the newly uploaded users
         const newEmails = new Set(newUsers.map(u => u.email));
         
-        // Filter out users from the existing list that are present in the new list
         const uniqueExistingUsers = users.filter(u => !newEmails.has(u.email));
 
-        // Combine the unique existing users with the new users
         const combinedUsers = [...uniqueExistingUsers, ...newUsers];
         
         setUsers(combinedUsers);
@@ -975,7 +981,6 @@ export default function UpdateDataPage() {
         excelData: {
             ...excelData,
             users: {
-                // We need to transform the user array back into an ExcelData-like object for saving
                 headers: ['Name', 'Email', 'LOBT'],
                 rows: users.map(u => ({ 'Name': u.name, 'Email': u.email, 'LOBT': u.lobt })),
             }
@@ -1359,3 +1364,4 @@ export default function UpdateDataPage() {
     </div>
   );
 }
+
