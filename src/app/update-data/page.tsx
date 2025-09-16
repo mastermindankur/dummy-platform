@@ -98,6 +98,16 @@ function CreateActionItemDialog({ users, pillars, onActionItemCreate }: { users:
     
     const getUserName = (email: string) => users.find(u => u.email === email)?.name || email;
 
+    const handleUserSelect = (email: string, checked: boolean) => {
+        setAssignedTo(prev => {
+            if (checked) {
+                return [...prev, email];
+            } else {
+                return prev.filter(e => e !== email);
+            }
+        });
+    };
+
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
@@ -138,17 +148,15 @@ function CreateActionItemDialog({ users, pillars, onActionItemCreate }: { users:
                                 <ScrollArea className="h-60">
                                     <div className="p-2 space-y-1">
                                     {users.map(user => (
-                                        <div key={user.email} className="flex items-center space-x-2 p-2 hover:bg-muted rounded-md cursor-pointer" onClick={() => {
-                                            setAssignedTo(prev => prev.includes(user.email) ? prev.filter(email => email !== user.email) : [...prev, user.email]);
-                                        }}>
+                                        <div key={user.email} className="flex items-center space-x-2 p-2 hover:bg-muted rounded-md">
                                             <Checkbox
                                                 id={`user-assign-${user.email}`}
                                                 checked={assignedTo.includes(user.email)}
                                                 onCheckedChange={(checked) => {
-                                                    setAssignedTo(prev => checked ? [...prev, user.email] : prev.filter(email => email !== user.email));
+                                                   handleUserSelect(user.email, !!checked);
                                                 }}
                                             />
-                                            <Label htmlFor={`user-assign-${user.email}`} className="flex-1 cursor-pointer">{user.name} <span className="text-xs text-muted-foreground">({user.email})</span></Label>
+                                            <Label htmlFor={`user-assign-${user.email}`} className="flex-1 cursor-pointer font-normal">{user.name} <span className="text-xs text-muted-foreground">({user.email})</span></Label>
                                         </div>
                                     ))}
                                     </div>
@@ -366,9 +374,10 @@ function ActionItemsDataManagement({
                             <Table>
                                 <TableHeader>
                                     <TableRow>
-                                        <TableHead className="w-[40%]">Task</TableHead>
+                                        <TableHead className="w-[30%]">Task</TableHead>
                                         <TableHead>Pillar</TableHead>
                                         <TableHead>Assigned To</TableHead>
+                                        <TableHead>Created</TableHead>
                                         <TableHead>Due Date</TableHead>
                                         <TableHead>Status</TableHead>
                                         <TableHead className="text-right">Actions</TableHead>
@@ -381,15 +390,18 @@ function ActionItemsDataManagement({
                                             <TableCell>{getPillarName(item.pillarId)}</TableCell>
                                             <TableCell>
                                                 {item.assignedTo.map(email => (
-                                                    <Badge key={email} variant="secondary" className="mr-1">{getUserName(email)}</Badge>
+                                                    <Badge key={email} variant="secondary" className="mr-1 mb-1 font-normal">
+                                                        {getUserName(email)}
+                                                    </Badge>
                                                 ))}
                                             </TableCell>
+                                            <TableCell>{format(new Date(item.createdAt), "PP")}</TableCell>
                                             <TableCell>
                                                 <Popover>
                                                     <PopoverTrigger asChild>
                                                         <Button variant="link" className={cn("p-0 h-auto", new Date(item.dueDate) < new Date() && item.status !== 'Completed' && 'text-destructive')}>
                                                             {format(new Date(item.dueDate), "PPP")}
-                                                            {item.originalDueDate && <s className="text-muted-foreground ml-2">{format(new Date(item.originalDueDate), "PPP")}</s>}
+                                                            {item.originalDueDate && <s className="text-muted-foreground ml-2">{format(new Date(item.originalDueDate), "PP")}</s>}
                                                         </Button>
                                                     </PopoverTrigger>
                                                     <PopoverContent className="w-auto p-0">
