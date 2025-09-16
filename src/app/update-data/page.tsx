@@ -105,7 +105,7 @@ function ActionItemsDataManagement({
                 onDataProcessed={onDataProcessed}
             />
 
-            <Accordion type="single" collapsible className="w-full" defaultValue="manage-users">
+            <Accordion type="single" collapsible className="w-full">
                 <AccordionItem value="manage-users">
                     <AccordionTrigger>
                         <h3 className="text-lg font-medium">Manage Users ({users.length})</h3>
@@ -1367,6 +1367,7 @@ export default function UpdateDataPage() {
     </div>
   );
 }
+
 
 
 
