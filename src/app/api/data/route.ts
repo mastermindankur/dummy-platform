@@ -80,7 +80,7 @@ export async function GET(request: Request) {
             const data = await readExcelData('app-sherpas');
             return NextResponse.json(data);
         }
-        if (fileKey === 'regression-testing-automation' || fileKey === 'junit-adoption' || fileKey === 'maintenance-screens' || fileKey === 'api-performance') {
+        if (fileKey === 'regression-testing-automation' || fileKey === 'junit-adoption' || fileKey === 'maintenance-screens' || fileKey === 'api-performance' || fileKey === 'users') {
             const data = await readExcelData(fileKey);
             return NextResponse.json(data);
         }
@@ -113,9 +113,6 @@ export async function POST(request: Request) {
     if (body.valueMap) {
         await writeValueMapData(body.valueMap);
     }
-    if (body.users) {
-        await writeUsers(body.users);
-    }
     if (body.actionItems) {
         await writeActionItems(body.actionItems);
     }
@@ -123,7 +120,7 @@ export async function POST(request: Request) {
         for (const key in body.excelData) {
             if (Object.prototype.hasOwnProperty.call(body.excelData, key)) {
                  if (body.excelData[key]) {
-                    // special handling for hackathons since they are just an array
+                    // special handling for certain keys
                     if (key === 'hackathons' || key === 'industry-events') {
                       await writeExcelData(key, body.excelData[key]);
                     } else if (key.startsWith('jira-assistant-adoption')) {
@@ -131,6 +128,13 @@ export async function POST(request: Request) {
                         if (month) {
                             await writeMonthlyData('jira-assistant-adoption', month, body.excelData[key]);
                         }
+                    } else if (key === 'users') {
+                        const usersData = body.excelData[key].rows.map((row: any) => ({
+                            name: row['Name'],
+                            email: row['Email'],
+                            lobt: row['LOBT'],
+                        }));
+                        await writeUsers(usersData);
                     }
                     else {
                       await writeExcelData(key, body.excelData[key]);
@@ -146,3 +150,5 @@ export async function POST(request: Request) {
     return new NextResponse('Internal Server Error', { status: 500 });
   }
 }
+
+    

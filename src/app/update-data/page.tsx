@@ -58,152 +58,15 @@ type FilterState = {
 };
 
 // ## ACTION ITEMS DATA MANAGEMENT ##
-function UserManagement() {
-    const [users, setUsers] = useState<User[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [isSaving, setIsSaving] = useState(false);
-    const [file, setFile] = useState<File | null>(null);
-    const [isProcessing, setIsProcessing] = useState(false);
-
-    useEffect(() => {
-        fetchUsers();
-    }, []);
-
-    const fetchUsers = async () => {
-        setIsLoading(true);
-        try {
-            const res = await fetch('/api/data?key=users');
-            if (res.ok) {
-                const data = await res.json();
-                setUsers(data);
-            }
-        } catch (error) {
-            toast({ title: "Error fetching users", variant: 'destructive' });
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const files = event.target.files;
-        if (files && files.length > 0) {
-            setFile(files[0]);
-        }
-    };
-
-    const handleUpload = async () => {
-        if (!file) return;
-        setIsProcessing(true);
-        try {
-            const fileAsDataUri = await new Promise<string>((resolve, reject) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = () => resolve(reader.result as string);
-                reader.onerror = (error) => reject(error);
-            });
-
-            const result = await processExcelFile(fileAsDataUri, file.name);
-
-            const requiredHeaders = ['Name', 'Email', 'LOBT'];
-            const hasRequiredHeaders = requiredHeaders.every(h => result.headers.includes(h));
-
-            if (!hasRequiredHeaders) {
-                toast({ title: 'Invalid Excel file', description: 'File must contain "Name", "Email", and "LOBT" columns.', variant: 'destructive'});
-                return;
-            }
-
-            const newUsers = result.rows.map(row => ({
-                name: row['Name'],
-                email: row['Email'],
-                lobt: row['LOBT'],
-            }));
-
-            setUsers(newUsers);
-            toast({ title: "Users loaded from file", description: "Click 'Save User List' to persist the new user list."});
-
-        } catch (error) {
-            toast({ title: 'Error processing file', variant: 'destructive' });
-        } finally {
-            setIsProcessing(false);
-        }
-    };
-
-    const handleSave = async () => {
-        setIsSaving(true);
-        try {
-            const res = await fetch('/api/data', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ users: users }),
-            });
-            if (!res.ok) throw new Error('Failed to save');
-            toast({ title: 'User list saved!' });
-        } catch (e) {
-            toast({ title: 'Error saving users', variant: 'destructive' });
-        } finally {
-            setIsSaving(false);
-        }
-    }
-
-    return (
-        <Card>
-            <CardHeader>
-                <CardTitle>Manage Users</CardTitle>
-                <CardDescription>Upload an Excel file with user details to populate the assignee list for action items. The file must contain columns: "Name", "Email", and "LOBT".</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                <div className="flex gap-2">
-                    <Input type="file" accept=".xlsx, .xls" onChange={handleFileChange} className="flex-grow"/>
-                    <Button onClick={handleUpload} disabled={!file || isProcessing}>
-                        {isProcessing ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Upload className="mr-2 h-4 w-4" />}
-                        Upload & Preview
-                    </Button>
-                </div>
-                 {isLoading ? (
-                    <Skeleton className="h-48 w-full" />
-                ) : (
-                    <div className="border rounded-md max-h-96 overflow-auto">
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Name</TableHead>
-                                    <TableHead>Email</TableHead>
-                                    <TableHead>LOBT</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {users.length > 0 ? (
-                                    users.map((user, index) => (
-                                        <TableRow key={index}>
-                                            <TableCell>{user.name}</TableCell>
-                                            <TableCell>{user.email}</TableCell>
-                                            <TableCell>{user.lobt}</TableCell>
-                                        </TableRow>
-                                    ))
-                                ) : (
-                                    <TableRow>
-                                        <TableCell colSpan={3} className="h-24 text-center">No users found. Upload a file to get started.</TableCell>
-                                    </TableRow>
-                                )}
-                            </TableBody>
-                        </Table>
-                    </div>
-                )}
-            </CardContent>
-            <CardFooter>
-                <Button onClick={handleSave} disabled={isSaving || isLoading}>
-                    {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                    Save User List
-                </Button>
-            </CardFooter>
-        </Card>
-    );
-}
-
-function ActionItemsDataManagement() {
+function ActionItemsDataManagement({ onDataProcessed }: { onDataProcessed: (key: string, data: ExcelData) => void; }) {
     return (
         <div className="space-y-6">
-            <UserManagement />
+             <ExcelUploadSection
+                title="Manage Users"
+                description="Upload an Excel file with user details to populate the assignee list for action items. The file must contain columns: 'Name', 'Email', and 'LOBT'."
+                fileKey="users"
+                onDataProcessed={onDataProcessed}
+            />
         </div>
     )
 }
@@ -888,6 +751,7 @@ export default function UpdateDataPage() {
       'junit-adoption': null,
       'maintenance-screens': null,
       'api-performance': null,
+      'users': null,
   });
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -1047,7 +911,7 @@ export default function UpdateDataPage() {
                     </TabsContent>
 
                      <TabsContent value="action-items">
-                        <ActionItemsDataManagement />
+                        <ActionItemsDataManagement onDataProcessed={handleExcelDataProcessed} />
                     </TabsContent>
 
                     {data?.map((pillar, pIndex) => (
@@ -1357,3 +1221,5 @@ export default function UpdateDataPage() {
     </div>
   );
 }
+
+    

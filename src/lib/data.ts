@@ -257,15 +257,29 @@ export async function readExcelData(fileKey: string): Promise<ExcelData | null> 
           const data = JSON.parse(fileContent);
           return { headers: [], rows: data };
         }
+         if (fileKey === 'users') {
+            const users: User[] = JSON.parse(fileContent);
+            const rows = users.map(user => ({ 'Name': user.name, 'Email': user.email, 'LOBT': user.lobt }));
+            const headers = users.length > 0 ? Object.keys(rows[0]) : [];
+            return { headers, rows };
+        }
         return JSON.parse(fileContent);
     } catch (error) {
         // It's okay if the file doesn't exist, it just means no data has been uploaded yet.
         if (error instanceof Error && (error as NodeJS.ErrnoException).code === 'ENOENT') {
             try {
-                // If the file doesn't exist, create it with empty data
-                const emptyContent = (fileKey === 'hackathons' || fileKey === 'industry-events') ? '[]' : JSON.stringify({ headers: [], rows: [] }, null, 2);
+                let emptyContent: string;
+                if (fileKey === 'hackathons' || fileKey === 'industry-events' || fileKey === 'users') {
+                    emptyContent = '[]';
+                } else {
+                    emptyContent = JSON.stringify({ headers: [], rows: [] }, null, 2);
+                }
+                
                 await fs.writeFile(dataFilePath(`${fileKey}.json`), emptyContent, 'utf-8');
-
+                
+                if (fileKey === 'users') {
+                    return { headers: ['Name', 'Email', 'LOBT'], rows: [] };
+                }
                 if (fileKey === 'hackathons' || fileKey === 'industry-events') {
                     return { headers: [], rows: [] };
                 }
@@ -404,3 +418,5 @@ export const writeUsers = (data: User[]) => writeJsonFile('users.json', data);
 
 export const getActionItems = () => readJsonFile<ActionItem[]>('action-items.json', []);
 export const writeActionItems = (data: ActionItem[]) => writeJsonFile('action-items.json', data);
+
+    
