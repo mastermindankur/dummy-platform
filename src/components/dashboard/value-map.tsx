@@ -304,11 +304,11 @@ export function ValueMap({
         {isClient && (
              <svg ref={svgRef} className="absolute top-0 left-0 w-full h-full pointer-events-none" aria-hidden="true">
                 <defs>
-                    <marker id="arrowhead" markerWidth="2" markerHeight="2" refX="0" refY="1" orient="auto">
-                        <polygon points="0 0, 2 1, 0 2" fill="hsl(var(--muted-foreground))" />
+                    <marker id="arrowhead" markerWidth="5" markerHeight="4" refX="2.5" refY="2" orient="auto">
+                        <polygon points="0 0, 5 2, 0 4" fill="hsl(var(--muted-foreground))" />
                     </marker>
-                    <marker id="arrowhead-highlight" markerWidth="2.5" markerHeight="2.5" refX="0" refY="1.25" orient="auto">
-                        <polygon points="0 0, 2.5 1.25, 0 2.5" fill="hsl(var(--foreground))" />
+                    <marker id="arrowhead-highlight" markerWidth="5" markerHeight="4" refX="2.5" refY="2" orient="auto">
+                        <polygon points="0 0, 5 2, 0 4" fill="hsl(var(--foreground))" />
                     </marker>
                 </defs>
                 {driverLeverConnections.map(conn => {
