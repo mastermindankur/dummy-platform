@@ -51,7 +51,7 @@ const ItemCard = ({ item, type, onClick, isHighlighted, isSelected, selectedItem
             "transition-all duration-300 cursor-pointer",
             isHighlighted ? selectedItemColorClasses[type] : itemColorClasses[type],
             selectedItem ? (isHighlighted ? 'opacity-100 shadow-lg' : 'opacity-30') : 'opacity-100',
-            isSelected && 'ring-2 ring-foreground'
+            isSelected && 'ring-2 ring-white'
         )}>
         <CardHeader className="p-3">
             <CardTitle className="text-sm">{item.name}</CardTitle>
@@ -59,7 +59,7 @@ const ItemCard = ({ item, type, onClick, isHighlighted, isSelected, selectedItem
         </CardHeader>
         {(item.description || item.isWceBookOfWork) && (
             <CardContent className="p-3 pt-0 space-y-2">
-                {item.description && isSelected && (
+                {item.description && (
                     <CardDescription className={cn("text-xs", isHighlighted ? 'text-inherit' : '')}>{item.description}</CardDescription>
                 )}
                 {item.isWceBookOfWork && (
@@ -309,11 +309,11 @@ export function ValueMap({
         {isClient && (
              <svg ref={svgRef} className="absolute top-0 left-0 w-full h-full pointer-events-none" aria-hidden="true">
                 <defs>
-                    <marker id="arrowhead" markerWidth="3.5" markerHeight="2.5" refX="2" refY="1.25" orient="auto">
-                        <polygon points="0 0, 3.5 1.25, 0 2.5" fill="hsl(var(--muted-foreground))" />
+                    <marker id="arrowhead" markerWidth="5" markerHeight="3.5" refX="2" refY="1.75" orient="auto">
+                        <polygon points="0 0, 5 1.75, 0 3.5" fill="hsl(var(--muted-foreground))" />
                     </marker>
-                    <marker id="arrowhead-highlight" markerWidth="3.5" markerHeight="2.5" refX="2" refY="1.25" orient="auto">
-                        <polygon points="0 0, 3.5 1.25, 0 2.5" fill="hsl(var(--foreground))" />
+                    <marker id="arrowhead-highlight" markerWidth="5" markerHeight="3.5" refX="2" refY="1.75" orient="auto">
+                        <polygon points="0 0, 5 1.75, 0 3.5" fill="hsl(var(--foreground))" />
                     </marker>
                 </defs>
                 {driverLeverConnections.map(conn => {

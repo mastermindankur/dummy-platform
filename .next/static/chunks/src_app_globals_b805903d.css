@@ -1952,6 +1952,11 @@ body {
   --tw-ring-color: hsl(var(--foreground));
 }
 
+.ring-white {
+  --tw-ring-opacity: 1;
+  --tw-ring-color: rgb(255 255 255 / var(--tw-ring-opacity, 1));
+}
+
 .ring-offset-background {
   --tw-ring-offset-color: hsl(var(--background));
 }
