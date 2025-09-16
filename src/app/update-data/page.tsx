@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -58,15 +59,109 @@ type FilterState = {
 };
 
 // ## ACTION ITEMS DATA MANAGEMENT ##
-function ActionItemsDataManagement({ onDataProcessed }: { onDataProcessed: (key: string, data: ExcelData) => void; }) {
+function ActionItemsDataManagement({ 
+    users, 
+    onUsersChange,
+    onDataProcessed 
+}: { 
+    users: User[];
+    onUsersChange: (users: User[]) => void;
+    onDataProcessed: (key: string, data: ExcelData) => void; 
+}) {
+    const [newUserName, setNewUserName] = useState('');
+    const [newUserEmail, setNewUserEmail] = useState('');
+    const [newUserLOBT, setNewUserLOBT] = useState('');
+
+    const handleAddUser = () => {
+        if (!newUserName || !newUserEmail || !newUserLOBT) {
+            toast({ title: "Missing fields", description: "Please fill in all fields to add a user.", variant: "destructive" });
+            return;
+        }
+        const newUser: User = {
+            name: newUserName,
+            email: newUserEmail,
+            lobt: newUserLOBT,
+        };
+        onUsersChange([...users, newUser]);
+        setNewUserName('');
+        setNewUserEmail('');
+        setNewUserLOBT('');
+    };
+
+    const handleRemoveUser = (email: string) => {
+        onUsersChange(users.filter(u => u.email !== email));
+    };
+
     return (
         <div className="space-y-6">
              <ExcelUploadSection
-                title="Manage Users"
+                title="Bulk Upload Users"
                 description="Upload an Excel file with user details to populate the assignee list for action items. The file must contain columns: 'Name', 'Email', and 'LOBT'."
                 fileKey="users"
                 onDataProcessed={onDataProcessed}
             />
+
+            <Card>
+                <CardHeader>
+                    <CardTitle>Manage Users</CardTitle>
+                    <CardDescription>View, add, or remove users from the list.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="border rounded-md">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Name</TableHead>
+                                    <TableHead>Email</TableHead>
+                                    <TableHead>LOBT</TableHead>
+                                    <TableHead className="text-right">Actions</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {users.map((user) => (
+                                    <TableRow key={user.email}>
+                                        <TableCell>{user.name}</TableCell>
+                                        <TableCell>{user.email}</TableCell>
+                                        <TableCell>{user.lobt}</TableCell>
+                                        <TableCell className="text-right">
+                                            <Button variant="ghost" size="icon" onClick={() => handleRemoveUser(user.email)}>
+                                                <Trash2 className="h-4 w-4 text-destructive" />
+                                            </Button>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </div>
+                     {users.length === 0 && (
+                        <div className="text-center p-4 text-muted-foreground">
+                            No users loaded. Upload an Excel file or add them manually.
+                        </div>
+                    )}
+                </CardContent>
+                <CardFooter className="flex flex-col items-start gap-4">
+                     <div className="w-full">
+                        <h4 className="font-medium text-lg">Add New User</h4>
+                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-2">
+                             <div>
+                                 <Label>Name</Label>
+                                 <Input value={newUserName} onChange={e => setNewUserName(e.target.value)} placeholder="John Doe" />
+                             </div>
+                             <div>
+                                 <Label>Email</Label>
+                                 <Input type="email" value={newUserEmail} onChange={e => setNewUserEmail(e.target.value)} placeholder="john.doe@example.com" />
+                             </div>
+                              <div>
+                                 <Label>LOBT</Label>
+                                 <Input value={newUserLOBT} onChange={e => setNewUserLOBT(e.target.value)} placeholder="e.g., GB & WM" />
+                             </div>
+                             <div className="self-end">
+                                 <Button onClick={handleAddUser} className="w-full sm:w-auto"><Plus className="mr-2"/>Add User</Button>
+                             </div>
+                         </div>
+                    </div>
+                </CardFooter>
+            </Card>
         </div>
     )
 }
@@ -751,8 +846,8 @@ export default function UpdateDataPage() {
       'junit-adoption': null,
       'maintenance-screens': null,
       'api-performance': null,
-      'users': null,
   });
+  const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState<string | undefined>('value-map');
@@ -760,10 +855,20 @@ export default function UpdateDataPage() {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      const res = await fetch('/api/data');
-      if (!res.ok) throw new Error('Failed to fetch data');
-      const jsonData = await res.json();
-      setData(jsonData);
+      const [pillarRes, usersRes] = await Promise.all([
+          fetch('/api/data'),
+          fetch('/api/data?key=users')
+      ]);
+
+      if (!pillarRes.ok) throw new Error('Failed to fetch pillar data');
+      const pillarJsonData = await pillarRes.json();
+      setData(pillarJsonData);
+
+      if (usersRes.ok) {
+          const usersJsonData = await usersRes.json();
+          setUsers(usersJsonData);
+      }
+
     } catch (error) {
       console.error(error);
       toast({
@@ -833,7 +938,23 @@ export default function UpdateDataPage() {
   };
 
   const handleExcelDataProcessed = async (key: string, processedData: ExcelData) => {
-    setExcelData(prev => ({ ...prev, [key]: processedData }));
+    if (key === 'users') {
+        const newUsers = processedData.rows.map(row => ({
+            name: row['Name'],
+            email: row['Email'],
+            lobt: row['LOBT'],
+        }));
+        // Merge with existing users, giving precedence to the newly uploaded file
+        // and removing duplicates based on email.
+        const existingEmails = new Set(newUsers.map(u => u.email));
+        const combinedUsers = [
+            ...newUsers,
+            ...users.filter(u => !existingEmails.has(u.email)),
+        ];
+        setUsers(combinedUsers);
+    } else {
+        setExcelData(prev => ({ ...prev, [key]: processedData }));
+    }
   };
 
   const handleSave = async () => {
@@ -845,7 +966,14 @@ export default function UpdateDataPage() {
         valueMap?: ValueMapData;
       } = {
         pillars: data,
-        excelData: excelData
+        excelData: {
+            ...excelData,
+            users: {
+                // We need to transform the user array back into an ExcelData-like object for saving
+                headers: ['Name', 'Email', 'LOBT'],
+                rows: users.map(u => ({ 'Name': u.name, 'Email': u.email, 'LOBT': u.lobt })),
+            }
+        }
       };
       
       const res = await fetch('/api/data', {
@@ -911,7 +1039,11 @@ export default function UpdateDataPage() {
                     </TabsContent>
 
                      <TabsContent value="action-items">
-                        <ActionItemsDataManagement onDataProcessed={handleExcelDataProcessed} />
+                        <ActionItemsDataManagement 
+                            users={users} 
+                            onUsersChange={setUsers}
+                            onDataProcessed={handleExcelDataProcessed}
+                        />
                     </TabsContent>
 
                     {data?.map((pillar, pIndex) => (
@@ -1221,5 +1353,7 @@ export default function UpdateDataPage() {
     </div>
   );
 }
+
+    
 
     

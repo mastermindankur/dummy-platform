@@ -325,17 +325,44 @@ async function readExcelData(fileKey) {
                 rows: data
             };
         }
+        if (fileKey === 'users') {
+            const users = JSON.parse(fileContent);
+            const rows = users.map((user)=>({
+                    'Name': user.name,
+                    'Email': user.email,
+                    'LOBT': user.lobt
+                }));
+            const headers = users.length > 0 ? Object.keys(rows[0]) : [];
+            return {
+                headers,
+                rows
+            };
+        }
         return JSON.parse(fileContent);
     } catch (error) {
         // It's okay if the file doesn't exist, it just means no data has been uploaded yet.
         if (error instanceof Error && error.code === 'ENOENT') {
             try {
-                // If the file doesn't exist, create it with empty data
-                const emptyContent = fileKey === 'hackathons' || fileKey === 'industry-events' ? '[]' : JSON.stringify({
-                    headers: [],
-                    rows: []
-                }, null, 2);
+                let emptyContent;
+                if (fileKey === 'hackathons' || fileKey === 'industry-events' || fileKey === 'users') {
+                    emptyContent = '[]';
+                } else {
+                    emptyContent = JSON.stringify({
+                        headers: [],
+                        rows: []
+                    }, null, 2);
+                }
                 await __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["promises"].writeFile(dataFilePath(`${fileKey}.json`), emptyContent, 'utf-8');
+                if (fileKey === 'users') {
+                    return {
+                        headers: [
+                            'Name',
+                            'Email',
+                            'LOBT'
+                        ],
+                        rows: []
+                    };
+                }
                 if (fileKey === 'hackathons' || fileKey === 'industry-events') {
                     return {
                         headers: [],
@@ -561,7 +588,7 @@ async function GET(request) {
                 const data = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["readExcelData"])('app-sherpas');
                 return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json(data);
             }
-            if (fileKey === 'regression-testing-automation' || fileKey === 'junit-adoption' || fileKey === 'maintenance-screens' || fileKey === 'api-performance') {
+            if (fileKey === 'regression-testing-automation' || fileKey === 'junit-adoption' || fileKey === 'maintenance-screens' || fileKey === 'api-performance' || fileKey === 'users') {
                 const data = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["readExcelData"])(fileKey);
                 return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json(data);
             }
@@ -598,9 +625,6 @@ async function POST(request) {
         if (body.valueMap) {
             await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["writeValueMapData"])(body.valueMap);
         }
-        if (body.users) {
-            await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["writeUsers"])(body.users);
-        }
         if (body.actionItems) {
             await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["writeActionItems"])(body.actionItems);
         }
@@ -608,7 +632,7 @@ async function POST(request) {
             for(const key in body.excelData){
                 if (Object.prototype.hasOwnProperty.call(body.excelData, key)) {
                     if (body.excelData[key]) {
-                        // special handling for hackathons since they are just an array
+                        // special handling for certain keys
                         if (key === 'hackathons' || key === 'industry-events') {
                             await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["writeExcelData"])(key, body.excelData[key]);
                         } else if (key.startsWith('jira-assistant-adoption')) {
@@ -616,6 +640,13 @@ async function POST(request) {
                             if (month) {
                                 await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["writeMonthlyData"])('jira-assistant-adoption', month, body.excelData[key]);
                             }
+                        } else if (key === 'users') {
+                            const usersData = body.excelData[key].rows.map((row)=>({
+                                    name: row['Name'],
+                                    email: row['Email'],
+                                    lobt: row['LOBT']
+                                }));
+                            await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["writeUsers"])(usersData);
                         } else {
                             await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["writeExcelData"])(key, body.excelData[key]);
                         }
