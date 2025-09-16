@@ -42,7 +42,7 @@ const ItemCard = ({ item, type, onClick, isHighlighted, isSelected }: {
         className={cn(
             "transition-all duration-300 cursor-pointer",
             itemColorClasses[type],
-            isHighlighted ? 'opacity-100' : 'opacity-30',
+            selectedItem ? (isHighlighted ? 'opacity-100' : 'opacity-30') : 'opacity-100',
             isSelected && 'border-primary shadow-lg'
         )}>
         <CardHeader className="p-3">
@@ -246,7 +246,6 @@ export function ValueMap({
         const isHighlight = isConnectionHighlighted(conn);
         return {
             stroke: isHighlight ? 'hsl(var(--foreground))' : 'hsl(var(--muted-foreground))',
-            opacity: isHighlight ? '1' : '0.3',
             strokeWidth: isHighlight ? '2.5' : '1.2'
         };
     };
@@ -295,11 +294,11 @@ export function ValueMap({
         {isClient && (
              <svg ref={svgRef} className="absolute top-0 left-0 w-full h-full pointer-events-none" aria-hidden="true">
                 <defs>
-                    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
-                        <polygon points="0 0, 10 3.5, 0 7" fill="hsl(var(--muted-foreground))" />
+                    <marker id="arrowhead" markerWidth="6" markerHeight="4" refX="0" refY="2" orient="auto">
+                        <polygon points="0 0, 6 2, 0 4" fill="hsl(var(--muted-foreground))" />
                     </marker>
-                    <marker id="arrowhead-highlight" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
-                        <polygon points="0 0, 10 3.5, 0 7" fill="hsl(var(--foreground))" />
+                    <marker id="arrowhead-highlight" markerWidth="6" markerHeight="4" refX="0" refY="2" orient="auto">
+                        <polygon points="0 0, 6 2, 0 4" fill="hsl(var(--foreground))" />
                     </marker>
                 </defs>
                 {driverLeverConnections.map(conn => {
@@ -313,7 +312,7 @@ export function ValueMap({
                             strokeWidth={styles.strokeWidth}
                             markerEnd={isConnectionHighlighted(conn) ? "url(#arrowhead-highlight)" : "url(#arrowhead)"}
                             className={'transition-all duration-300'}
-                            style={{ opacity: selectedItem ? styles.opacity : 1 }}
+                            style={{ opacity: selectedItem ? (isConnectionHighlighted(conn) ? 1 : 0.3) : 1 }}
                         />
                     )
                 })}
@@ -328,7 +327,7 @@ export function ValueMap({
                             strokeWidth={styles.strokeWidth}
                             markerEnd={isConnectionHighlighted(conn) ? "url(#arrowhead-highlight)" : "url(#arrowhead)"}
                             className={'transition-all duration-300'}
-                            style={{ opacity: selectedItem ? styles.opacity : 1 }}
+                            style={{ opacity: selectedItem ? (isConnectionHighlighted(conn) ? 1 : 0.3) : 1 }}
                         />
                     )
                 })}
@@ -372,3 +371,5 @@ export function ValueMap({
     </div>
   );
 }
+
+    
