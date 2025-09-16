@@ -6,7 +6,7 @@ import {
   Cpu,
   Landmark,
 } from "lucide-react";
-import type { Pillar, SubItem, ExcelData, MonthlyExcelData, ValueMapData } from "@/types";
+import type { Pillar, SubItem, ExcelData, MonthlyExcelData, ValueMapData, User, ActionItem } from "@/types";
 import { promises as fs } from 'fs';
 import path from 'path';
 
@@ -372,3 +372,35 @@ export async function writeValueMapData(data: ValueMapData) {
         throw new Error("Failed to save Value Map data.");
     }
 }
+
+// User and Action Item data functions
+async function readJsonFile<T>(fileName: string, defaultValue: T): Promise<T> {
+    const filePath = dataFilePath(fileName);
+    try {
+        const fileContent = await fs.readFile(filePath, 'utf-8');
+        return JSON.parse(fileContent);
+    } catch (error) {
+        if (error instanceof Error && (error as NodeJS.ErrnoException).code === 'ENOENT') {
+            await writeJsonFile(fileName, defaultValue);
+            return defaultValue;
+        }
+        console.error(`Could not read or parse ${fileName}:`, error);
+        throw new Error(`Failed to read ${fileName}.`);
+    }
+}
+
+async function writeJsonFile<T>(fileName: string, data: T) {
+    try {
+        const filePath = dataFilePath(fileName);
+        await fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf-8');
+    } catch (error) {
+        console.error(`Could not write to ${fileName}:`, error);
+        throw new Error(`Failed to save ${fileName}.`);
+    }
+}
+
+export const getUsers = () => readJsonFile<User[]>('users.json', []);
+export const writeUsers = (data: User[]) => writeJsonFile('users.json', data);
+
+export const getActionItems = () => readJsonFile<ActionItem[]>('action-items.json', []);
+export const writeActionItems = (data: ActionItem[]) => writeJsonFile('action-items.json', data);

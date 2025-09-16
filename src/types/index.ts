@@ -114,3 +114,20 @@ export type ValueMapData = {
     outcomeGroups?: ValueMapGroup[];
     driverGroups?: ValueMapGroup[];
 };
+
+// Action Items & Users
+export type User = {
+    name: string;
+    email: string;
+    lobt: string;
+};
+
+export type ActionItem = {
+    id: string;
+    task: string;
+    assignedTo: string[]; // array of user emails
+    dueDate: string;
+    originalDueDate?: string;
+    status: 'Open' | 'Completed' | 'Delayed';
+    pillarId: string;
+};

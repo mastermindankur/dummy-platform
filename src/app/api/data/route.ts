@@ -9,6 +9,10 @@ import {
     writeMonthlyData,
     getValueMapData,
     writeValueMapData,
+    getUsers,
+    writeUsers,
+    getActionItems,
+    writeActionItems,
 } from '@/lib/data';
 import type { Pillar } from '@/types';
 
@@ -16,6 +20,24 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const fileKey = searchParams.get('key');
   const month = searchParams.get('month'); // e.g., '2024-08'
+
+  if (fileKey === 'users') {
+      try {
+          const data = await getUsers();
+          return NextResponse.json(data);
+      } catch (error) {
+          return new NextResponse('Internal Server Error', { status: 500 });
+      }
+  }
+  if (fileKey === 'action-items') {
+      try {
+          const data = await getActionItems();
+          return NextResponse.json(data);
+      } catch (error) {
+          return new NextResponse('Internal Server Error', { status: 500 });
+      }
+  }
+
 
   if (fileKey === 'value-map') {
       try {
@@ -90,6 +112,12 @@ export async function POST(request: Request) {
     }
     if (body.valueMap) {
         await writeValueMapData(body.valueMap);
+    }
+    if (body.users) {
+        await writeUsers(body.users);
+    }
+    if (body.actionItems) {
+        await writeActionItems(body.actionItems);
     }
     if (body.excelData) {
         for (const key in body.excelData) {
