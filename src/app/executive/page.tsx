@@ -81,15 +81,17 @@ export default function ExecutivePage() {
                     <DialogContent>
                         <DialogHeader>
                             <DialogTitle>How to Read Our Value Map</DialogTitle>
-                            <DialogDescription>
-                                <p className="mb-2 mt-4">
-                                Our Value Map is read from right to left – starting with the Outcomes we want to achieve, then looking at the Drivers that influence those outcomes, and finally the Levers we can pull to make it happen.
-                                </p>
-                                <ul className="list-disc pl-5 space-y-1">
-                                <li><span className="font-semibold">Outcomes:</span> What success looks like.</li>
-                                <li><span className="font-semibold">Drivers:</span> What makes success possible.</li>
-                                <li><span className="font-semibold">Levers:</span> The actions we can take.</li>
-                                </ul>
+                            <DialogDescription asChild>
+                                <div>
+                                    <p className="mb-2 mt-4">
+                                    Our Value Map is read from right to left – starting with the Outcomes we want to achieve, then looking at the Drivers that influence those outcomes, and finally the Levers we can pull to make it happen.
+                                    </p>
+                                    <ul className="list-disc pl-5 space-y-1">
+                                    <li><span className="font-semibold">Outcomes:</span> What success looks like.</li>
+                                    <li><span className="font-semibold">Drivers:</span> What makes success possible.</li>
+                                    <li><span className="font-semibold">Levers:</span> The actions we can take.</li>
+                                    </ul>
+                                </div>
                             </DialogDescription>
                         </DialogHeader>
                     </DialogContent>
