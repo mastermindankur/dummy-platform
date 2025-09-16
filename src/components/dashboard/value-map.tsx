@@ -60,7 +60,7 @@ const ItemCard = ({ item, type, onClick, isHighlighted, isSelected, selectedItem
         {(item.description || item.isWceBookOfWork) && (
             <CardContent className="p-3 pt-0 space-y-2">
                 {item.description && (
-                    <CardDescription className={cn("text-xs", isHighlighted ? 'text-inherit' : '')}>{item.description}</CardDescription>
+                    <CardDescription className={cn("text-xs", isHighlighted ? 'text-inherit' : 'text-muted-foreground')}>{item.description}</CardDescription>
                 )}
                 {item.isWceBookOfWork && (
                     <Badge variant={isHighlighted ? "default" : "secondary"} className={cn(isHighlighted && "bg-background/20 text-foreground")}>BOW25</Badge>
@@ -138,7 +138,7 @@ export function ValueMap({
                         const rect2 = driverCard.getBoundingClientRect();
                         const x1 = rect1.right - containerRect.left;
                         const y1 = (rect1.top - containerRect.top) + rect1.height / 2;
-                        const x2 = rect2.left - containerRect.left;
+                        const x2 = (rect2.left - containerRect.left) - 5;
                         const y2 = (rect2.top - containerRect.top) + rect2.height / 2;
                         path.setAttribute('d', createCurvePath(x1, y1, x2, y2));
                     }
@@ -155,7 +155,7 @@ export function ValueMap({
                         const rect2 = outcomeCard.getBoundingClientRect();
                         const x1 = rect1.right - containerRect.left;
                         const y1 = (rect1.top - containerRect.top) + rect1.height / 2;
-                        const x2 = rect2.left - containerRect.left;
+                        const x2 = (rect2.left - containerRect.left) - 5;
                         const y2 = (rect2.top - containerRect.top) + rect2.height / 2;
                         path.setAttribute('d', createCurvePath(x1, y1, x2, y2));
                     }
@@ -309,10 +309,10 @@ export function ValueMap({
         {isClient && (
              <svg ref={svgRef} className="absolute top-0 left-0 w-full h-full pointer-events-none" aria-hidden="true">
                 <defs>
-                    <marker id="arrowhead" markerWidth="5" markerHeight="3.5" refX="2" refY="1.75" orient="auto">
+                    <marker id="arrowhead" markerWidth="5" markerHeight="3.5" refX="4.5" refY="1.75" orient="auto">
                         <polygon points="0 0, 5 1.75, 0 3.5" fill="hsl(var(--muted-foreground))" />
                     </marker>
-                    <marker id="arrowhead-highlight" markerWidth="5" markerHeight="3.5" refX="2" refY="1.75" orient="auto">
+                    <marker id="arrowhead-highlight" markerWidth="5" markerHeight="3.5" refX="4.5" refY="1.75" orient="auto">
                         <polygon points="0 0, 5 1.75, 0 3.5" fill="hsl(var(--foreground))" />
                     </marker>
                 </defs>
