@@ -230,20 +230,26 @@ export function ValueMap({
         return highlighted[type].includes(id);
     };
 
-    const getLineOpacityClass = (conn: DriverLeverConnection | OutcomeDriverConnection) => {
-        if (!selectedItem) return 'opacity-100';
-
+    const isConnectionHighlighted = (conn: DriverLeverConnection | OutcomeDriverConnection) => {
+        if (!selectedItem) return true;
+    
         const isDriverLever = 'leverId' in conn;
-
-        if (highlighted.driver.includes(conn.driverId)) {
-            if (isDriverLever) {
-                return highlighted.lever.includes(conn.leverId) ? 'opacity-100' : 'opacity-30';
-            } else { // OutcomeDriverConnection
-                return highlighted.outcome.includes(conn.outcomeId) ? 'opacity-100' : 'opacity-30';
-            }
+    
+        if (isDriverLever) {
+            return highlighted.lever.includes(conn.leverId) && highlighted.driver.includes(conn.driverId);
+        } else { // OutcomeDriverConnection
+            return highlighted.driver.includes(conn.driverId) && highlighted.outcome.includes(conn.outcomeId);
         }
-        return 'opacity-30';
     };
+    
+    const getConnectionStyles = (conn: DriverLeverConnection | OutcomeDriverConnection) => {
+        const isHighlight = isConnectionHighlighted(conn);
+        return {
+            opacity: isHighlight ? '1' : '0.3',
+            strokeWidth: isHighlight ? '2.5' : '1.2'
+        };
+    };
+    
 
     const renderGroupedItems = (items: ValueMapItem[], groups: ValueMapGroup[], type: 'lever' | 'driver' | 'outcome') => {
         const groupedItems = items.filter(item => item.groupId && groups.find(g => g.id === item.groupId));
@@ -291,29 +297,40 @@ export function ValueMap({
                     <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
                         <polygon points="0 0, 10 3.5, 0 7" fill="hsl(var(--muted-foreground))" />
                     </marker>
+                    <marker id="arrowhead-highlight" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                        <polygon points="0 0, 10 3.5, 0 7" fill="hsl(var(--primary))" />
+                    </marker>
                 </defs>
-                {driverLeverConnections.map(conn => (
-                    <path
-                        key={`path-ld-${conn.leverId}-${conn.driverId}`}
-                        id={`path-ld-${conn.leverId}-${conn.driverId}`}
-                        fill="none"
-                        stroke="hsl(var(--muted-foreground))"
-                        strokeWidth="1.2"
-                        markerEnd="url(#arrowhead)"
-                        className={cn('transition-opacity', getLineOpacityClass(conn))}
-                    />
-                ))}
-                {outcomeDriverConnections.map(conn => (
-                     <path
-                        key={`path-do-${conn.driverId}-${conn.outcomeId}`}
-                        id={`path-do-${conn.driverId}-${conn.outcomeId}`}
-                        fill="none"
-                        stroke="hsl(var(--muted-foreground))"
-                        strokeWidth="1.2"
-                        markerEnd="url(#arrowhead)"
-                        className={cn('transition-opacity', getLineOpacityClass(conn))}
-                    />
-                ))}
+                {driverLeverConnections.map(conn => {
+                    const styles = getConnectionStyles(conn);
+                    return (
+                        <path
+                            key={`path-ld-${conn.leverId}-${conn.driverId}`}
+                            id={`path-ld-${conn.leverId}-${conn.driverId}`}
+                            fill="none"
+                            stroke={isConnectionHighlighted(conn) ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground))'}
+                            strokeWidth={styles.strokeWidth}
+                            markerEnd={isConnectionHighlighted(conn) ? "url(#arrowhead-highlight)" : "url(#arrowhead)"}
+                            className={'transition-all duration-300'}
+                            style={{ opacity: styles.opacity }}
+                        />
+                    )
+                })}
+                {outcomeDriverConnections.map(conn => {
+                    const styles = getConnectionStyles(conn);
+                    return (
+                        <path
+                            key={`path-do-${conn.driverId}-${conn.outcomeId}`}
+                            id={`path-do-${conn.driverId}-${conn.outcomeId}`}
+                            fill="none"
+                            stroke={isConnectionHighlighted(conn) ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground))'}
+                            strokeWidth={styles.strokeWidth}
+                            markerEnd={isConnectionHighlighted(conn) ? "url(#arrowhead-highlight)" : "url(#arrowhead)"}
+                            className={'transition-all duration-300'}
+                            style={{ opacity: styles.opacity }}
+                        />
+                    )
+                })}
             </svg>
         )}
 
