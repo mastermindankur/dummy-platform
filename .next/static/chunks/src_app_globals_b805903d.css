@@ -451,6 +451,14 @@ body {
   top: 50%;
 }
 
+.-top-2\.5 {
+  top: -.625rem;
+}
+
+.left-3 {
+  left: .75rem;
+}
+
 .z-10 {
   z-index: 10;
 }
@@ -886,6 +894,10 @@ body {
 
 .max-w-4xl {
   max-width: 56rem;
+}
+
+.max-w-2xl {
+  max-width: 42rem;
 }
 
 .flex-1 {
@@ -1363,6 +1375,10 @@ body {
 
 .bg-transparent {
   background-color: #0000;
+}
+
+.bg-secondary\/20 {
+  background-color: hsl(var(--secondary) / .2);
 }
 
 .fill-current {

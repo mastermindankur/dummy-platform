@@ -4,5 +4,6 @@
   "/dashboard/page": "app/dashboard/page.js",
   "/executive/page": "app/executive/page.js",
   "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/page": "app/page.js"
+  "/page": "app/page.js",
+  "/update-data/page": "app/update-data/page.js"
 }

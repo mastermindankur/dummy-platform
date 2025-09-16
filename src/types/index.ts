@@ -80,6 +80,7 @@ export type ValueMapItem = {
     description: string;
     status?: Status;
     isWceBookOfWork?: boolean;
+    groupId?: string;
 };
 
 export type ValueMapOutcome = ValueMapItem & {
@@ -101,8 +102,15 @@ export type DriverLeverConnection = {
     leverId: string;
 };
 
+export type ValueMapGroup = {
+    id: string;
+    name: string;
+};
+
 export type ValueMapData = {
     outcomes: ValueMapOutcome[];
     drivers: ValueMapDriver[];
     levers: ValueMapLever[];
+    outcomeGroups?: ValueMapGroup[];
+    driverGroups?: ValueMapGroup[];
 };

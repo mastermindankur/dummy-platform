@@ -352,6 +352,8 @@ export async function getValueMapData(): Promise<ValueMapData> {
                 outcomes: [],
                 drivers: [],
                 levers: [],
+                outcomeGroups: [],
+                driverGroups: [],
             };
             await writeValueMapData(defaultData);
             return defaultData;

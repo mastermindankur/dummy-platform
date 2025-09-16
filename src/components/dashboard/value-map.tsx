@@ -5,13 +5,15 @@ import React, { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { StatusIndicator } from '@/components/dashboard/status-indicator';
-import type { ValueMapItem, OutcomeDriverConnection, DriverLeverConnection, ValueMapDriver, ValueMapOutcome, ValueMapLever } from '@/types';
+import type { ValueMapItem, OutcomeDriverConnection, DriverLeverConnection, ValueMapDriver, ValueMapOutcome, ValueMapLever, ValueMapGroup } from '@/types';
 import { Badge } from '@/components/ui/badge';
 
 type ValueMapProps = {
     outcomes: ValueMapOutcome[];
     drivers: ValueMapDriver[];
     levers: ValueMapLever[];
+    outcomeGroups: ValueMapGroup[];
+    driverGroups: ValueMapGroup[];
     outcomeDriverConnections: OutcomeDriverConnection[];
     driverLeverConnections: DriverLeverConnection[];
 };
@@ -21,10 +23,52 @@ type SelectedItem = {
     type: 'lever' | 'driver' | 'outcome';
 } | null;
 
+const ItemCard = ({ item, type, onClick, isHighlighted, isSelected }: {
+    item: ValueMapItem;
+    type: 'lever' | 'driver' | 'outcome';
+    onClick: () => void;
+    isHighlighted: boolean;
+    isSelected: boolean;
+}) => (
+    <Card 
+        id={`card-${item.id}`} 
+        onClick={onClick}
+        className={cn(
+            "bg-background/70 transition-all duration-300 cursor-pointer",
+            isHighlighted ? 'opacity-100' : 'opacity-30',
+            isSelected && 'bg-card border-primary shadow-lg'
+        )}>
+        <CardHeader className="p-3">
+            <CardTitle className="text-sm">{item.name}</CardTitle>
+            {item.status && <StatusIndicator status={item.status} className="text-xs" />}
+        </CardHeader>
+        {item.isWceBookOfWork && (
+            <CardContent className="p-3 pt-0">
+                <Badge variant="secondary">WCE</Badge>
+            </CardContent>
+        )}
+    </Card>
+);
+
+const GroupContainer = ({ group, children, title }: { group?: ValueMapGroup, children: React.ReactNode, title: string }) => {
+    if (!group) return <>{children}</>;
+
+    return (
+        <div id={`group-${group.id}`} className="border rounded-lg p-3 bg-secondary/20 relative">
+            <h3 className="text-sm font-semibold text-muted-foreground absolute -top-2.5 left-3 bg-card px-2">{group.name}</h3>
+            <div className="space-y-2 pt-2">
+                {children}
+            </div>
+        </div>
+    );
+};
+
 export function ValueMap({ 
     outcomes, 
     drivers, 
     levers,
+    outcomeGroups,
+    driverGroups,
     outcomeDriverConnections,
     driverLeverConnections,
 }: ValueMapProps) {
@@ -47,7 +91,7 @@ export function ValueMap({
             const containerRect = containerRef.current.getBoundingClientRect();
 
             const createCurvePath = (x1: number, y1: number, x2: number, y2: number) => {
-                const horizontalOffset = 80; // Increased for a more pronounced curve
+                const horizontalOffset = 80;
                 const controlPoint1 = { x: x1 + horizontalOffset, y: y1 };
                 const controlPoint2 = { x: x2 - horizontalOffset, y: y2 };
                 return `M${x1},${y1} C${controlPoint1.x},${controlPoint1.y} ${controlPoint2.x},${controlPoint2.y} ${x2},${y2}`;
@@ -87,7 +131,6 @@ export function ValueMap({
                     }
                 }
             })
-
         };
         
         updateLines();
@@ -104,7 +147,7 @@ export function ValueMap({
             }
             clearTimeout(timeoutId);
         };
-    }, [isClient, selectedItem, outcomes, drivers, levers, outcomeDriverConnections, driverLeverConnections]);
+    }, [isClient, selectedItem, outcomes, drivers, levers, outcomeDriverConnections, driverLeverConnections, outcomeGroups, driverGroups]);
 
     const handleItemClick = (id: string, type: 'lever' | 'driver' | 'outcome') => {
         setSelectedItem(prev => (prev?.id === id && prev?.type === type ? null : { id, type }));
@@ -165,9 +208,9 @@ export function ValueMap({
 
     const highlighted = getHighlightedIds();
 
-    const getOpacityClass = (id: string, type: 'lever' | 'driver' | 'outcome') => {
-        if (!selectedItem) return 'opacity-100';
-        return highlighted[type].includes(id) ? 'opacity-100' : 'opacity-30';
+    const isHighlighted = (id: string, type: 'lever' | 'driver' | 'outcome') => {
+        if (!selectedItem) return true;
+        return highlighted[type].includes(id);
     };
 
     const getLineOpacityClass = (conn: DriverLeverConnection | OutcomeDriverConnection) => {
@@ -183,6 +226,43 @@ export function ValueMap({
             }
         }
         return 'opacity-30';
+    };
+
+    const renderGroupedItems = (items: ValueMapItem[], groups: ValueMapGroup[], type: 'lever' | 'driver' | 'outcome') => {
+        const groupedItems = items.filter(item => item.groupId && groups.find(g => g.id === item.groupId));
+        const ungroupedItems = items.filter(item => !item.groupId || !groups.find(g => g.id === item.groupId));
+        
+        return (
+            <>
+                {groups.map(group => (
+                    <GroupContainer key={group.id} group={group} title={`${type} Group`}>
+                        {groupedItems
+                            .filter(item => item.groupId === group.id)
+                            .map(item => (
+                                <ItemCard 
+                                    key={item.id} 
+                                    item={item} 
+                                    type={type} 
+                                    onClick={() => handleItemClick(item.id, type)}
+                                    isHighlighted={isHighlighted(item.id, type)}
+                                    isSelected={selectedItem?.id === item.id}
+                                />
+                            ))
+                        }
+                    </GroupContainer>
+                ))}
+                {ungroupedItems.map(item => (
+                    <ItemCard 
+                        key={item.id} 
+                        item={item} 
+                        type={type}
+                        onClick={() => handleItemClick(item.id, type)}
+                        isHighlighted={isHighlighted(item.id, type)}
+                        isSelected={selectedItem?.id === item.id}
+                    />
+                ))}
+            </>
+        );
     };
 
 
@@ -220,78 +300,32 @@ export function ValueMap({
             </svg>
         )}
 
-        <div className="flex w-full justify-between">
+        <div className="grid grid-cols-1 md:grid-cols-3 w-full gap-8">
             {/* Levers Column */}
-            <div className="w-1/3 px-4 space-y-2">
+            <div className="px-4 space-y-2">
                 <h2 className="text-xl font-semibold text-center mb-4">Levers</h2>
                 {levers.map(lever => (
-                    <Card 
+                     <ItemCard 
                         key={lever.id} 
-                        id={`card-${lever.id}`} 
+                        item={lever} 
+                        type="lever"
                         onClick={() => handleItemClick(lever.id, 'lever')}
-                        className={cn(
-                            "bg-background/70 transition-all duration-300 cursor-pointer",
-                            getOpacityClass(lever.id, 'lever'),
-                            selectedItem?.id === lever.id && 'bg-card border-primary shadow-lg'
-                        )}>
-                        <CardHeader className="p-3">
-                            <CardTitle className="text-sm">{lever.name}</CardTitle>
-                            {lever.status && <StatusIndicator status={lever.status} className="text-xs" />}
-                        </CardHeader>
-                        {lever.isWceBookOfWork && (
-                            <CardContent className="p-3 pt-0">
-                                <Badge variant="secondary">WCE</Badge>
-                            </CardContent>
-                        )}
-                    </Card>
+                        isHighlighted={isHighlighted(lever.id, 'lever')}
+                        isSelected={selectedItem?.id === lever.id}
+                    />
                 ))}
             </div>
 
             {/* Drivers Column */}
-            <div className="w-1/3 px-4 space-y-2">
+            <div className="px-4 space-y-2">
                  <h2 className="text-xl font-semibold text-center mb-4">Drivers</h2>
-                {drivers.map(driver => (
-                    <Card 
-                        key={driver.id} 
-                        id={`card-${driver.id}`} 
-                        onClick={() => handleItemClick(driver.id, 'driver')}
-                        className={cn(
-                        "bg-background/70 transition-all duration-300 cursor-pointer", 
-                        getOpacityClass(driver.id, 'driver'),
-                        selectedItem?.id === driver.id && 'bg-card border-primary shadow-lg'
-                        )}>
-                        <CardHeader className="p-3">
-                            <CardTitle className="text-base">{driver.name}</CardTitle>
-                             {driver.description && <CardDescription className="text-xs line-clamp-2">{driver.description}</CardDescription>}
-                        </CardHeader>
-                         {driver.isWceBookOfWork && (
-                            <CardContent className="p-3 pt-0">
-                                <Badge variant="secondary">WCE</Badge>
-                            </CardContent>
-                        )}
-                    </Card>
-                ))}
+                 {renderGroupedItems(drivers, driverGroups, 'driver')}
             </div>
 
             {/* Outcomes Column */}
-            <div className="w-1/3 px-4 space-y-2">
+            <div className="px-4 space-y-2">
                 <h2 className="text-xl font-semibold text-center mb-4">Outcomes</h2>
-                {outcomes.map(outcome => (
-                    <Card 
-                        key={outcome.id} 
-                        id={`card-${outcome.id}`} 
-                        onClick={() => handleItemClick(outcome.id, 'outcome')}
-                        className={cn(
-                        "bg-background/70 transition-all duration-300 cursor-pointer",
-                        getOpacityClass(outcome.id, 'outcome'),
-                        selectedItem?.id === outcome.id && 'bg-card border-primary shadow-lg'
-                        )}>
-                        <CardHeader className="p-3">
-                            <CardTitle className="text-base">{outcome.name}</CardTitle>
-                            {outcome.description && <CardDescription className="text-xs line-clamp-2">{outcome.description}</CardDescription>}
-                        </CardHeader>
-                    </Card>
-                ))}
+                {renderGroupedItems(outcomes, outcomeGroups, 'outcome')}
             </div>
         </div>
         <div className="flex justify-end pt-4 pr-4">

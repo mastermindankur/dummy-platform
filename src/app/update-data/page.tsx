@@ -23,10 +23,10 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/use-toast';
-import type { Pillar, SubItem, Status, ExcelData, ValueMapData, ValueMapItem, ValueMapLever, ValueMapDriver, ValueMapOutcome } from '@/types';
+import type { Pillar, SubItem, Status, ExcelData, ValueMapData, ValueMapItem, ValueMapLever, ValueMapDriver, ValueMapOutcome, ValueMapGroup } from '@/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Loader2, Plus, Trash2, Upload, ArrowRight, ChevronsUpDown, Filter, X, Edit, GripVertical } from 'lucide-react';
+import { Loader2, Plus, Trash2, Upload, ArrowRight, ChevronsUpDown, Filter, X, Edit, GripVertical, Settings2 } from 'lucide-react';
 import { processExcelFile, getExcelSheetNames } from '@/lib/excel-utils';
 import Link from 'next/link';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -51,9 +51,10 @@ type FilterState = {
 // ## VALUE MAP SECTION ##
 
 function ValueMapManager() {
-    const [valueMapData, setValueMapData] = useState<ValueMapData>({ outcomes: [], drivers: [], levers: [] });
+    const [valueMapData, setValueMapData] = useState<ValueMapData>({ outcomes: [], drivers: [], levers: [], outcomeGroups: [], driverGroups: [] });
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
+    const [isGroupEditorOpen, setIsGroupEditorOpen] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -61,7 +62,7 @@ function ValueMapManager() {
             try {
                 const res = await fetch('/api/data?key=value-map');
                 const data = await res.json();
-                setValueMapData(data);
+                setValueMapData(prev => ({...prev, ...data}));
             } catch (e) {
                 toast({ title: 'Error fetching value map data', variant: 'destructive' });
             } finally {
@@ -86,6 +87,10 @@ function ValueMapManager() {
         } finally {
             setIsSaving(false);
         }
+    };
+    
+    const handleGroupUpdate = (newGroups: Partial<ValueMapData>) => {
+        setValueMapData(prev => ({...prev, ...newGroups}));
     };
 
     const handleItemChange = <T extends ValueMapItem>(
@@ -122,7 +127,6 @@ function ValueMapManager() {
         setValueMapData(prev => ({
             ...prev,
             [type]: prev[type].filter((item: ValueMapItem) => item.id !== id),
-            // Also remove connections
             ...(type === 'levers' && {
                 drivers: prev.drivers.map(d => ({...d, connectedLeverIds: d.connectedLeverIds.filter(leverId => leverId !== id) }))
             }),
@@ -138,7 +142,18 @@ function ValueMapManager() {
 
     return (
         <div className="space-y-6">
-            <div className="flex justify-end">
+            <div className="flex justify-end gap-2">
+                <Dialog open={isGroupEditorOpen} onOpenChange={setIsGroupEditorOpen}>
+                    <DialogTrigger asChild>
+                        <Button variant="outline"><Settings2 className="mr-2 h-4 w-4"/>Manage Groups</Button>
+                    </DialogTrigger>
+                    <ValueMapGroupEditor 
+                        outcomeGroups={valueMapData.outcomeGroups || []}
+                        driverGroups={valueMapData.driverGroups || []}
+                        onSave={handleGroupUpdate}
+                        onClose={() => setIsGroupEditorOpen(false)}
+                    />
+                </Dialog>
                 <Button onClick={handleSave} disabled={isSaving}>
                     {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     Save Value Map Changes
@@ -155,6 +170,7 @@ function ValueMapManager() {
                  <ValueMapColumn
                     title="Drivers"
                     items={valueMapData.drivers}
+                    groups={valueMapData.driverGroups}
                     onAdd={() => handleItemAdd('drivers')}
                     onDelete={(id) => handleItemDelete('drivers', id)}
                     onUpdate={(item) => handleItemChange('drivers', item as ValueMapDriver)}
@@ -163,6 +179,7 @@ function ValueMapManager() {
                  <ValueMapColumn
                     title="Outcomes"
                     items={valueMapData.outcomes}
+                    groups={valueMapData.outcomeGroups}
                     onAdd={() => handleItemAdd('outcomes')}
                     onDelete={(id) => handleItemDelete('outcomes', id)}
                     onUpdate={(item) => handleItemChange('outcomes', item as ValueMapOutcome)}
@@ -173,9 +190,97 @@ function ValueMapManager() {
     );
 }
 
-function ValueMapColumn({ title, items, onAdd, onDelete, onUpdate, drivers, levers }: {
+function ValueMapGroupEditor({ outcomeGroups, driverGroups, onSave, onClose }: {
+    outcomeGroups: ValueMapGroup[],
+    driverGroups: ValueMapGroup[],
+    onSave: (data: {outcomeGroups: ValueMapGroup[], driverGroups: ValueMapGroup[]}) => void,
+    onClose: () => void
+}) {
+    const [localOutcomeGroups, setLocalOutcomeGroups] = useState(outcomeGroups);
+    const [localDriverGroups, setLocalDriverGroups] = useState(driverGroups);
+
+    const handleAddGroup = (type: 'outcome' | 'driver') => {
+        const newGroup = { id: `${type}-group-${Date.now()}`, name: `New ${type.charAt(0).toUpperCase() + type.slice(1)} Group`};
+        if (type === 'outcome') {
+            setLocalOutcomeGroups(prev => [...prev, newGroup]);
+        } else {
+            setLocalDriverGroups(prev => [...prev, newGroup]);
+        }
+    };
+    
+    const handleRemoveGroup = (type: 'outcome' | 'driver', id: string) => {
+        if (type === 'outcome') {
+            setLocalOutcomeGroups(prev => prev.filter(g => g.id !== id));
+        } else {
+            setLocalDriverGroups(prev => prev.filter(g => g.id !== id));
+        }
+    };
+    
+    const handleGroupNameChange = (type: 'outcome' | 'driver', id: string, name: string) => {
+        if (type === 'outcome') {
+            setLocalOutcomeGroups(prev => prev.map(g => g.id === id ? {...g, name} : g));
+        } else {
+            setLocalDriverGroups(prev => prev.map(g => g.id === id ? {...g, name} : g));
+        }
+    };
+    
+    const handleSaveChanges = () => {
+        onSave({ outcomeGroups: localOutcomeGroups, driverGroups: localDriverGroups });
+        onClose();
+    };
+
+    return (
+        <DialogContent className="max-w-2xl">
+            <DialogHeader>
+                <DialogTitle>Manage Value Map Groups</DialogTitle>
+                <DialogDescription>Create, edit, or delete groups for your Outcomes and Drivers.</DialogDescription>
+            </DialogHeader>
+            <div className="grid grid-cols-2 gap-6 py-4">
+                <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                        <h4 className="font-medium">Outcome Groups</h4>
+                        <Button size="sm" variant="outline" onClick={() => handleAddGroup('outcome')}><Plus className="mr-2 h-4 w-4"/> Add</Button>
+                    </div>
+                    <div className="space-y-2">
+                        {localOutcomeGroups.map(group => (
+                            <div key={group.id} className="flex items-center gap-2">
+                                <Input value={group.name} onChange={e => handleGroupNameChange('outcome', group.id, e.target.value)} />
+                                <Button size="icon" variant="ghost" className="text-destructive hover:text-destructive" onClick={() => handleRemoveGroup('outcome', group.id)}>
+                                    <Trash2 className="h-4 w-4"/>
+                                </Button>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+                 <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                        <h4 className="font-medium">Driver Groups</h4>
+                        <Button size="sm" variant="outline" onClick={() => handleAddGroup('driver')}><Plus className="mr-2 h-4 w-4"/> Add</Button>
+                    </div>
+                     <div className="space-y-2">
+                        {localDriverGroups.map(group => (
+                            <div key={group.id} className="flex items-center gap-2">
+                                <Input value={group.name} onChange={e => handleGroupNameChange('driver', group.id, e.target.value)} />
+                                <Button size="icon" variant="ghost" className="text-destructive hover:text-destructive" onClick={() => handleRemoveGroup('driver', group.id)}>
+                                    <Trash2 className="h-4 w-4"/>
+                                </Button>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+            <DialogFooter>
+                <DialogClose asChild><Button variant="ghost">Cancel</Button></DialogClose>
+                <Button onClick={handleSaveChanges}>Save Changes</Button>
+            </DialogFooter>
+        </DialogContent>
+    );
+}
+
+function ValueMapColumn({ title, items, groups, onAdd, onDelete, onUpdate, drivers, levers }: {
     title: 'Outcomes' | 'Drivers' | 'Levers';
     items: ValueMapItem[];
+    groups?: ValueMapGroup[];
     onAdd: () => void;
     onDelete: (id: string) => void;
     onUpdate: (item: ValueMapItem) => void;
@@ -199,6 +304,8 @@ function ValueMapColumn({ title, items, onAdd, onDelete, onUpdate, drivers, leve
                             onDelete={onDelete}
                             levers={levers}
                             drivers={drivers}
+                            driverGroups={groups?.length && title === 'Drivers' ? groups : undefined}
+                            outcomeGroups={groups?.length && title === 'Outcomes' ? groups : undefined}
                          />
                     </div>
                 ))}
@@ -208,12 +315,14 @@ function ValueMapColumn({ title, items, onAdd, onDelete, onUpdate, drivers, leve
     );
 }
 
-function ValueMapItemCard({ item, onUpdate, onDelete, levers, drivers }: {
+function ValueMapItemCard({ item, onUpdate, onDelete, levers, drivers, driverGroups, outcomeGroups }: {
     item: ValueMapItem;
     onUpdate: (item: any) => void;
     onDelete: (id: string) => void;
     levers?: ValueMapLever[];
     drivers?: ValueMapDriver[];
+    driverGroups?: ValueMapGroup[];
+    outcomeGroups?: ValueMapGroup[];
 }) {
     const [isEditing, setIsEditing] = useState(false);
     const [editedItem, setEditedItem] = useState(item);
@@ -289,7 +398,7 @@ function ValueMapItemCard({ item, onUpdate, onDelete, levers, drivers }: {
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <Button variant="outline" className="w-full justify-start">
-                                        {(editedItem as ValueMapOutcome).connectedDriverIds?.length || 0} selected
+                                        {((editedItem as ValueMapOutcome).connectedDriverIds || []).length} selected
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent className="w-64">
@@ -308,6 +417,21 @@ function ValueMapItemCard({ item, onUpdate, onDelete, levers, drivers }: {
                             </DropdownMenu>
                         </div>
                     )}
+                     {isOutcome && outcomeGroups && (
+                        <div>
+                            <Label>Outcome Group</Label>
+                            <Select
+                                value={editedItem.groupId}
+                                onValueChange={groupId => setEditedItem({ ...editedItem, groupId: groupId === 'none' ? undefined : groupId })}
+                            >
+                                <SelectTrigger><SelectValue placeholder="Assign to a group..."/></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="none">No Group</SelectItem>
+                                    {outcomeGroups.map(g => <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    )}
 
                     {isDriver && levers && (
                         <div>
@@ -315,7 +439,7 @@ function ValueMapItemCard({ item, onUpdate, onDelete, levers, drivers }: {
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <Button variant="outline" className="w-full justify-start">
-                                        {(editedItem as ValueMapDriver).connectedLeverIds?.length || 0} selected
+                                        {((editedItem as ValueMapDriver).connectedLeverIds || []).length} selected
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent className="w-64">
@@ -334,6 +458,23 @@ function ValueMapItemCard({ item, onUpdate, onDelete, levers, drivers }: {
                             </DropdownMenu>
                         </div>
                     )}
+
+                    {isDriver && driverGroups && (
+                        <div>
+                            <Label>Driver Group</Label>
+                             <Select
+                                value={editedItem.groupId}
+                                onValueChange={groupId => setEditedItem({ ...editedItem, groupId: groupId === 'none' ? undefined : groupId })}
+                            >
+                                <SelectTrigger><SelectValue placeholder="Assign to a group..."/></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="none">No Group</SelectItem>
+                                    {driverGroups.map(g => <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    )}
+
                 </div>
                 <DialogFooter>
                     <DialogClose asChild><Button variant="ghost" onClick={handleCancel}>Cancel</Button></DialogClose>

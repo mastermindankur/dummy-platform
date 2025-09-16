@@ -36,6 +36,9 @@ export default function ExecutivePage() {
   const outcomes = valueMapData?.outcomes || [];
   const drivers = valueMapData?.drivers || [];
   const levers = valueMapData?.levers || [];
+  const outcomeGroups = valueMapData?.outcomeGroups || [];
+  const driverGroups = valueMapData?.driverGroups || [];
+
 
   const outcomeDriverConnections: OutcomeDriverConnection[] = outcomes.flatMap(o =>
     (o.connectedDriverIds || []).map(driverId => ({ outcomeId: o.id, driverId }))
@@ -68,6 +71,8 @@ export default function ExecutivePage() {
                   outcomes={outcomes}
                   drivers={drivers}
                   levers={levers}
+                  outcomeGroups={outcomeGroups}
+                  driverGroups={driverGroups}
                   outcomeDriverConnections={outcomeDriverConnections}
                   driverLeverConnections={driverLeverConnections}
                 />
