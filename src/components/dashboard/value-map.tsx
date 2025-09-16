@@ -298,7 +298,7 @@ export function ValueMap({
                         <polygon points="0 0, 10 3.5, 0 7" fill="hsl(var(--muted-foreground))" />
                     </marker>
                     <marker id="arrowhead-highlight" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
-                        <polygon points="0 0, 10 3.5, 0 7" fill="hsl(var(--primary))" />
+                        <polygon points="0 0, 10 3.5, 0 7" fill="hsl(var(--foreground))" />
                     </marker>
                 </defs>
                 {driverLeverConnections.map(conn => {
@@ -308,7 +308,7 @@ export function ValueMap({
                             key={`path-ld-${conn.leverId}-${conn.driverId}`}
                             id={`path-ld-${conn.leverId}-${conn.driverId}`}
                             fill="none"
-                            stroke={isConnectionHighlighted(conn) ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground))'}
+                            stroke={isConnectionHighlighted(conn) ? 'hsl(var(--foreground))' : 'hsl(var(--muted-foreground))'}
                             strokeWidth={styles.strokeWidth}
                             markerEnd={isConnectionHighlighted(conn) ? "url(#arrowhead-highlight)" : "url(#arrowhead)"}
                             className={'transition-all duration-300'}
@@ -323,7 +323,7 @@ export function ValueMap({
                             key={`path-do-${conn.driverId}-${conn.outcomeId}`}
                             id={`path-do-${conn.driverId}-${conn.outcomeId}`}
                             fill="none"
-                            stroke={isConnectionHighlighted(conn) ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground))'}
+                            stroke={isConnectionHighlighted(conn) ? 'hsl(var(--foreground))' : 'hsl(var(--muted-foreground))'}
                             strokeWidth={styles.strokeWidth}
                             markerEnd={isConnectionHighlighted(conn) ? "url(#arrowhead-highlight)" : "url(#arrowhead)"}
                             className={'transition-all duration-300'}
@@ -371,8 +371,3 @@ export function ValueMap({
     </div>
   );
 }
-
-    
-    
-
-    
