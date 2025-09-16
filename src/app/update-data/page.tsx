@@ -24,10 +24,10 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/use-toast';
-import type { Pillar, SubItem, Status, ExcelData, ValueMapData, ValueMapItem, ValueMapLever, ValueMapDriver, ValueMapOutcome, ValueMapGroup, User } from '@/types';
+import type { Pillar, SubItem, Status, ExcelData, ValueMapData, ValueMapItem, ValueMapLever, ValueMapDriver, ValueMapOutcome, ValueMapGroup, User, ActionItem } from '@/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Loader2, Plus, Trash2, Upload, ArrowRight, ChevronsUpDown, Filter, X, Edit, GripVertical, Settings2, Users } from 'lucide-react';
+import { Loader2, Plus, Trash2, Upload, ArrowRight, ChevronsUpDown, Filter, X, Edit, GripVertical, Settings2, Users, CalendarIcon } from 'lucide-react';
 import { processExcelFile, getExcelSheetNames } from '@/lib/excel-utils';
 import Link from 'next/link';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -51,6 +51,12 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
+import { Badge } from '@/components/ui/badge';
+
 
 type FilterState = {
     id: number;
@@ -59,14 +65,141 @@ type FilterState = {
 };
 
 // ## ACTION ITEMS DATA MANAGEMENT ##
+
+function CreateActionItemDialog({ users, pillars, onActionItemCreate }: { users: User[], pillars: Pillar[], onActionItemCreate: (item: ActionItem) => void }) {
+    const [task, setTask] = useState('');
+    const [assignedTo, setAssignedTo] = useState<string[]>([]);
+    const [dueDate, setDueDate] = useState<Date | undefined>();
+    const [pillarId, setPillarId] = useState('');
+    const [isOpen, setIsOpen] = useState(false);
+
+    const handleCreate = () => {
+        if (!task || assignedTo.length === 0 || !dueDate || !pillarId) {
+            toast({ title: "Missing fields", description: "Please fill out all fields.", variant: "destructive" });
+            return;
+        }
+        const newActionItem: ActionItem = {
+            id: `action-${Date.now()}`,
+            task,
+            assignedTo,
+            dueDate: format(dueDate, 'yyyy-MM-dd'),
+            status: 'Open',
+            pillarId,
+            createdAt: new Date().toISOString(),
+        };
+        onActionItemCreate(newActionItem);
+        setTask('');
+        setAssignedTo([]);
+        setDueDate(undefined);
+        setPillarId('');
+        setIsOpen(false);
+        toast({ title: "Action Item Created", description: "Don't forget to save your changes." });
+    };
+    
+    const getUserName = (email: string) => users.find(u => u.email === email)?.name || email;
+
+    return (
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <DialogTrigger asChild>
+                <Button><Plus className="mr-2 h-4 w-4" /> Create Action Item</Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[625px]">
+                <DialogHeader>
+                    <DialogTitle>Create New Action Item</DialogTitle>
+                </DialogHeader>
+                <div className="py-4 space-y-4">
+                    <div>
+                        <Label htmlFor="task-description">Task Description</Label>
+                        <Textarea id="task-description" value={task} onChange={e => setTask(e.target.value)} placeholder="Describe the action item..."/>
+                    </div>
+                     <div>
+                        <Label>Pillar</Label>
+                        <Select value={pillarId} onValueChange={setPillarId}>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select a pillar" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {pillars.map(pillar => (
+                                    <SelectItem key={pillar.id} value={pillar.id}>{pillar.name}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                     <div>
+                        <Label>Assign To</Label>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button variant="outline" className="w-full justify-start text-left font-normal">
+                                    {assignedTo.length > 0 ? `${assignedTo.length} user(s) selected` : "Select users"}
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                                <div className="p-2 space-y-1 h-60 overflow-y-auto">
+                                {users.map(user => (
+                                    <div key={user.email} className="flex items-center space-x-2 p-2 hover:bg-muted rounded-md">
+                                        <Checkbox
+                                            id={`user-assign-${user.email}`}
+                                            checked={assignedTo.includes(user.email)}
+                                            onCheckedChange={(checked) => {
+                                                setAssignedTo(prev => checked ? [...prev, user.email] : prev.filter(email => email !== user.email));
+                                            }}
+                                        />
+                                        <Label htmlFor={`user-assign-${user.email}`} className="flex-1 cursor-pointer">{user.name} <span className="text-xs text-muted-foreground">({user.email})</span></Label>
+                                    </div>
+                                ))}
+                                </div>
+                            </PopoverContent>
+                        </Popover>
+                         {assignedTo.length > 0 && (
+                            <div className="p-2 mt-2 border rounded-md text-sm">
+                                {assignedTo.map(email => <Badge key={email} variant="secondary" className="mr-1 mb-1">{getUserName(email)}</Badge>)}
+                            </div>
+                        )}
+                    </div>
+                     <div>
+                        <Label>Due Date</Label>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button
+                                variant={"outline"}
+                                className={cn(
+                                    "w-full justify-start text-left font-normal",
+                                    !dueDate && "text-muted-foreground"
+                                )}
+                                >
+                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                {dueDate ? format(dueDate, "PPP") : <span>Pick a date</span>}
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0">
+                                <Calendar mode="single" selected={dueDate} onSelect={setDueDate} initialFocus/>
+                            </PopoverContent>
+                        </Popover>
+                    </div>
+                </div>
+                <DialogFooter>
+                    <DialogClose asChild><Button variant="ghost">Cancel</Button></DialogClose>
+                    <Button onClick={handleCreate}>Create</Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
 function ActionItemsDataManagement({ 
     users, 
     onUsersChange,
-    onDataProcessed 
+    onDataProcessed,
+    pillars,
+    actionItems,
+    onActionItemsChange
 }: { 
     users: User[];
     onUsersChange: (users: User[]) => void;
-    onDataProcessed: (key: string, data: ExcelData) => void; 
+    onDataProcessed: (key: string, data: ExcelData) => void;
+    pillars: Pillar[];
+    actionItems: ActionItem[];
+    onActionItemsChange: (items: ActionItem[]) => void;
 }) {
     const [newUserName, setNewUserName] = useState('');
     const [newUserEmail, setNewUserEmail] = useState('');
@@ -96,15 +229,33 @@ function ActionItemsDataManagement({
         onUsersChange(users.filter(u => u.email !== email));
     };
 
+    const handleActionItemCreate = (item: ActionItem) => {
+      onActionItemsChange([...actionItems, item]);
+    };
+    
+    const handleRemoveActionItem = (id: string) => {
+      onActionItemsChange(actionItems.filter(item => item.id !== id));
+      toast({ title: "Action Item Removed", description: "Don't forget to save your changes." });
+    };
+    
+    const handleStatusChange = (id: string, status: ActionItem['status']) => {
+        onActionItemsChange(actionItems.map(item => item.id === id ? {...item, status} : item));
+    };
+    
+    const handleDueDateChange = (id: string, newDueDate: string) => {
+        onActionItemsChange(actionItems.map(item => {
+            if (item.id === id) {
+                return {...item, dueDate: newDueDate, originalDueDate: item.originalDueDate || item.dueDate };
+            }
+            return item;
+        }));
+    };
+    
+    const getUserName = (email: string) => users.find(u => u.email === email)?.name || email;
+    const getPillarName = (pillarId: string) => pillars.find(p => p.id === pillarId)?.name || 'Unknown Pillar';
+
     return (
         <div className="space-y-6">
-             <ExcelUploadSection
-                title="Bulk Upload Users"
-                description="Upload an Excel file with user details to populate the assignee list for action items. The file must contain columns: 'Name', 'Email', and 'LOBT'."
-                fileKey="users"
-                onDataProcessed={onDataProcessed}
-            />
-
             <Accordion type="single" collapsible className="w-full">
                 <AccordionItem value="manage-users">
                     <AccordionTrigger>
@@ -112,42 +263,52 @@ function ActionItemsDataManagement({
                     </AccordionTrigger>
                     <AccordionContent>
                         <Card>
-                            <CardHeader>
-                                <CardTitle>User List</CardTitle>
-                                <CardDescription>View, add, or remove users from the list.</CardDescription>
+                             <CardHeader>
+                                <CardTitle>Upload and Manage Users</CardTitle>
+                                <CardDescription>Bulk upload users via Excel or add them manually.</CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <div className="border rounded-md max-h-96 overflow-auto">
-                                    <Table>
-                                        <TableHeader className="sticky top-0 bg-secondary">
-                                            <TableRow>
-                                                <TableHead>Name</TableHead>
-                                                <TableHead>Email</TableHead>
-                                                <TableHead>LOBT</TableHead>
-                                                <TableHead className="text-right">Actions</TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {users.map((user) => (
-                                                <TableRow key={user.email}>
-                                                    <TableCell>{user.name}</TableCell>
-                                                    <TableCell>{user.email}</TableCell>
-                                                    <TableCell>{user.lobt}</TableCell>
-                                                    <TableCell className="text-right">
-                                                        <Button variant="ghost" size="icon" onClick={() => handleRemoveUser(user.email)}>
-                                                            <Trash2 className="h-4 w-4 text-destructive" />
-                                                        </Button>
-                                                    </TableCell>
+                                <ExcelUploadSection
+                                    title="Bulk Upload Users"
+                                    description="Upload an Excel file with user details. The file must contain columns: 'Name', 'Email', and 'LOBT'."
+                                    fileKey="users"
+                                    onDataProcessed={onDataProcessed}
+                                />
+
+                                <div className="mt-6">
+                                    <h4 className="font-medium text-lg mb-2">User List</h4>
+                                    <div className="border rounded-md max-h-96 overflow-auto">
+                                        <Table>
+                                            <TableHeader className="sticky top-0 bg-secondary">
+                                                <TableRow>
+                                                    <TableHead>Name</TableHead>
+                                                    <TableHead>Email</TableHead>
+                                                    <TableHead>LOBT</TableHead>
+                                                    <TableHead className="text-right">Actions</TableHead>
                                                 </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
-                                </div>
-                                {users.length === 0 && (
-                                    <div className="text-center p-4 text-muted-foreground">
-                                        No users loaded. Upload an Excel file or add them manually.
+                                            </TableHeader>
+                                            <TableBody>
+                                                {users.map((user) => (
+                                                    <TableRow key={user.email}>
+                                                        <TableCell>{user.name}</TableCell>
+                                                        <TableCell>{user.email}</TableCell>
+                                                        <TableCell>{user.lobt}</TableCell>
+                                                        <TableCell className="text-right">
+                                                            <Button variant="ghost" size="icon" onClick={() => handleRemoveUser(user.email)}>
+                                                                <Trash2 className="h-4 w-4 text-destructive" />
+                                                            </Button>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))}
+                                            </TableBody>
+                                        </Table>
                                     </div>
-                                )}
+                                    {users.length === 0 && (
+                                        <div className="text-center p-4 text-muted-foreground">
+                                            No users loaded. Upload an Excel file or add them manually.
+                                        </div>
+                                    )}
+                                </div>
                             </CardContent>
                             <CardFooter className="flex flex-col items-start gap-4">
                                 <div className="w-full">
@@ -175,6 +336,82 @@ function ActionItemsDataManagement({
                     </AccordionContent>
                 </AccordionItem>
             </Accordion>
+            
+            <Card>
+                <CardHeader>
+                    <div className="flex justify-between items-center">
+                        <CardTitle>Action Log</CardTitle>
+                        <CreateActionItemDialog users={users} pillars={pillars} onActionItemCreate={handleActionItemCreate}/>
+                    </div>
+                    <CardDescription>All tracked action items across all pillars.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    {actionItems.length > 0 ? (
+                        <div className="border rounded-lg">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead className="w-[40%]">Task</TableHead>
+                                        <TableHead>Pillar</TableHead>
+                                        <TableHead>Assigned To</TableHead>
+                                        <TableHead>Due Date</TableHead>
+                                        <TableHead>Status</TableHead>
+                                        <TableHead className="text-right">Actions</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {actionItems.map(item => (
+                                        <TableRow key={item.id}>
+                                            <TableCell className="font-medium">{item.task}</TableCell>
+                                            <TableCell>{getPillarName(item.pillarId)}</TableCell>
+                                            <TableCell>
+                                                {item.assignedTo.map(email => (
+                                                    <Badge key={email} variant="secondary" className="mr-1">{getUserName(email)}</Badge>
+                                                ))}
+                                            </TableCell>
+                                            <TableCell>
+                                                <Popover>
+                                                    <PopoverTrigger asChild>
+                                                        <Button variant="link" className={cn("p-0 h-auto", new Date(item.dueDate) < new Date() && item.status !== 'Completed' && 'text-destructive')}>
+                                                            {format(new Date(item.dueDate), "PPP")}
+                                                            {item.originalDueDate && <s className="text-muted-foreground ml-2">{format(new Date(item.originalDueDate), "PPP")}</s>}
+                                                        </Button>
+                                                    </PopoverTrigger>
+                                                    <PopoverContent className="w-auto p-0">
+                                                        <Calendar mode="single" selected={new Date(item.dueDate)} onSelect={(date) => date && handleDueDateChange(item.id, format(date, 'yyyy-MM-dd'))} />
+                                                    </PopoverContent>
+                                                </Popover>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Select value={item.status} onValueChange={(status: ActionItem['status']) => handleStatusChange(item.id, status)}>
+                                                    <SelectTrigger className="w-[120px]">
+                                                        <SelectValue />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="Open">Open</SelectItem>
+                                                        <SelectItem value="Completed">Completed</SelectItem>
+                                                        <SelectItem value="Delayed">Delayed</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </TableCell>
+                                            <TableCell className="text-right">
+                                                <Button variant="ghost" size="icon" onClick={() => handleRemoveActionItem(item.id)}>
+                                                    <Trash2 className="h-4 w-4 text-destructive" />
+                                                </Button>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </div>
+                    ) : (
+                        <div className="text-center text-muted-foreground p-8 border-dashed border-2 rounded-md">
+                            <p>No action items created yet. Click "Create Action Item" to get started.</p>
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
+
         </div>
     )
 }
@@ -861,6 +1098,7 @@ export default function UpdateDataPage() {
       'api-performance': null,
   });
   const [users, setUsers] = useState<User[]>([]);
+  const [actionItems, setActionItems] = useState<ActionItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState<string | undefined>('action-items');
@@ -868,9 +1106,10 @@ export default function UpdateDataPage() {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      const [pillarRes, usersRes] = await Promise.all([
+      const [pillarRes, usersRes, actionItemsRes] = await Promise.all([
           fetch('/api/data'),
-          fetch('/api/data?key=users')
+          fetch('/api/data?key=users'),
+          fetch('/api/data?key=action-items')
       ]);
 
       if (!pillarRes.ok) throw new Error('Failed to fetch pillar data');
@@ -880,6 +1119,11 @@ export default function UpdateDataPage() {
       if (usersRes.ok) {
           const usersJsonData = await usersRes.json();
           setUsers(usersJsonData);
+      }
+      
+      if (actionItemsRes.ok) {
+          const actionItemsJsonData = await actionItemsRes.json();
+          setActionItems(actionItemsJsonData);
       }
 
     } catch (error) {
@@ -978,9 +1222,11 @@ export default function UpdateDataPage() {
     try {
       const payload: {
         pillars: Pillar[] | null;
+        actionItems: ActionItem[];
         excelData: Record<string, any>;
       } = {
         pillars: data,
+        actionItems: actionItems,
         excelData: {
             ...excelData,
             users: {
@@ -1057,6 +1303,9 @@ export default function UpdateDataPage() {
                             users={users} 
                             onUsersChange={setUsers}
                             onDataProcessed={handleExcelDataProcessed}
+                            pillars={data || []}
+                            actionItems={actionItems}
+                            onActionItemsChange={setActionItems}
                         />
                     </TabsContent>
 
@@ -1367,6 +1616,7 @@ export default function UpdateDataPage() {
     </div>
   );
 }
+
 
 
 
