@@ -231,7 +231,7 @@ export function ValueMap({
     };
 
     const isConnectionHighlighted = (conn: DriverLeverConnection | OutcomeDriverConnection) => {
-        if (!selectedItem) return true;
+        if (!selectedItem) return false;
     
         const isDriverLever = 'leverId' in conn;
     
@@ -245,6 +245,7 @@ export function ValueMap({
     const getConnectionStyles = (conn: DriverLeverConnection | OutcomeDriverConnection) => {
         const isHighlight = isConnectionHighlighted(conn);
         return {
+            stroke: isHighlight ? 'hsl(var(--foreground))' : 'hsl(var(--muted-foreground))',
             opacity: isHighlight ? '1' : '0.3',
             strokeWidth: isHighlight ? '2.5' : '1.2'
         };
@@ -308,11 +309,11 @@ export function ValueMap({
                             key={`path-ld-${conn.leverId}-${conn.driverId}`}
                             id={`path-ld-${conn.leverId}-${conn.driverId}`}
                             fill="none"
-                            stroke={isConnectionHighlighted(conn) ? 'hsl(var(--foreground))' : 'hsl(var(--muted-foreground))'}
+                            stroke={styles.stroke}
                             strokeWidth={styles.strokeWidth}
                             markerEnd={isConnectionHighlighted(conn) ? "url(#arrowhead-highlight)" : "url(#arrowhead)"}
                             className={'transition-all duration-300'}
-                            style={{ opacity: styles.opacity }}
+                            style={{ opacity: selectedItem ? styles.opacity : 1 }}
                         />
                     )
                 })}
@@ -323,11 +324,11 @@ export function ValueMap({
                             key={`path-do-${conn.driverId}-${conn.outcomeId}`}
                             id={`path-do-${conn.driverId}-${conn.outcomeId}`}
                             fill="none"
-                            stroke={isConnectionHighlighted(conn) ? 'hsl(var(--foreground))' : 'hsl(var(--muted-foreground))'}
+                            stroke={styles.stroke}
                             strokeWidth={styles.strokeWidth}
                             markerEnd={isConnectionHighlighted(conn) ? "url(#arrowhead-highlight)" : "url(#arrowhead)"}
                             className={'transition-all duration-300'}
-                            style={{ opacity: styles.opacity }}
+                            style={{ opacity: selectedItem ? styles.opacity : 1 }}
                         />
                     )
                 })}
