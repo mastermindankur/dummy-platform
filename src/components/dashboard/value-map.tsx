@@ -29,12 +29,13 @@ const itemColorClasses = {
     outcome: 'bg-purple-950/30',
 };
 
-const ItemCard = ({ item, type, onClick, isHighlighted, isSelected }: {
+const ItemCard = ({ item, type, onClick, isHighlighted, isSelected, selectedItem }: {
     item: ValueMapItem;
     type: 'lever' | 'driver' | 'outcome';
     onClick: () => void;
     isHighlighted: boolean;
     isSelected: boolean;
+    selectedItem: SelectedItem;
 }) => (
     <Card 
         id={`card-${item.id}`} 
@@ -269,6 +270,7 @@ export function ValueMap({
                                     onClick={() => handleItemClick(item.id, type)}
                                     isHighlighted={isHighlighted(item.id, type)}
                                     isSelected={selectedItem?.id === item.id}
+                                    selectedItem={selectedItem}
                                 />
                             ))
                         }
@@ -282,6 +284,7 @@ export function ValueMap({
                         onClick={() => handleItemClick(item.id, type)}
                         isHighlighted={isHighlighted(item.id, type)}
                         isSelected={selectedItem?.id === item.id}
+                        selectedItem={selectedItem}
                     />
                 ))}
             </>
@@ -295,10 +298,10 @@ export function ValueMap({
              <svg ref={svgRef} className="absolute top-0 left-0 w-full h-full pointer-events-none" aria-hidden="true">
                 <defs>
                     <marker id="arrowhead" markerWidth="6" markerHeight="4" refX="0" refY="2" orient="auto">
-                        <polygon points="0 0, 6 2, 0 4" fill="hsl(var(--muted-foreground))" />
+                        <polygon points="0 0, 4 2, 0 4" fill="hsl(var(--muted-foreground))" />
                     </marker>
                     <marker id="arrowhead-highlight" markerWidth="6" markerHeight="4" refX="0" refY="2" orient="auto">
-                        <polygon points="0 0, 6 2, 0 4" fill="hsl(var(--foreground))" />
+                        <polygon points="0 0, 4 2, 0 4" fill="hsl(var(--foreground))" />
                     </marker>
                 </defs>
                 {driverLeverConnections.map(conn => {
@@ -346,6 +349,7 @@ export function ValueMap({
                         onClick={() => handleItemClick(lever.id, 'lever')}
                         isHighlighted={isHighlighted(lever.id, 'lever')}
                         isSelected={selectedItem?.id === lever.id}
+                        selectedItem={selectedItem}
                     />
                 ))}
             </div>
