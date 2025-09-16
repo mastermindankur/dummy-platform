@@ -60,7 +60,7 @@ export default async function PillarPage({ params }: { params: { id: string } })
       <main className="flex-1 p-4 md:p-8">
         <div className="mb-4">
             <Button asChild variant="outline">
-                <Link href="/">
+                <Link href="/dashboard">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back to Dashboard
                 </Link>
