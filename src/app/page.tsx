@@ -29,7 +29,7 @@ export default function LandingPage() {
                    </div>
                   <CardTitle>Explore Value Map</CardTitle>
                   <CardDescription className="text-sm">
-                    Visualize the linkage from levers to strategic outcomes.
+                    Visualise the linkage from levers to drivers to strategic outcomes on the dashboard.
                   </CardDescription>
                 </CardHeader>
               </Card>
