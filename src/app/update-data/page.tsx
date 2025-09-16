@@ -83,7 +83,7 @@ function CreateActionItemDialog({ users, pillars, onActionItemCreate }: { users:
             task,
             assignedTo,
             dueDate: format(dueDate, 'yyyy-MM-dd'),
-            status: 'Open',
+            status: 'Backlog',
             pillarId,
             createdAt: new Date().toISOString(),
         };
@@ -138,7 +138,9 @@ function CreateActionItemDialog({ users, pillars, onActionItemCreate }: { users:
                                 <ScrollArea className="h-60">
                                     <div className="p-2 space-y-1">
                                     {users.map(user => (
-                                        <div key={user.email} className="flex items-center space-x-2 p-2 hover:bg-muted rounded-md">
+                                        <div key={user.email} className="flex items-center space-x-2 p-2 hover:bg-muted rounded-md cursor-pointer" onClick={() => {
+                                            setAssignedTo(prev => prev.includes(user.email) ? prev.filter(email => email !== user.email) : [...prev, user.email]);
+                                        }}>
                                             <Checkbox
                                                 id={`user-assign-${user.email}`}
                                                 checked={assignedTo.includes(user.email)}
@@ -251,10 +253,10 @@ function ActionItemsDataManagement({
                 // If the new due date is different from the current one, and there's no original due date set yet,
                 // set the current due date as the original.
                 if (item.dueDate !== newDueDate && !item.originalDueDate) {
-                    return {...item, dueDate: newDueDate, originalDueDate: item.dueDate };
+                    return {...item, dueDate: newDueDate, originalDueDate: item.dueDate, status: 'Delayed' };
                 }
                 // If an original due date already exists, just update the due date.
-                return {...item, dueDate: newDueDate };
+                return {...item, dueDate: newDueDate, status: 'Delayed' };
             }
             return item;
         }));
@@ -397,12 +399,14 @@ function ActionItemsDataManagement({
                                             </TableCell>
                                             <TableCell>
                                                 <Select value={item.status} onValueChange={(status: ActionItem['status']) => handleStatusChange(item.id, status)}>
-                                                    <SelectTrigger className="w-[120px]">
+                                                    <SelectTrigger className="w-[130px]">
                                                         <SelectValue />
                                                     </SelectTrigger>
                                                     <SelectContent>
-                                                        <SelectItem value="Open">Open</SelectItem>
+                                                        <SelectItem value="Backlog">Backlog</SelectItem>
+                                                        <SelectItem value="In progress">In progress</SelectItem>
                                                         <SelectItem value="Completed">Completed</SelectItem>
+                                                        <SelectItem value="Deferred">Deferred</SelectItem>
                                                         <SelectItem value="Delayed">Delayed</SelectItem>
                                                     </SelectContent>
                                                 </Select>

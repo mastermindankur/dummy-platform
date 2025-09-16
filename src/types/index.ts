@@ -99,7 +99,7 @@ export type OutcomeDriverConnection = {
 
 export type DriverLeverConnection = {
     driverId: string;
-    leverId: string;
+leverId: string;
 };
 
 export type ValueMapGroup = {
@@ -128,8 +128,7 @@ export type ActionItem = {
     assignedTo: string[]; // array of user emails
     dueDate: string;
     originalDueDate?: string;
-    status: 'Open' | 'Completed' | 'Delayed';
+    status: 'Backlog' | 'In progress' | 'Completed' | 'Deferred' | 'Delayed';
     pillarId: string;
     createdAt: string;
 };
-
