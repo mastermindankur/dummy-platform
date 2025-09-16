@@ -44,7 +44,7 @@ const ItemCard = ({ item, type, onClick, isHighlighted, isSelected }: {
         </CardHeader>
         {item.isWceBookOfWork && (
             <CardContent className="p-3 pt-0">
-                <Badge variant="secondary">WCE</Badge>
+                <Badge variant="secondary">BOW25</Badge>
             </CardContent>
         )}
     </Card>
@@ -348,4 +348,5 @@ export function ValueMap({
   );
 }
 
+    
     
