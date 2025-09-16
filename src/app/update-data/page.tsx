@@ -105,7 +105,7 @@ function ActionItemsDataManagement({
                 onDataProcessed={onDataProcessed}
             />
 
-            <Accordion type="single" collapsible className="w-full">
+            <Accordion type="single" collapsible className="w-full" defaultValue="manage-users">
                 <AccordionItem value="manage-users">
                     <AccordionTrigger>
                         <h3 className="text-lg font-medium">Manage Users ({users.length})</h3>
@@ -958,13 +958,16 @@ export default function UpdateDataPage() {
             lobt: row['LOBT'],
         })).filter(u => u.name && u.email && u.lobt);
         
-        const newEmails = new Set(newUsers.map(u => u.email));
-        
-        const uniqueExistingUsers = users.filter(u => !newEmails.has(u.email));
+        // Create a Map to ensure uniqueness by email, letting newer entries override older ones.
+        const userMap = new Map<string, User>();
 
-        const combinedUsers = [...uniqueExistingUsers, ...newUsers];
+        // Add existing users to the map first
+        users.forEach(user => userMap.set(user.email, user));
+
+        // Then add new users, overwriting any duplicates
+        newUsers.forEach(user => userMap.set(user.email, user));
         
-        setUsers(combinedUsers);
+        setUsers(Array.from(userMap.values()));
     } else {
         setExcelData(prev => ({ ...prev, [key]: processedData }));
     }
@@ -1364,5 +1367,6 @@ export default function UpdateDataPage() {
     </div>
   );
 }
+
 
 
