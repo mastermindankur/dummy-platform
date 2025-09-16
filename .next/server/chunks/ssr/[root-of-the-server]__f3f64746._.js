@@ -828,7 +828,7 @@ function BlogsAndOpenSourcePage() {
                 setExcelData(data);
                 if (pillars) {
                     const emergingTechPillar = pillars.find((p)=>p.id === 'adopting-emerging-technologies');
-                    const subItem = emergingTechPillar?.subItems.find((s)=>s.id === 'blogs-open-source') || null;
+                    const subItem = emergingTechPillar?.subItems.find((s)=>s.dataKey === 'dti-tech-blogs') || null;
                     setBlogSubItem(subItem);
                 }
             } catch (error) {

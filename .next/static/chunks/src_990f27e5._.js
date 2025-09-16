@@ -926,7 +926,7 @@ function BlogsAndOpenSourcePage() {
                                 "BlogsAndOpenSourcePage.useEffect.loadData.emergingTechPillar": (p)=>p.id === 'adopting-emerging-technologies'
                             }["BlogsAndOpenSourcePage.useEffect.loadData.emergingTechPillar"]);
                             const subItem = emergingTechPillar?.subItems.find({
-                                "BlogsAndOpenSourcePage.useEffect.loadData": (s)=>s.id === 'blogs-open-source'
+                                "BlogsAndOpenSourcePage.useEffect.loadData": (s)=>s.dataKey === 'dti-tech-blogs'
                             }["BlogsAndOpenSourcePage.useEffect.loadData"]) || null;
                             setBlogSubItem(subItem);
                         }
