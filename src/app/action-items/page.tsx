@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Loader2, PenSquare, Filter, GripVertical, CalendarDays, Briefcase } from "lucide-react";
+import { Loader2, Filter, GripVertical, CalendarDays, Briefcase } from "lucide-react";
 import type { ActionItem, User, Pillar, MeetingEvent } from '@/types';
 import {
     Select,
@@ -144,11 +144,6 @@ export default function ActionItemsPage() {
             <h1 className="text-3xl font-bold">Action Items & Status</h1>
             <p className="text-muted-foreground">A Kanban board for tracking key action items.</p>
           </div>
-          <Button asChild>
-            <Link href="/update-data">
-                <PenSquare className="mr-2 h-4 w-4" /> Manage Action Items
-            </Link>
-          </Button>
         </div>
         
         <div className="flex items-center gap-4 mb-4">
