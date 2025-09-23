@@ -13,6 +13,8 @@ import {
     writeUsers,
     getActionItems,
     writeActionItems,
+    getEvents,
+    writeEvents,
 } from '@/lib/data';
 import type { Pillar } from '@/types';
 
@@ -36,6 +38,14 @@ export async function GET(request: Request) {
       } catch (error) {
           return new NextResponse('Internal Server Error', { status: 500 });
       }
+  }
+  if (fileKey === 'events') {
+    try {
+        const data = await getEvents();
+        return NextResponse.json(data);
+    } catch (error) {
+        return new NextResponse('Internal Server Error', { status: 500 });
+    }
   }
 
 
@@ -115,6 +125,9 @@ export async function POST(request: Request) {
     }
     if (body.actionItems) {
         await writeActionItems(body.actionItems);
+    }
+    if (body.events) {
+        await writeEvents(body.events);
     }
     if (body.excelData) {
         for (const key in body.excelData) {

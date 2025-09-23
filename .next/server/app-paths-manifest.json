@@ -1,7 +1,8 @@
 {
   "/action-items/page": "app/action-items/page.js",
   "/api/data/route": "app/api/data/route.js",
-  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/dashboard/page": "app/dashboard/page.js",
+  "/executive/page": "app/executive/page.js",
   "/page": "app/page.js",
   "/update-data/page": "app/update-data/page.js"
 }

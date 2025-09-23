@@ -24,10 +24,10 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/use-toast';
-import type { Pillar, SubItem, Status, ExcelData, ValueMapData, ValueMapItem, ValueMapLever, ValueMapDriver, ValueMapOutcome, ValueMapGroup, User, ActionItem } from '@/types';
+import type { Pillar, SubItem, Status, ExcelData, ValueMapData, ValueMapItem, ValueMapLever, ValueMapDriver, ValueMapOutcome, ValueMapGroup, User, ActionItem, MeetingEvent } from '@/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Loader2, Plus, Trash2, Upload, ArrowRight, ChevronsUpDown, Filter, X, Edit, GripVertical, Settings2, Users, CalendarIcon } from 'lucide-react';
+import { Loader2, Plus, Trash2, Upload, ArrowRight, ChevronsUpDown, Filter, X, Edit, GripVertical, Settings2, Users, CalendarIcon, Briefcase } from 'lucide-react';
 import { processExcelFile, getExcelSheetNames } from '@/lib/excel-utils';
 import Link from 'next/link';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -66,44 +66,84 @@ type FilterState = {
 
 // ## ACTION ITEMS DATA MANAGEMENT ##
 
-function CreateActionItemDialog({ users, pillars, onActionItemCreate }: { users: User[], pillars: Pillar[], onActionItemCreate: (item: ActionItem) => void }) {
+function CreateActionItemDialog({ users, pillars, events, onActionItemCreate, onActionItemUpdate, existingItem }: { 
+    users: User[], 
+    pillars: Pillar[], 
+    events: MeetingEvent[],
+    onActionItemCreate: (item: ActionItem) => void,
+    onActionItemUpdate?: (item: ActionItem) => void,
+    existingItem?: ActionItem | null,
+}) {
     const [task, setTask] = useState('');
     const [assignedTo, setAssignedTo] = useState<string[]>([]);
     const [dueDate, setDueDate] = useState<Date | undefined>();
     const [pillarId, setPillarId] = useState('');
+    const [eventId, setEventId] = useState<string | undefined>();
     const [isOpen, setIsOpen] = useState(false);
 
-    const handleCreate = () => {
+    useEffect(() => {
+        if (existingItem) {
+            setTask(existingItem.task);
+            setAssignedTo(existingItem.assignedTo);
+            setDueDate(new Date(existingItem.dueDate));
+            setPillarId(existingItem.pillarId);
+            setEventId(existingItem.eventId);
+        } else {
+            // Reset for creation
+            setTask('');
+            setAssignedTo([]);
+            setDueDate(undefined);
+            setPillarId('');
+            setEventId(undefined);
+        }
+    }, [existingItem, isOpen]);
+
+
+    const handleSave = () => {
         if (!task || assignedTo.length === 0 || !dueDate || !pillarId) {
-            toast({ title: "Missing fields", description: "Please fill out all fields.", variant: "destructive" });
+            toast({ title: "Missing fields", description: "Please fill out all required fields.", variant: "destructive" });
             return;
         }
-        const newActionItem: ActionItem = {
-            id: `action-${Date.now()}`,
-            task,
-            assignedTo,
-            dueDate: format(dueDate, 'yyyy-MM-dd'),
-            status: 'Backlog',
-            pillarId,
-            createdAt: new Date().toISOString(),
-        };
-        onActionItemCreate(newActionItem);
-        setTask('');
-        setAssignedTo([]);
-        setDueDate(undefined);
-        setPillarId('');
+
+        if (existingItem && onActionItemUpdate) {
+             let updatedItem: ActionItem = {...existingItem, task, assignedTo, pillarId, eventId: eventId === 'none' ? undefined : eventId };
+             const newDueDateStr = format(dueDate, 'yyyy-MM-dd');
+             if (updatedItem.dueDate !== newDueDateStr) {
+                if (!updatedItem.originalDueDate) {
+                     updatedItem.originalDueDate = updatedItem.dueDate;
+                }
+                updatedItem.dueDate = newDueDateStr;
+                updatedItem.status = 'Delayed';
+             }
+             onActionItemUpdate(updatedItem);
+             toast({ title: "Action Item Updated" });
+        } else {
+            const newActionItem: ActionItem = {
+                id: `action-${Date.now()}`,
+                task,
+                assignedTo,
+                dueDate: format(dueDate, 'yyyy-MM-dd'),
+                status: 'Backlog',
+                pillarId,
+                eventId: eventId === 'none' ? undefined : eventId,
+                createdAt: new Date().toISOString(),
+            };
+            onActionItemCreate(newActionItem);
+            toast({ title: "Action Item Created", description: "Don't forget to save your changes." });
+        }
+        
         setIsOpen(false);
-        toast({ title: "Action Item Created", description: "Don't forget to save your changes." });
     };
     
     const getUserName = (email: string) => users.find(u => u.email === email)?.name || email;
 
-    const handleUserSelect = (email: string, checked: boolean) => {
+    const handleUserSelect = (email: string) => {
         setAssignedTo(prev => {
-            if (checked) {
-                return [...prev, email];
-            } else {
+            const isSelected = prev.includes(email);
+            if (isSelected) {
                 return prev.filter(e => e !== email);
+            } else {
+                return [...prev, email];
             }
         });
     };
@@ -111,50 +151,70 @@ function CreateActionItemDialog({ users, pillars, onActionItemCreate }: { users:
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-                <Button><Plus className="mr-2 h-4 w-4" /> Create Action Item</Button>
+                {existingItem ? (
+                     <Button variant="ghost" size="icon"><Edit className="h-4 w-4" /></Button>
+                ) : (
+                    <Button><Plus className="mr-2 h-4 w-4" /> Create Action Item</Button>
+                )}
             </DialogTrigger>
             <DialogContent className="sm:max-w-[625px]">
                 <DialogHeader>
-                    <DialogTitle>Create New Action Item</DialogTitle>
+                    <DialogTitle>{existingItem ? 'Edit' : 'Create New'} Action Item</DialogTitle>
                 </DialogHeader>
                 <div className="py-4 space-y-4">
                     <div>
                         <Label htmlFor="task-description">Task Description</Label>
                         <Textarea id="task-description" value={task} onChange={e => setTask(e.target.value)} placeholder="Describe the action item..."/>
                     </div>
-                     <div>
-                        <Label>Pillar</Label>
-                        <Select value={pillarId} onValueChange={setPillarId}>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Select a pillar" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {pillars.map(pillar => (
-                                    <SelectItem key={pillar.id} value={pillar.id}>{pillar.name}</SelectItem>
-                                ))}
-                                <SelectItem value="other">Other</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
+                     <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <Label>Pillar</Label>
+                            <Select value={pillarId} onValueChange={setPillarId}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select a pillar" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {pillars.map(pillar => (
+                                        <SelectItem key={pillar.id} value={pillar.id}>{pillar.name}</SelectItem>
+                                    ))}
+                                    <SelectItem value="other">Other</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div>
+                            <Label>Event (Optional)</Label>
+                            <Select value={eventId} onValueChange={setEventId}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select an event" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="none">No Event</SelectItem>
+                                    {events.map(event => (
+                                        <SelectItem key={event.id} value={event.id}>{event.name} ({format(new Date(event.date), 'PP')})</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                     </div>
                      <div>
                         <Label>Assign To</Label>
-                        <DropdownMenu>
+                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="outline" className="w-full justify-start text-left font-normal">
                                     {assignedTo.length > 0 ? `${assignedTo.length} user(s) selected` : "Select users"}
                                 </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent className="w-64" align="start">
+                            <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width]">
                                 <ScrollArea className="h-60">
                                     {users.map(user => (
                                         <DropdownMenuItem key={user.email} onSelect={(e) => e.preventDefault()}>
-                                            <div className="flex items-center space-x-2 w-full" onClick={() => handleUserSelect(user.email, !assignedTo.includes(user.email))}>
+                                            <div className="flex items-center space-x-2 w-full" onClick={() => handleUserSelect(user.email)}>
                                                 <Checkbox
-                                                    id={`user-assign-${user.email}`}
+                                                    id={`user-assign-${user.email}-${existingItem?.id || 'new'}`}
                                                     checked={assignedTo.includes(user.email)}
-                                                    onCheckedChange={(checked) => handleUserSelect(user.email, !!checked)}
+                                                    onCheckedChange={() => handleUserSelect(user.email)}
                                                 />
-                                                <Label htmlFor={`user-assign-${user.email}`} className="flex-1 cursor-pointer font-normal">{user.name} <span className="text-xs text-muted-foreground">({user.email})</span></Label>
+                                                <Label htmlFor={`user-assign-${user.email}-${existingItem?.id || 'new'}`} className="flex-1 cursor-pointer font-normal">{user.name} <span className="text-xs text-muted-foreground">({user.email})</span></Label>
                                             </div>
                                         </DropdownMenuItem>
                                     ))}
@@ -190,7 +250,7 @@ function CreateActionItemDialog({ users, pillars, onActionItemCreate }: { users:
                 </div>
                 <DialogFooter>
                     <DialogClose asChild><Button variant="ghost">Cancel</Button></DialogClose>
-                    <Button onClick={handleCreate}>Create</Button>
+                    <Button onClick={handleSave}>{existingItem ? 'Save Changes' : 'Create'}</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
@@ -203,7 +263,9 @@ function ActionItemsDataManagement({
     onDataProcessed,
     pillars,
     actionItems,
-    onActionItemsChange
+    onActionItemsChange,
+    events,
+    onEventsChange,
 }: { 
     users: User[];
     onUsersChange: (users: User[]) => void;
@@ -211,10 +273,15 @@ function ActionItemsDataManagement({
     pillars: Pillar[];
     actionItems: ActionItem[];
     onActionItemsChange: (items: ActionItem[]) => void;
+    events: MeetingEvent[];
+    onEventsChange: (events: MeetingEvent[]) => void;
 }) {
     const [newUserName, setNewUserName] = useState('');
     const [newUserEmail, setNewUserEmail] = useState('');
     const [newUserLOBT, setNewUserLOBT] = useState('');
+    
+    const [newEventName, setNewEventName] = useState('');
+    const [newEventDate, setNewEventDate] = useState<Date | undefined>();
 
     const handleAddUser = () => {
         if (!newUserName || !newUserEmail || !newUserLOBT) {
@@ -240,8 +307,31 @@ function ActionItemsDataManagement({
         onUsersChange(users.filter(u => u.email !== email));
     };
 
+    const handleAddEvent = () => {
+        if (!newEventName || !newEventDate) {
+            toast({ title: "Missing fields", description: "Please provide a name and date for the event.", variant: "destructive" });
+            return;
+        }
+        const newEvent: MeetingEvent = {
+            id: `event-${Date.now()}`,
+            name: newEventName,
+            date: format(newEventDate, 'yyyy-MM-dd'),
+        };
+        onEventsChange([...events, newEvent].sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+        setNewEventName('');
+        setNewEventDate(undefined);
+    };
+    
+    const handleRemoveEvent = (id: string) => {
+        onEventsChange(events.filter(e => e.id !== id));
+    };
+
     const handleActionItemCreate = (item: ActionItem) => {
-      onActionItemsChange([...actionItems, item]);
+      onActionItemsChange([item, ...actionItems]);
+    };
+    
+    const handleActionItemUpdate = (updatedItem: ActionItem) => {
+      onActionItemsChange(actionItems.map(item => item.id === updatedItem.id ? updatedItem : item));
     };
     
     const handleRemoveActionItem = (id: string) => {
@@ -253,36 +343,91 @@ function ActionItemsDataManagement({
         onActionItemsChange(actionItems.map(item => item.id === id ? {...item, status} : item));
     };
     
-    const handleDueDateChange = (id: string, newDueDate: string) => {
-        onActionItemsChange(actionItems.map(item => {
-            if (item.id === id) {
-                // If the new due date is different from the current one, and there's no original due date set yet,
-                // set the current due date as the original.
-                if (item.dueDate !== newDueDate && !item.originalDueDate) {
-                    return {...item, dueDate: newDueDate, originalDueDate: item.dueDate, status: 'Delayed' };
-                }
-                // If an original due date already exists, just update the due date.
-                return {...item, dueDate: newDueDate, status: 'Delayed' };
-            }
-            return item;
-        }));
-    };
-    
     const getUserName = (email: string) => users.find(u => u.email === email)?.name || email;
     const getPillarName = (pillarId: string) => {
         if (pillarId === 'other') return 'Other';
         return pillars.find(p => p.id === pillarId)?.name || 'Unknown Pillar';
     };
+    const getEventName = (eventId?: string) => {
+        if (!eventId) return 'N/A';
+        return events.find(e => e.id === eventId)?.name || 'Unknown Event';
+    }
 
 
     return (
         <div className="space-y-6">
-            <Accordion type="single" collapsible className="w-full">
-                <AccordionItem value="manage-users">
-                    <AccordionTrigger>
-                        <h3 className="text-lg font-medium">Manage Users ({users.length})</h3>
-                    </AccordionTrigger>
-                    <AccordionContent>
+            <Accordion type="multiple" className="w-full space-y-4">
+                <AccordionItem value="manage-events" className="border-b-0">
+                    <AccordionTrigger className="px-4 py-3 bg-secondary/30 rounded-md font-medium text-lg hover:no-underline">Manage Events ({events.length})</AccordionTrigger>
+                    <AccordionContent className="pt-2">
+                        <Card>
+                             <CardHeader>
+                                <CardTitle>Event List</CardTitle>
+                                <CardDescription>Add or remove events to associate with action items.</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="border rounded-md max-h-96 overflow-auto">
+                                    <Table>
+                                        <TableHeader className="sticky top-0 bg-secondary">
+                                            <TableRow>
+                                                <TableHead>Event Name</TableHead>
+                                                <TableHead>Date</TableHead>
+                                                <TableHead className="text-right">Actions</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {events.map((event) => (
+                                                <TableRow key={event.id}>
+                                                    <TableCell>{event.name}</TableCell>
+                                                    <TableCell>{format(new Date(event.date), 'PP')}</TableCell>
+                                                    <TableCell className="text-right">
+                                                        <Button variant="ghost" size="icon" onClick={() => handleRemoveEvent(event.id)}>
+                                                            <Trash2 className="h-4 w-4 text-destructive" />
+                                                        </Button>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </div>
+                                {events.length === 0 && (
+                                    <div className="text-center p-4 text-muted-foreground">
+                                        No events created yet.
+                                    </div>
+                                )}
+                            </CardContent>
+                            <CardFooter className="flex flex-col items-start gap-4">
+                                <div className="w-full">
+                                    <h4 className="font-medium text-lg">Add New Event</h4>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-2">
+                                        <div className="md:col-span-2">
+                                            <Label>Event Name</Label>
+                                            <Input value={newEventName} onChange={e => setNewEventName(e.target.value)} placeholder="e.g., Project Phoenix Sync" />
+                                        </div>
+                                        <div>
+                                            <Label>Date</Label>
+                                            <Popover>
+                                                <PopoverTrigger asChild>
+                                                    <Button variant="outline" className={cn("w-full justify-start text-left font-normal", !newEventDate && "text-muted-foreground")}>
+                                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                                        {newEventDate ? format(newEventDate, "PPP") : <span>Pick a date</span>}
+                                                    </Button>
+                                                </PopoverTrigger>
+                                                <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={newEventDate} onSelect={setNewEventDate} initialFocus/></PopoverContent>
+                                            </Popover>
+                                        </div>
+                                        <div className="self-end">
+                                            <Button onClick={handleAddEvent} className="w-full sm:w-auto"><Plus className="mr-2"/>Add Event</Button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardFooter>
+                        </Card>
+                    </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="manage-users" className="border-b-0">
+                    <AccordionTrigger className="px-4 py-3 bg-secondary/30 rounded-md font-medium text-lg hover:no-underline">Manage Users ({users.length})</AccordionTrigger>
+                    <AccordionContent className="pt-2">
                         <Card>
                              <CardHeader>
                                 <CardTitle>Upload and Manage Users</CardTitle>
@@ -362,18 +507,19 @@ function ActionItemsDataManagement({
                 <CardHeader>
                     <div className="flex justify-between items-center">
                         <CardTitle>Action Log</CardTitle>
-                        <CreateActionItemDialog users={users} pillars={pillars} onActionItemCreate={handleActionItemCreate}/>
+                        <CreateActionItemDialog users={users} pillars={pillars} events={events} onActionItemCreate={handleActionItemCreate}/>
                     </div>
                     <CardDescription>All tracked action items across all pillars.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     {actionItems.length > 0 ? (
-                        <div className="border rounded-lg">
+                        <div className="border rounded-lg max-h-[50vh] overflow-auto">
                             <Table>
-                                <TableHeader>
+                                <TableHeader className="sticky top-0 bg-secondary">
                                     <TableRow>
                                         <TableHead className="w-[30%]">Task</TableHead>
                                         <TableHead>Pillar</TableHead>
+                                        <TableHead>Event</TableHead>
                                         <TableHead>Assigned To</TableHead>
                                         <TableHead>Created</TableHead>
                                         <TableHead>Due Date</TableHead>
@@ -386,6 +532,7 @@ function ActionItemsDataManagement({
                                         <TableRow key={item.id}>
                                             <TableCell className="font-medium">{item.task}</TableCell>
                                             <TableCell>{getPillarName(item.pillarId)}</TableCell>
+                                            <TableCell>{getEventName(item.eventId)}</TableCell>
                                             <TableCell>
                                                 {item.assignedTo.map(email => (
                                                     <Badge key={email} variant="secondary" className="mr-1 mb-1 font-normal">
@@ -395,17 +542,10 @@ function ActionItemsDataManagement({
                                             </TableCell>
                                             <TableCell>{format(new Date(item.createdAt), "PP")}</TableCell>
                                             <TableCell>
-                                                <Popover>
-                                                    <PopoverTrigger asChild>
-                                                        <Button variant="link" className={cn("p-0 h-auto", new Date(item.dueDate) < new Date() && item.status !== 'Completed' && 'text-destructive')}>
-                                                            {format(new Date(item.dueDate), "PPP")}
-                                                            {item.originalDueDate && <s className="text-muted-foreground ml-2">{format(new Date(item.originalDueDate), "PP")}</s>}
-                                                        </Button>
-                                                    </PopoverTrigger>
-                                                    <PopoverContent className="w-auto p-0">
-                                                        <Calendar mode="single" selected={new Date(item.dueDate)} onSelect={(date) => date && handleDueDateChange(item.id, format(date, 'yyyy-MM-dd'))} />
-                                                    </PopoverContent>
-                                                </Popover>
+                                                <div className={cn(new Date(item.dueDate) < new Date() && item.status !== 'Completed' && 'text-destructive font-semibold')}>
+                                                   {format(new Date(item.dueDate), "PP")}
+                                                </div>
+                                                {item.originalDueDate && <s className="text-xs text-muted-foreground">{format(new Date(item.originalDueDate), "PP")}</s>}
                                             </TableCell>
                                             <TableCell>
                                                 <Select value={item.status} onValueChange={(status: ActionItem['status']) => handleStatusChange(item.id, status)}>
@@ -422,9 +562,12 @@ function ActionItemsDataManagement({
                                                 </Select>
                                             </TableCell>
                                             <TableCell className="text-right">
-                                                <Button variant="ghost" size="icon" onClick={() => handleRemoveActionItem(item.id)}>
-                                                    <Trash2 className="h-4 w-4 text-destructive" />
-                                                </Button>
+                                                <div className="flex justify-end items-center">
+                                                    <CreateActionItemDialog users={users} pillars={pillars} events={events} onActionItemUpdate={handleActionItemUpdate} existingItem={item} />
+                                                    <Button variant="ghost" size="icon" onClick={() => handleRemoveActionItem(item.id)}>
+                                                        <Trash2 className="h-4 w-4 text-destructive" />
+                                                    </Button>
+                                                </div>
                                             </TableCell>
                                         </TableRow>
                                     ))}
@@ -735,15 +878,17 @@ function ValueMapItemCard({ item, onUpdate, onDelete, levers, drivers, driverGro
         setIsEditing(false);
     };
 
-    const handleCheckboxChange = (type: 'drivers' | 'levers', id: string, checked: boolean) => {
+    const handleCheckboxChange = (type: 'drivers' | 'levers', id: string) => {
         if (isOutcome && type === 'drivers') {
             const currentIds = (editedItem as ValueMapOutcome).connectedDriverIds || [];
-            const newIds = checked ? [...currentIds, id] : currentIds.filter(driverId => driverId !== id);
+            const isSelected = currentIds.includes(id);
+            const newIds = isSelected ? currentIds.filter(driverId => driverId !== id) : [...currentIds, id];
             setEditedItem(prev => ({...prev, connectedDriverIds: newIds }));
         }
         if (isDriver && type === 'levers') {
             const currentIds = (editedItem as ValueMapDriver).connectedLeverIds || [];
-            const newIds = checked ? [...currentIds, id] : currentIds.filter(leverId => leverId !== id);
+            const isSelected = currentIds.includes(id);
+            const newIds = isSelected ? currentIds.filter(leverId => leverId !== id) : [...currentIds, id];
             setEditedItem(prev => ({...prev, connectedLeverIds: newIds }));
         }
     };
@@ -796,16 +941,16 @@ function ValueMapItemCard({ item, onUpdate, onDelete, levers, drivers, driverGro
                                         {((editedItem as ValueMapOutcome).connectedDriverIds || []).length} selected
                                     </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent className="w-64">
+                                <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width]">
                                     <ScrollArea className="h-72">
                                         {drivers.map(d => (
                                             <DropdownMenuItem key={d.id} onSelect={(e) => e.preventDefault()}>
-                                                <div className="flex items-center space-x-2 w-full" onClick={() => handleCheckboxChange('drivers', d.id, !((editedItem as ValueMapOutcome).connectedDriverIds || []).includes(d.id))}>
+                                                <div className="flex items-center space-x-2 w-full" onClick={() => handleCheckboxChange('drivers', d.id)}>
                                                     <Checkbox
                                                         checked={((editedItem as ValueMapOutcome).connectedDriverIds || []).includes(d.id)}
-                                                        onCheckedChange={(checked) => handleCheckboxChange('drivers', d.id, !!checked)}
+                                                        onCheckedChange={() => handleCheckboxChange('drivers', d.id)}
                                                     />
-                                                    <Label className="flex-1 cursor-pointer">{d.name}</Label>
+                                                    <Label className="flex-1 cursor-pointer font-normal">{d.name}</Label>
                                                 </div>
                                             </DropdownMenuItem>
                                         ))}
@@ -839,16 +984,16 @@ function ValueMapItemCard({ item, onUpdate, onDelete, levers, drivers, driverGro
                                         {((editedItem as ValueMapDriver).connectedLeverIds || []).length} selected
                                     </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent className="w-64">
+                                <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width]">
                                     <ScrollArea className="h-72">
                                         {levers.map(l => (
                                             <DropdownMenuItem key={l.id} onSelect={(e) => e.preventDefault()}>
-                                                <div className="flex items-center space-x-2" onClick={() => handleCheckboxChange('levers', l.id, !((editedItem as ValueMapDriver).connectedLeverIds || []).includes(l.id))}>
+                                                <div className="flex items-center space-x-2" onClick={() => handleCheckboxChange('levers', l.id)}>
                                                     <Checkbox
                                                         checked={((editedItem as ValueMapDriver).connectedLeverIds || []).includes(l.id)}
-                                                        onCheckedChange={(checked) => handleCheckboxChange('levers', l.id, !!checked)}
+                                                        onCheckedChange={() => handleCheckboxChange('levers', l.id)}
                                                     />
-                                                    <Label className="flex-1 cursor-pointer">{l.name}</Label>
+                                                    <Label className="flex-1 cursor-pointer font-normal">{l.name}</Label>
                                                 </div>
                                             </DropdownMenuItem>
                                         ))}
@@ -1125,6 +1270,7 @@ export default function UpdateDataPage() {
       'api-performance': null,
   });
   const [users, setUsers] = useState<User[]>([]);
+  const [events, setEvents] = useState<MeetingEvent[]>([]);
   const [actionItems, setActionItems] = useState<ActionItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -1133,25 +1279,20 @@ export default function UpdateDataPage() {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      const [pillarRes, usersRes, actionItemsRes] = await Promise.all([
+      const [pillarRes, usersRes, actionItemsRes, eventsRes] = await Promise.all([
           fetch('/api/data'),
           fetch('/api/data?key=users'),
-          fetch('/api/data?key=action-items')
+          fetch('/api/data?key=action-items'),
+          fetch('/api/data?key=events'),
       ]);
 
       if (!pillarRes.ok) throw new Error('Failed to fetch pillar data');
       const pillarJsonData = await pillarRes.json();
       setData(pillarJsonData);
 
-      if (usersRes.ok) {
-          const usersJsonData = await usersRes.json();
-          setUsers(usersJsonData);
-      }
-      
-      if (actionItemsRes.ok) {
-          const actionItemsJsonData = await actionItemsRes.json();
-          setActionItems(actionItemsJsonData);
-      }
+      if (usersRes.ok) setUsers(await usersRes.json());
+      if (actionItemsRes.ok) setActionItems(await actionItemsRes.json());
+      if (eventsRes.ok) setEvents(await eventsRes.json());
 
     } catch (error) {
       console.error(error);
@@ -1250,10 +1391,12 @@ export default function UpdateDataPage() {
       const payload: {
         pillars: Pillar[] | null;
         actionItems: ActionItem[];
+        events: MeetingEvent[];
         excelData: Record<string, any>;
       } = {
         pillars: data,
         actionItems: actionItems,
+        events: events,
         excelData: {
             ...excelData,
             users: {
@@ -1333,6 +1476,8 @@ export default function UpdateDataPage() {
                             pillars={data || []}
                             actionItems={actionItems}
                             onActionItemsChange={setActionItems}
+                            events={events}
+                            onEventsChange={setEvents}
                         />
                     </TabsContent>
 

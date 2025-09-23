@@ -12,8 +12,8 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Loader2, PenSquare, Filter, GripVertical, CalendarDays } from "lucide-react";
-import type { ActionItem, User, Pillar } from '@/types';
+import { Loader2, PenSquare, Filter, GripVertical, CalendarDays, Briefcase } from "lucide-react";
+import type { ActionItem, User, Pillar, MeetingEvent } from '@/types';
 import {
     Select,
     SelectContent,
@@ -29,13 +29,25 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 
 const KANBAN_COLUMNS: ActionItem['status'][] = ['Backlog', 'In progress', 'Delayed', 'Deferred', 'Completed'];
 
-function ActionItemCard({ item, users }: { item: ActionItem, users: User[] }) {
+function ActionItemCard({ item, users, events }: { item: ActionItem, users: User[], events: MeetingEvent[] }) {
     const isOverdue = new Date(item.dueDate) < new Date() && item.status !== 'Completed';
     const getUserName = (email: string) => users.find(u => u.email === email)?.name || email;
+    const getEventName = (eventId?: string) => {
+        if (!eventId) return null;
+        const event = events.find(e => e.id === eventId);
+        return event ? event.name : null;
+    }
+    const eventName = getEventName(item.eventId);
     
     return (
         <Card className="mb-4">
             <CardContent className="p-3">
+                {eventName && (
+                    <Badge variant="outline" className="mb-2 font-normal text-xs">
+                        <Briefcase className="h-3 w-3 mr-1" />
+                        {eventName}
+                    </Badge>
+                )}
                 <p className="text-sm font-medium mb-2">{item.task}</p>
                 <div className="text-xs text-muted-foreground space-y-2">
                     <div className="flex items-center gap-2">
@@ -73,6 +85,7 @@ export default function ActionItemsPage() {
   const [actionItems, setActionItems] = useState<ActionItem[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [pillars, setPillars] = useState<Pillar[]>([]);
+  const [events, setEvents] = useState<MeetingEvent[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedPillar, setSelectedPillar] = useState<string>('all');
 
@@ -80,14 +93,16 @@ export default function ActionItemsPage() {
     async function fetchData() {
         setIsLoading(true);
         try {
-            const [itemsRes, usersRes, pillarsRes] = await Promise.all([
+            const [itemsRes, usersRes, pillarsRes, eventsRes] = await Promise.all([
                 fetch('/api/data?key=action-items'),
                 fetch('/api/data?key=users'),
                 fetch('/api/data'),
+                fetch('/api/data?key=events'),
             ]);
             if (itemsRes.ok) setActionItems(await itemsRes.json());
             if (usersRes.ok) setUsers(await usersRes.json());
             if (pillarsRes.ok) setPillars(await pillarsRes.json());
+            if (eventsRes.ok) setEvents(await eventsRes.json());
         } catch (error) {
             console.error(error);
             toast({ title: 'Error loading data', variant: 'destructive' });
@@ -164,7 +179,7 @@ export default function ActionItemsPage() {
                             <h2 className="font-semibold text-lg mb-4">{status} ({itemsByStatus[status].length})</h2>
                             <div className="space-y-4 h-full">
                                 {itemsByStatus[status].map(item => (
-                                    <ActionItemCard key={item.id} item={item} users={users} />
+                                    <ActionItemCard key={item.id} item={item} users={users} events={events} />
                                 ))}
                             </div>
                         </div>

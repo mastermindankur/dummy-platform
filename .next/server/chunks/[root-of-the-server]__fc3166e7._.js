@@ -76,6 +76,7 @@ var { g: global, __dirname } = __turbopack_context__;
 {
 __turbopack_context__.s({
     "getActionItems": (()=>getActionItems),
+    "getEvents": (()=>getEvents),
     "getPillarById": (()=>getPillarById),
     "getPillars": (()=>getPillars),
     "getUsers": (()=>getUsers),
@@ -84,6 +85,7 @@ __turbopack_context__.s({
     "readMonthlyData": (()=>readMonthlyData),
     "writeActionItems": (()=>writeActionItems),
     "writeData": (()=>writeData),
+    "writeEvents": (()=>writeEvents),
     "writeExcelData": (()=>writeExcelData),
     "writeMonthlyData": (()=>writeMonthlyData),
     "writeUsers": (()=>writeUsers),
@@ -507,6 +509,8 @@ const getUsers = ()=>readJsonFile('users.json', []);
 const writeUsers = (data)=>writeJsonFile('users.json', data);
 const getActionItems = ()=>readJsonFile('action-items.json', []);
 const writeActionItems = (data)=>writeJsonFile('action-items.json', data);
+const getEvents = ()=>readJsonFile('events.json', []);
+const writeEvents = (data)=>writeJsonFile('events.json', data);
 }}),
 "[project]/src/app/api/data/route.ts [app-route] (ecmascript)": ((__turbopack_context__) => {
 "use strict";
@@ -538,6 +542,16 @@ async function GET(request) {
     if (fileKey === 'action-items') {
         try {
             const data = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["getActionItems"])();
+            return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json(data);
+        } catch (error) {
+            return new __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"]('Internal Server Error', {
+                status: 500
+            });
+        }
+    }
+    if (fileKey === 'events') {
+        try {
+            const data = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["getEvents"])();
             return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json(data);
         } catch (error) {
             return new __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"]('Internal Server Error', {
@@ -627,6 +641,9 @@ async function POST(request) {
         }
         if (body.actionItems) {
             await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["writeActionItems"])(body.actionItems);
+        }
+        if (body.events) {
+            await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["writeEvents"])(body.events);
         }
         if (body.excelData) {
             for(const key in body.excelData){

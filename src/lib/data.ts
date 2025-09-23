@@ -1,4 +1,5 @@
 
+
 import {
   TrendingUp,
   ShieldCheck,
@@ -6,7 +7,7 @@ import {
   Cpu,
   Landmark,
 } from "lucide-react";
-import type { Pillar, SubItem, ExcelData, MonthlyExcelData, ValueMapData, User, ActionItem } from "@/types";
+import type { Pillar, SubItem, ExcelData, MonthlyExcelData, ValueMapData, User, ActionItem, MeetingEvent } from "@/types";
 import { promises as fs } from 'fs';
 import path from 'path';
 
@@ -419,4 +420,5 @@ export const writeUsers = (data: User[]) => writeJsonFile('users.json', data);
 export const getActionItems = () => readJsonFile<ActionItem[]>('action-items.json', []);
 export const writeActionItems = (data: ActionItem[]) => writeJsonFile('action-items.json', data);
 
-    
+export const getEvents = () => readJsonFile<MeetingEvent[]>('events.json', []);
+export const writeEvents = (data: MeetingEvent[]) => writeJsonFile('events.json', data);

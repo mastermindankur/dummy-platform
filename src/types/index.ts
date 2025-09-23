@@ -116,6 +116,13 @@ export type ValueMapData = {
     driverGroups?: ValueMapGroup[];
 };
 
+// Events for Action Items
+export type MeetingEvent = {
+    id: string;
+    name: string;
+    date: string;
+};
+
 // Action Items & Users
 export type User = {
     name: string;
@@ -131,5 +138,6 @@ export type ActionItem = {
     originalDueDate?: string;
     status: 'Backlog' | 'In progress' | 'Completed' | 'Deferred' | 'Delayed';
     pillarId: string;
+    eventId?: string; // Optional event ID
     createdAt: string;
 };
