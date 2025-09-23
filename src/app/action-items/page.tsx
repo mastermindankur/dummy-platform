@@ -27,7 +27,7 @@ import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
-const KANBAN_COLUMNS: ActionItem['status'][] = ['Backlog', 'In progress', 'Delayed', 'Deferred', 'Completed'];
+const KANBAN_COLUMNS: ActionItem['status'][] = ['Backlog', 'In progress', 'Delayed', 'Completed', 'Deferred'];
 
 function ActionItemCard({ item, users, events }: { item: ActionItem, users: User[], events: MeetingEvent[] }) {
     const isOverdue = new Date(item.dueDate) < new Date() && item.status !== 'Completed';
