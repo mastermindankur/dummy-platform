@@ -88,6 +88,7 @@ export default function ActionItemsPage() {
   const [events, setEvents] = useState<MeetingEvent[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedPillar, setSelectedPillar] = useState<string>('all');
+  const [selectedEvent, setSelectedEvent] = useState<string>('all');
 
   useEffect(() => {
     async function fetchData() {
@@ -114,9 +115,19 @@ export default function ActionItemsPage() {
   }, []);
 
   const filteredItems = useMemo(() => {
-      if (selectedPillar === 'all') return actionItems;
-      return actionItems.filter(item => item.pillarId === selectedPillar);
-  }, [actionItems, selectedPillar]);
+    let items = actionItems;
+    if (selectedPillar !== 'all') {
+      items = items.filter(item => item.pillarId === selectedPillar);
+    }
+    if (selectedEvent !== 'all') {
+      if (selectedEvent === 'none') {
+        items = items.filter(item => !item.eventId);
+      } else {
+        items = items.filter(item => item.eventId === selectedEvent);
+      }
+    }
+    return items;
+  }, [actionItems, selectedPillar, selectedEvent]);
 
   const itemsByStatus = useMemo(() => {
       const grouped: Record<ActionItem['status'], ActionItem[]> = {
@@ -158,6 +169,18 @@ export default function ActionItemsPage() {
                         <SelectItem key={pillar.id} value={pillar.id}>{pillar.name}</SelectItem>
                     ))}
                      <SelectItem value="other">Other</SelectItem>
+                </SelectContent>
+            </Select>
+            <Select value={selectedEvent} onValueChange={setSelectedEvent}>
+                <SelectTrigger className="w-[280px]">
+                    <SelectValue placeholder="Filter by event..." />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="all">All Events</SelectItem>
+                    <SelectItem value="none">No Event</SelectItem>
+                    {events.map(event => (
+                        <SelectItem key={event.id} value={event.id}>{event.name}</SelectItem>
+                    ))}
                 </SelectContent>
             </Select>
         </div>
