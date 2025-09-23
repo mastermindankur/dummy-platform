@@ -283,6 +283,10 @@ function ActionItemsDataManagement({
     const [newEventName, setNewEventName] = useState('');
     const [newEventDate, setNewEventDate] = useState<Date | undefined>();
 
+    const [searchTerm, setSearchTerm] = useState('');
+    const [pillarFilter, setPillarFilter] = useState('all');
+    const [eventFilter, setEventFilter] = useState('all');
+
     const handleAddUser = () => {
         if (!newUserName || !newUserEmail || !newUserLOBT) {
             toast({ title: "Missing fields", description: "Please fill in all fields to add a user.", variant: "destructive" });
@@ -352,6 +356,24 @@ function ActionItemsDataManagement({
         if (!eventId) return 'N/A';
         return events.find(e => e.id === eventId)?.name || 'Unknown Event';
     }
+    
+    const filteredActionItems = useMemo(() => {
+        return actionItems.filter(item => {
+            const searchTermMatch = item.task.toLowerCase().includes(searchTerm.toLowerCase());
+            const pillarMatch = pillarFilter === 'all' || item.pillarId === pillarFilter;
+            
+            let eventMatch = true;
+            if (eventFilter === 'all') {
+                eventMatch = true;
+            } else if (eventFilter === 'none') {
+                eventMatch = !item.eventId;
+            } else {
+                eventMatch = item.eventId === eventFilter;
+            }
+
+            return searchTermMatch && pillarMatch && eventMatch;
+        });
+    }, [actionItems, searchTerm, pillarFilter, eventFilter]);
 
 
     return (
@@ -512,7 +534,40 @@ function ActionItemsDataManagement({
                     <CardDescription>All tracked action items across all pillars.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    {actionItems.length > 0 ? (
+                    <div className="flex flex-col sm:flex-row gap-4 mb-4">
+                        <Input 
+                            placeholder="Search by task name..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="max-w-sm"
+                        />
+                         <Select value={pillarFilter} onValueChange={setPillarFilter}>
+                            <SelectTrigger className="w-full sm:w-[280px]">
+                                <SelectValue placeholder="Filter by pillar..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All Pillars</SelectItem>
+                                {pillars.map(pillar => (
+                                    <SelectItem key={pillar.id} value={pillar.id}>{pillar.name}</SelectItem>
+                                ))}
+                                 <SelectItem value="other">Other</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        <Select value={eventFilter} onValueChange={setEventFilter}>
+                            <SelectTrigger className="w-full sm:w-[280px]">
+                                <SelectValue placeholder="Filter by event..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All Events</SelectItem>
+                                <SelectItem value="none">No Event</SelectItem>
+                                {events.map(event => (
+                                    <SelectItem key={event.id} value={event.id}>{event.name}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    {filteredActionItems.length > 0 ? (
                         <div className="border rounded-lg max-h-[50vh] overflow-auto">
                             <Table>
                                 <TableHeader className="sticky top-0 bg-secondary">
@@ -528,7 +583,7 @@ function ActionItemsDataManagement({
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {actionItems.map(item => (
+                                    {filteredActionItems.map(item => (
                                         <TableRow key={item.id}>
                                             <TableCell className="font-medium">{item.task}</TableCell>
                                             <TableCell>{getPillarName(item.pillarId)}</TableCell>
@@ -576,7 +631,12 @@ function ActionItemsDataManagement({
                         </div>
                     ) : (
                         <div className="text-center text-muted-foreground p-8 border-dashed border-2 rounded-md">
-                            <p>No action items created yet. Click "Create Action Item" to get started.</p>
+                             <p>
+                                {actionItems.length > 0
+                                    ? "No action items match your current filters."
+                                    : 'No action items created yet. Click "Create Action Item" to get started.'
+                                }
+                            </p>
                         </div>
                     )}
                 </CardContent>
