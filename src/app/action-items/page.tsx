@@ -32,12 +32,11 @@ const KANBAN_COLUMNS: ActionItem['status'][] = ['Backlog', 'In progress', 'Delay
 function ActionItemCard({ item, users, events }: { item: ActionItem, users: User[], events: MeetingEvent[] }) {
     const isOverdue = new Date(item.dueDate) < new Date() && item.status !== 'Completed';
     const getUserName = (email: string) => users.find(u => u.email === email)?.name || email;
-    const getEventName = (eventId?: string) => {
+    const getEventDetails = (eventId?: string) => {
         if (!eventId) return null;
-        const event = events.find(e => e.id === eventId);
-        return event ? event.name : null;
+        return events.find(e => e.id === eventId) || null;
     }
-    const eventName = getEventName(item.eventId);
+    const eventDetails = getEventDetails(item.eventId);
     
     return (
         <Card className="mb-4">
@@ -63,12 +62,6 @@ function ActionItemCard({ item, users, events }: { item: ActionItem, users: User
                                 </TooltipProvider>
                             )}
                         </div>
-                        {eventName && (
-                             <Badge variant="outline" className="font-normal text-xs py-0.5">
-                                <Briefcase className="h-3 w-3 mr-1" />
-                                {eventName}
-                            </Badge>
-                        )}
                     </div>
                      <div>
                         {item.assignedTo.map(email => (
@@ -77,6 +70,12 @@ function ActionItemCard({ item, users, events }: { item: ActionItem, users: User
                             </Badge>
                         ))}
                     </div>
+                     {eventDetails && (
+                        <div className="flex items-center gap-2">
+                            <Briefcase className="h-3.5 w-3.5" />
+                            <span>{eventDetails.name} ({format(new Date(eventDetails.date), 'PP')})</span>
+                        </div>
+                    )}
                 </div>
             </CardContent>
         </Card>
