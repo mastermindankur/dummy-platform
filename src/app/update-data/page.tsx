@@ -506,7 +506,7 @@ function ActionItemsDataManagement({
             <Card>
                 <CardHeader>
                     <div className="flex justify-between items-center">
-                        <CardTitle>Action Log</CardTitle>
+                        <CardTitle>Action Log ({actionItems.length})</CardTitle>
                         <CreateActionItemDialog users={users} pillars={pillars} events={events} onActionItemCreate={handleActionItemCreate}/>
                     </div>
                     <CardDescription>All tracked action items across all pillars.</CardDescription>
