@@ -653,6 +653,8 @@ function ValueMapManager() {
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [isGroupEditorOpen, setIsGroupEditorOpen] = useState(false);
+    const dragItem = React.useRef<number | null>(null);
+    const dragOverItem = React.useRef<number | null>(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -734,6 +736,19 @@ function ValueMapManager() {
         }));
     };
 
+    const handleSort = (type: 'outcomes' | 'drivers' | 'levers') => {
+        if (dragItem.current === null || dragOverItem.current === null) return;
+        
+        setValueMapData(prev => {
+            const items = [...prev[type]];
+            const dragItemContent = items.splice(dragItem.current!, 1)[0];
+            items.splice(dragOverItem.current!, 0, dragItemContent);
+            dragItem.current = null;
+            dragOverItem.current = null;
+            return {...prev, [type]: items };
+        });
+    };
+
     if (isLoading) {
         return <Skeleton className="h-96 w-full" />;
     }
@@ -764,6 +779,9 @@ function ValueMapManager() {
                     onAdd={() => handleItemAdd('levers')}
                     onDelete={(id) => handleItemDelete('levers', id)}
                     onUpdate={(item) => handleItemChange('levers', item as ValueMapLever)}
+                    dragItem={dragItem}
+                    dragOverItem={dragOverItem}
+                    handleSort={() => handleSort('levers')}
                 />
                  <ValueMapColumn
                     title="Drivers"
@@ -773,6 +791,9 @@ function ValueMapManager() {
                     onDelete={(id) => handleItemDelete('drivers', id)}
                     onUpdate={(item) => handleItemChange('drivers', item as ValueMapDriver)}
                     levers={valueMapData.levers}
+                    dragItem={dragItem}
+                    dragOverItem={dragOverItem}
+                    handleSort={() => handleSort('drivers')}
                 />
                  <ValueMapColumn
                     title="Outcomes"
@@ -782,6 +803,9 @@ function ValueMapManager() {
                     onDelete={(id) => handleItemDelete('outcomes', id)}
                     onUpdate={(item) => handleItemChange('outcomes', item as ValueMapOutcome)}
                     drivers={valueMapData.drivers}
+                    dragItem={dragItem}
+                    dragOverItem={dragOverItem}
+                    handleSort={() => handleSort('outcomes')}
                 />
             </div>
         </div>
@@ -875,7 +899,7 @@ function ValueMapGroupEditor({ outcomeGroups, driverGroups, onSave, onClose }: {
     );
 }
 
-function ValueMapColumn({ title, items, groups, onAdd, onDelete, onUpdate, drivers, levers }: {
+function ValueMapColumn({ title, items, groups, onAdd, onDelete, onUpdate, drivers, levers, dragItem, dragOverItem, handleSort }: {
     title: 'Outcomes' | 'Drivers' | 'Levers';
     items: ValueMapItem[];
     groups?: ValueMapGroup[];
@@ -884,6 +908,9 @@ function ValueMapColumn({ title, items, groups, onAdd, onDelete, onUpdate, drive
     onUpdate: (item: ValueMapItem) => void;
     drivers?: ValueMapDriver[];
     levers?: ValueMapLever[];
+    dragItem: React.MutableRefObject<number | null>;
+    dragOverItem: React.MutableRefObject<number | null>;
+    handleSort: () => void;
 }) {
     return (
         <Card className="bg-secondary/30">
@@ -894,8 +921,17 @@ function ValueMapColumn({ title, items, groups, onAdd, onDelete, onUpdate, drive
                 </CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-                {items.map(item => (
-                    <div key={item.id} className="group flex items-center gap-2">
+                {items.map((item, index) => (
+                    <div 
+                        key={item.id} 
+                        className="group flex items-center gap-2"
+                        draggable
+                        onDragStart={() => dragItem.current = index}
+                        onDragEnter={() => dragOverItem.current = index}
+                        onDragEnd={handleSort}
+                        onDragOver={(e) => e.preventDefault()}
+                    >
+                        <GripVertical className="h-5 w-5 text-muted-foreground cursor-grab" />
                          <ValueMapItemCard
                             item={item}
                             onUpdate={onUpdate}

@@ -1035,6 +1035,10 @@ body {
   cursor: pointer;
 }
 
+.cursor-grab {
+  cursor: grab;
+}
+
 .touch-none {
   touch-action: none;
 }
