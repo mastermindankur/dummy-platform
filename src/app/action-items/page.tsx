@@ -42,30 +42,32 @@ function ActionItemCard({ item, users, events }: { item: ActionItem, users: User
     return (
         <Card className="mb-4">
             <CardContent className="p-3">
-                {eventName && (
-                    <Badge variant="outline" className="mb-2 font-normal text-xs">
-                        <Briefcase className="h-3 w-3 mr-1" />
-                        {eventName}
-                    </Badge>
-                )}
                 <p className="text-sm font-medium mb-2">{item.task}</p>
                 <div className="text-xs text-muted-foreground space-y-2">
-                    <div className="flex items-center gap-2">
-                        <CalendarDays className="h-3.5 w-3.5"/>
-                         <span className={cn(isOverdue && 'text-destructive font-semibold')}>
-                            Due: {format(new Date(item.dueDate), "PPP")}
-                        </span>
-                        {item.originalDueDate && (
-                             <TooltipProvider>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <s className="cursor-help">{format(new Date(item.originalDueDate), "PP")}</s>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                        <p>Original due date</p>
-                                    </TooltipContent>
-                                </Tooltip>
-                             </TooltipProvider>
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                        <div className="flex items-center gap-2">
+                            <CalendarDays className="h-3.5 w-3.5"/>
+                            <span className={cn(isOverdue && 'text-destructive font-semibold')}>
+                                Due: {format(new Date(item.dueDate), "PPP")}
+                            </span>
+                            {item.originalDueDate && (
+                                <TooltipProvider>
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <s className="cursor-help">{format(new Date(item.originalDueDate), "PP")}</s>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                            <p>Original due date</p>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                </TooltipProvider>
+                            )}
+                        </div>
+                        {eventName && (
+                             <Badge variant="outline" className="font-normal text-xs py-0.5">
+                                <Briefcase className="h-3 w-3 mr-1" />
+                                {eventName}
+                            </Badge>
                         )}
                     </div>
                      <div>
