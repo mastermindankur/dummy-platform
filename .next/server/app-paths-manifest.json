@@ -1,6 +1,7 @@
 {
   "/api/data/route": "app/api/data/route.js",
   "/dashboard/page": "app/dashboard/page.js",
+  "/hackathons/page": "app/hackathons/page.js",
   "/industry-events/page": "app/industry-events/page.js",
   "/page": "app/page.js",
   "/pillar/[id]/page": "app/pillar/[id]/page.js",

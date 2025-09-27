@@ -18,7 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { ArrowLeft, CalendarClock, Loader2 } from 'lucide-react';
+import { ArrowLeft, CalendarClock, Link as LinkIcon, Loader2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import type { ExcelData, Pillar, SubItem, ExcelRow } from '@/types';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer } from 'recharts';
@@ -53,6 +53,11 @@ const fetchMetadata = async (key: string) => {
     const { lastUpdated } = await res.json();
     return lastUpdated;
 };
+
+const isUrl = (value: any): boolean => {
+    if (typeof value !== 'string') return false;
+    return value.startsWith('http://') || value.startsWith('https://');
+}
 
 export default function BlogsAndOpenSourcePage() {
   const [isLoading, setIsLoading] = useState(true);
@@ -216,7 +221,19 @@ export default function BlogsAndOpenSourcePage() {
                             <TableRow key={rowIndex}>
                             {excelData.headers.map((header) => (
                                 <TableCell key={header}>
-                                {String(row[header] ?? '')}
+                                {isUrl(row[header]) ? (
+                                    <a
+                                        href={row[header]}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-primary hover:underline flex items-center gap-1"
+                                    >
+                                        <LinkIcon className="h-3 w-3" />
+                                        View Link
+                                    </a>
+                                ) : (
+                                    String(row[header] ?? '')
+                                )}
                                 </TableCell>
                             ))}
                             </TableRow>
