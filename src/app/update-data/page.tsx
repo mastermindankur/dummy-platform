@@ -24,7 +24,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/use-toast';
-import type { Pillar, SubItem, Status, ExcelData, ValueMapData, ValueMapItem, ValueMapLever, ValueMapDriver, ValueMapOutcome, ValueMapGroup, User, ActionItem, MeetingEvent, MappingRule } from '@/types';
+import type { Pillar, SubItem, Status, ExcelData, ValueMapData, ValueMapItem, ValueMapLever, ValueMapDriver, ValueMapOutcome, ValueMapGroup, User, ActionItem, MeetingEvent, MappingRule, ExcelRow } from '@/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Loader2, Plus, Trash2, Upload, ArrowRight, ChevronsUpDown, Filter, X, Edit, GripVertical, Settings2, Users, CalendarIcon, Briefcase } from 'lucide-react';
@@ -56,6 +56,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
+import { Combobox } from '@/components/ui/combobox';
 
 
 type FilterState = {
@@ -1146,6 +1147,8 @@ function ExcelUploadSection({
   const [sheetNames, setSheetNames] = useState<string[]>([]);
   const [selectedSheet, setSelectedSheet] = useState<string>('');
   const [headers, setHeaders] = useState<string[]>([]);
+  const [allRows, setAllRows] = useState<ExcelRow[]>([]);
+
   const [filters, setFilters] = useState<FilterState[]>([]);
   const [filterCounter, setFilterCounter] = useState(0);
   const [mappings, setMappings] = useState<MappingRule[]>([]);
@@ -1163,6 +1166,7 @@ function ExcelUploadSection({
         setSheetNames([]);
         setSelectedSheet('');
         setHeaders([]);
+        setAllRows([]);
         setFilters([]);
         setMappings([]);
         setIsLoading(true);
@@ -1192,7 +1196,8 @@ function ExcelUploadSection({
 
   const handleSheetChange = async (sheetName: string, dataUri = fileDataUri) => {
     setSelectedSheet(sheetName);
-    setHeaders([]); // Reset headers and filters if sheet changes
+    setHeaders([]);
+    setAllRows([]);
     setFilters([]);
     
     if (!dataUri) return;
@@ -1200,6 +1205,7 @@ function ExcelUploadSection({
     try {
         const result = await processExcelFile(dataUri, sheetName);
         setHeaders(result.headers);
+        setAllRows(result.rows);
     } catch(error) {
         console.error('Error processing sheet for headers:', error);
         toast({ title: 'Error reading sheet', description: 'Could not read headers from the selected sheet.', variant: 'destructive' });
@@ -1232,6 +1238,18 @@ function ExcelUploadSection({
 
   const handleMappingChange = (id: number, field: keyof Omit<MappingRule, 'id'>, value: string) => {
       setMappings(mappings.map(m => m.id === id ? {...m, [field]: value} : m));
+  };
+  
+  const getUniqueColumnValues = (column: string): { value: string; label: string }[] => {
+      if (!column || allRows.length === 0) return [];
+      const uniqueValues = new Set<string>();
+      allRows.forEach(row => {
+          const value = row[column];
+          if (value !== undefined && value !== null) {
+              uniqueValues.add(String(value).trim());
+          }
+      });
+      return Array.from(uniqueValues).sort().map(val => ({ value: val, label: val }));
   };
 
 
@@ -1369,7 +1387,10 @@ function ExcelUploadSection({
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                                         <Label className="md:col-span-2 text-sm font-semibold">IF</Label>
-                                        <Select onValueChange={(value) => handleMappingChange(mapping.id, 'ifColumn', value)} value={mapping.ifColumn}>
+                                        <Select 
+                                            onValueChange={(value) => handleMappingChange(mapping.id, 'ifColumn', value)} 
+                                            value={mapping.ifColumn}
+                                        >
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Select Column" />
                                             </SelectTrigger>
@@ -1377,10 +1398,11 @@ function ExcelUploadSection({
                                                 {headers.map(header => <SelectItem key={header} value={header}>{header}</SelectItem>)}
                                             </SelectContent>
                                         </Select>
-                                        <Input
-                                            placeholder="Condition Value"
-                                            value={mapping.ifValue}
-                                            onChange={(e) => handleMappingChange(mapping.id, 'ifValue', e.target.value)}
+                                        <Combobox
+                                            options={getUniqueColumnValues(mapping.ifColumn)}
+                                            selectedValue={mapping.ifValue}
+                                            onSelect={(value) => handleMappingChange(mapping.id, 'ifValue', value)}
+                                            placeholder="Select or type value..."
                                         />
                                     </div>
                                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -1948,3 +1970,4 @@ export default function UpdateDataPage() {
     </div>
   );
 }
+

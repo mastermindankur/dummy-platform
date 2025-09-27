@@ -24,7 +24,7 @@ async function getExcelSheetNames(fileAsDataUri) {
     });
     return workbook.SheetNames;
 }
-async function processExcelFile(fileAsDataUri, sheetName, filters, helperColumn) {
+async function processExcelFile(fileAsDataUri, sheetName, filters, mappings) {
     const base64Data = fileAsDataUri.split(',')[1];
     const buffer = Buffer.from(base64Data, 'base64');
     const workbook = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$xlsx$2f$xlsx$2e$mjs__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["read"])(buffer, {
@@ -61,17 +61,21 @@ async function processExcelFile(fileAsDataUri, sheetName, filters, helperColumn)
             });
         });
     }
-    if (helperColumn) {
-        rows = rows.map((row)=>({
-                ...row,
-                [helperColumn.name]: helperColumn.value
-            }));
-        if (!headers.includes(helperColumn.name)) {
-            headers = [
-                ...headers,
-                helperColumn.name
-            ];
-        }
+    if (mappings && mappings.length > 0) {
+        const newHeaders = new Set(headers);
+        mappings.forEach((m)=>newHeaders.add(m.thenColumn));
+        headers = Array.from(newHeaders);
+        rows = rows.map((row)=>{
+            const newRow = {
+                ...row
+            };
+            mappings.forEach((mapping)=>{
+                if (String(row[mapping.ifColumn] ?? '').trim() === mapping.ifValue.trim()) {
+                    newRow[mapping.thenColumn] = mapping.thenValue;
+                }
+            });
+            return newRow;
+        });
     }
     return {
         headers,
