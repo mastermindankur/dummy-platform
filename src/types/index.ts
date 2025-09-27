@@ -42,6 +42,14 @@ export type MonthlyExcelData = {
   [month: string]: ExcelData;
 }
 
+export type MappingRule = {
+    id: number;
+    ifColumn: string;
+    ifValue: string;
+    thenColumn: string;
+    thenValue: string;
+};
+
 export type HackathonTeam = {
   id: string;
   name: string;

@@ -24,7 +24,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/use-toast';
-import type { Pillar, SubItem, Status, ExcelData, ValueMapData, ValueMapItem, ValueMapLever, ValueMapDriver, ValueMapOutcome, ValueMapGroup, User, ActionItem, MeetingEvent } from '@/types';
+import type { Pillar, SubItem, Status, ExcelData, ValueMapData, ValueMapItem, ValueMapLever, ValueMapDriver, ValueMapOutcome, ValueMapGroup, User, ActionItem, MeetingEvent, MappingRule } from '@/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Loader2, Plus, Trash2, Upload, ArrowRight, ChevronsUpDown, Filter, X, Edit, GripVertical, Settings2, Users, CalendarIcon, Briefcase } from 'lucide-react';
@@ -1148,8 +1148,8 @@ function ExcelUploadSection({
   const [headers, setHeaders] = useState<string[]>([]);
   const [filters, setFilters] = useState<FilterState[]>([]);
   const [filterCounter, setFilterCounter] = useState(0);
-  const [helperColumnName, setHelperColumnName] = useState('');
-  const [helperColumnValue, setHelperColumnValue] = useState('');
+  const [mappings, setMappings] = useState<MappingRule[]>([]);
+  const [mappingCounter, setMappingCounter] = useState(0);
 
   const [isLoading, setIsLoading] = useState(false);
   const [month, setMonth] = useState<string>(isMonthly ? new Date().toISOString().slice(0, 7) : '');
@@ -1164,8 +1164,7 @@ function ExcelUploadSection({
         setSelectedSheet('');
         setHeaders([]);
         setFilters([]);
-        setHelperColumnName('');
-        setHelperColumnValue('');
+        setMappings([]);
         setIsLoading(true);
         try {
             const dataUri = await new Promise<string>((resolve, reject) => {
@@ -1222,6 +1221,19 @@ function ExcelUploadSection({
       setFilters(filters.map(f => f.id === id ? {...f, [type]: value} : f));
   }
 
+  const handleAddMapping = () => {
+    setMappings([...mappings, { id: mappingCounter, ifColumn: '', ifValue: '', thenColumn: '', thenValue: ''}]);
+    setMappingCounter(prev => prev + 1);
+  };
+
+  const handleRemoveMapping = (id: number) => {
+      setMappings(mappings.filter(m => m.id !== id));
+  };
+
+  const handleMappingChange = (id: number, field: keyof Omit<MappingRule, 'id'>, value: string) => {
+      setMappings(mappings.map(m => m.id === id ? {...m, [field]: value} : m));
+  };
+
 
   const handleProcessAndLoad = async () => {
     if (!file || !fileDataUri || !selectedSheet) {
@@ -1245,9 +1257,9 @@ function ExcelUploadSection({
 
     try {
         const validFilters = filters.filter(f => f.column && f.value).map(({column, value}) => ({column, value}));
-        const helperColumn = (helperColumnName && helperColumnValue) ? { name: helperColumnName, value: helperColumnValue } : undefined;
+        const validMappings = mappings.filter(m => m.ifColumn && m.ifValue && m.thenColumn && m.thenValue);
         
-        const result = await processExcelFile(fileDataUri, selectedSheet, validFilters, helperColumn);
+        const result = await processExcelFile(fileDataUri, selectedSheet, validFilters, validMappings);
         
         const finalFileKey = isMonthly ? `${fileKey}:${month}` : fileKey;
         onDataProcessed(finalFileKey, result);
@@ -1343,22 +1355,51 @@ function ExcelUploadSection({
                                </div>
                            ))}
                         </div>
+
                         <div className="space-y-2">
-                           <Label>4. Add Helper Column (Optional)</Label>
-                           <div className="flex gap-2 items-center">
-                               <Input
-                                   placeholder="Column Name"
-                                   value={helperColumnName}
-                                   onChange={e => setHelperColumnName(e.target.value)}
-                                />
-                               <Input
-                                   placeholder="Column Value"
-                                   value={helperColumnValue}
-                                   onChange={e => setHelperColumnValue(e.target.value)}
-                                />
+                           <div className="flex items-center justify-between">
+                             <Label>4. Conditional Mappings (Optional)</Label>
+                             <Button variant="outline" size="sm" onClick={handleAddMapping}><Plus className="mr-2 h-3 w-3" /> Add Rule</Button>
                            </div>
-                           <p className="text-xs text-muted-foreground">This will add or overwrite a column with the specified value for all processed rows.</p>
+                           <p className="text-xs text-muted-foreground">Add new columns with values based on conditions. For example: IF `Country` equals `France`, THEN set `Continent` to `Europe`.</p>
+                           {mappings.map((mapping) => (
+                               <div key={mapping.id} className="p-3 border rounded-md bg-secondary/50 space-y-2">
+                                    <div className="flex justify-end">
+                                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleRemoveMapping(mapping.id)}><X className="h-3 w-3 text-destructive"/></Button>
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                        <Label className="md:col-span-2 text-sm font-semibold">IF</Label>
+                                        <Select onValueChange={(value) => handleMappingChange(mapping.id, 'ifColumn', value)} value={mapping.ifColumn}>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Select Column" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {headers.map(header => <SelectItem key={header} value={header}>{header}</SelectItem>)}
+                                            </SelectContent>
+                                        </Select>
+                                        <Input
+                                            placeholder="Condition Value"
+                                            value={mapping.ifValue}
+                                            onChange={(e) => handleMappingChange(mapping.id, 'ifValue', e.target.value)}
+                                        />
+                                    </div>
+                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                        <Label className="md:col-span-2 text-sm font-semibold">THEN</Label>
+                                        <Input
+                                            placeholder="New/Target Column Name"
+                                            value={mapping.thenColumn}
+                                            onChange={(e) => handleMappingChange(mapping.id, 'thenColumn', e.target.value)}
+                                        />
+                                        <Input
+                                            placeholder="Value to Set"
+                                            value={mapping.thenValue}
+                                            onChange={(e) => handleMappingChange(mapping.id, 'thenValue', e.target.value)}
+                                        />
+                                    </div>
+                               </div>
+                           ))}
                         </div>
+
                         <Button onClick={handleProcessAndLoad} disabled={isLoading || !file}>
                             {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
                             Process & Load Data

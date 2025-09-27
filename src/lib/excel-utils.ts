@@ -2,17 +2,12 @@
 'use server';
 
 import * as XLSX from 'xlsx';
-import type { ExcelRow, ExcelData } from '@/types';
+import type { ExcelRow, ExcelData, MappingRule } from '@/types';
 
 type Filter = {
     column: string;
     value: string;
 };
-
-type HelperColumn = {
-    name: string;
-    value: string;
-}
 
 export async function getExcelSheetNames(fileAsDataUri: string): Promise<string[]> {
     const base64Data = fileAsDataUri.split(',')[1];
@@ -25,7 +20,7 @@ export async function processExcelFile(
     fileAsDataUri: string, 
     sheetName: string,
     filters?: Filter[],
-    helperColumn?: HelperColumn
+    mappings?: MappingRule[]
 ): Promise<ExcelData> {
   const base64Data = fileAsDataUri.split(',')[1];
   const buffer = Buffer.from(base64Data, 'base64');
@@ -62,15 +57,20 @@ export async function processExcelFile(
       });
   }
 
-  if (helperColumn) {
-      rows = rows.map(row => ({
-          ...row,
-          [helperColumn.name]: helperColumn.value
-      }));
-      
-      if (!headers.includes(helperColumn.name)) {
-          headers = [...headers, helperColumn.name];
-      }
+  if (mappings && mappings.length > 0) {
+      const newHeaders = new Set(headers);
+      mappings.forEach(m => newHeaders.add(m.thenColumn));
+      headers = Array.from(newHeaders);
+
+      rows = rows.map(row => {
+          const newRow = { ...row };
+          mappings.forEach(mapping => {
+              if (String(row[mapping.ifColumn] ?? '').trim() === mapping.ifValue.trim()) {
+                  newRow[mapping.thenColumn] = mapping.thenValue;
+              }
+          });
+          return newRow;
+      });
   }
   
   return { headers, rows };

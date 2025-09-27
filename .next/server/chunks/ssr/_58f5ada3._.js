@@ -5,7 +5,7 @@ module.exports = {
 
 var { g: global, __dirname } = __turbopack_context__;
 {
-/* __next_internal_action_entry_do_not_use__ [{"4061dd86f1c8ce5e24f133f6e04f7d09fb0221ad96":"getExcelSheetNames","70a70a002e8f4de023f15547f8c2e4edfd1264cac1":"processExcelFile"},"",""] */ __turbopack_context__.s({
+/* __next_internal_action_entry_do_not_use__ [{"4061dd86f1c8ce5e24f133f6e04f7d09fb0221ad96":"getExcelSheetNames","78a70a002e8f4de023f15547f8c2e4edfd1264cac1":"processExcelFile"},"",""] */ __turbopack_context__.s({
     "getExcelSheetNames": (()=>getExcelSheetNames),
     "processExcelFile": (()=>processExcelFile)
 });
@@ -24,7 +24,7 @@ async function getExcelSheetNames(fileAsDataUri) {
     });
     return workbook.SheetNames;
 }
-async function processExcelFile(fileAsDataUri, sheetName, filters) {
+async function processExcelFile(fileAsDataUri, sheetName, filters, helperColumn) {
     const base64Data = fileAsDataUri.split(',')[1];
     const buffer = Buffer.from(base64Data, 'base64');
     const workbook = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$xlsx$2f$xlsx$2e$mjs__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["read"])(buffer, {
@@ -43,7 +43,7 @@ async function processExcelFile(fileAsDataUri, sheetName, filters) {
             rows: []
         };
     }
-    const headers = jsonData[0].map(String);
+    let headers = jsonData[0].map(String);
     let rows = jsonData.slice(1).map((row)=>{
         const rowData = {};
         headers.forEach((header, index)=>{
@@ -61,6 +61,18 @@ async function processExcelFile(fileAsDataUri, sheetName, filters) {
             });
         });
     }
+    if (helperColumn) {
+        rows = rows.map((row)=>({
+                ...row,
+                [helperColumn.name]: helperColumn.value
+            }));
+        if (!headers.includes(helperColumn.name)) {
+            headers = [
+                ...headers,
+                helperColumn.name
+            ];
+        }
+    }
     return {
         headers,
         rows
@@ -72,7 +84,7 @@ async function processExcelFile(fileAsDataUri, sheetName, filters) {
     processExcelFile
 ]);
 (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(getExcelSheetNames, "4061dd86f1c8ce5e24f133f6e04f7d09fb0221ad96", null);
-(0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(processExcelFile, "70a70a002e8f4de023f15547f8c2e4edfd1264cac1", null);
+(0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(processExcelFile, "78a70a002e8f4de023f15547f8c2e4edfd1264cac1", null);
 }}),
 "[project]/.next-internal/server/app/update-data/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/lib/excel-utils.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript) <locals>": ((__turbopack_context__) => {
 "use strict";
@@ -100,7 +112,7 @@ var { g: global, __dirname } = __turbopack_context__;
 {
 __turbopack_context__.s({
     "4061dd86f1c8ce5e24f133f6e04f7d09fb0221ad96": (()=>__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$excel$2d$utils$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["getExcelSheetNames"]),
-    "70a70a002e8f4de023f15547f8c2e4edfd1264cac1": (()=>__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$excel$2d$utils$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["processExcelFile"])
+    "78a70a002e8f4de023f15547f8c2e4edfd1264cac1": (()=>__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$excel$2d$utils$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["processExcelFile"])
 });
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$excel$2d$utils$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/lib/excel-utils.ts [app-rsc] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f2e$next$2d$internal$2f$server$2f$app$2f$update$2d$data$2f$page$2f$actions$2e$js__$7b$__ACTIONS_MODULE0__$3d3e$__$225b$project$5d2f$src$2f$lib$2f$excel$2d$utils$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$2922$__$7d$__$5b$app$2d$rsc$5d$__$28$server__actions__loader$2c$__ecmascript$29$__$3c$locals$3e$__ = __turbopack_context__.i('[project]/.next-internal/server/app/update-data/page/actions.js { ACTIONS_MODULE0 => "[project]/src/lib/excel-utils.ts [app-rsc] (ecmascript)" } [app-rsc] (server actions loader, ecmascript) <locals>');
@@ -112,7 +124,7 @@ var { g: global, __dirname } = __turbopack_context__;
 {
 __turbopack_context__.s({
     "4061dd86f1c8ce5e24f133f6e04f7d09fb0221ad96": (()=>__TURBOPACK__imported__module__$5b$project$5d2f2e$next$2d$internal$2f$server$2f$app$2f$update$2d$data$2f$page$2f$actions$2e$js__$7b$__ACTIONS_MODULE0__$3d3e$__$225b$project$5d2f$src$2f$lib$2f$excel$2d$utils$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$2922$__$7d$__$5b$app$2d$rsc$5d$__$28$server__actions__loader$2c$__ecmascript$29$__$3c$exports$3e$__["4061dd86f1c8ce5e24f133f6e04f7d09fb0221ad96"]),
-    "70a70a002e8f4de023f15547f8c2e4edfd1264cac1": (()=>__TURBOPACK__imported__module__$5b$project$5d2f2e$next$2d$internal$2f$server$2f$app$2f$update$2d$data$2f$page$2f$actions$2e$js__$7b$__ACTIONS_MODULE0__$3d3e$__$225b$project$5d2f$src$2f$lib$2f$excel$2d$utils$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$2922$__$7d$__$5b$app$2d$rsc$5d$__$28$server__actions__loader$2c$__ecmascript$29$__$3c$exports$3e$__["70a70a002e8f4de023f15547f8c2e4edfd1264cac1"])
+    "78a70a002e8f4de023f15547f8c2e4edfd1264cac1": (()=>__TURBOPACK__imported__module__$5b$project$5d2f2e$next$2d$internal$2f$server$2f$app$2f$update$2d$data$2f$page$2f$actions$2e$js__$7b$__ACTIONS_MODULE0__$3d3e$__$225b$project$5d2f$src$2f$lib$2f$excel$2d$utils$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$2922$__$7d$__$5b$app$2d$rsc$5d$__$28$server__actions__loader$2c$__ecmascript$29$__$3c$exports$3e$__["78a70a002e8f4de023f15547f8c2e4edfd1264cac1"])
 });
 var __TURBOPACK__imported__module__$5b$project$5d2f2e$next$2d$internal$2f$server$2f$app$2f$update$2d$data$2f$page$2f$actions$2e$js__$7b$__ACTIONS_MODULE0__$3d3e$__$225b$project$5d2f$src$2f$lib$2f$excel$2d$utils$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$2922$__$7d$__$5b$app$2d$rsc$5d$__$28$server__actions__loader$2c$__ecmascript$29$__$3c$module__evaluation$3e$__ = __turbopack_context__.i('[project]/.next-internal/server/app/update-data/page/actions.js { ACTIONS_MODULE0 => "[project]/src/lib/excel-utils.ts [app-rsc] (ecmascript)" } [app-rsc] (server actions loader, ecmascript) <module evaluation>');
 var __TURBOPACK__imported__module__$5b$project$5d2f2e$next$2d$internal$2f$server$2f$app$2f$update$2d$data$2f$page$2f$actions$2e$js__$7b$__ACTIONS_MODULE0__$3d3e$__$225b$project$5d2f$src$2f$lib$2f$excel$2d$utils$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$2922$__$7d$__$5b$app$2d$rsc$5d$__$28$server__actions__loader$2c$__ecmascript$29$__$3c$exports$3e$__ = __turbopack_context__.i('[project]/.next-internal/server/app/update-data/page/actions.js { ACTIONS_MODULE0 => "[project]/src/lib/excel-utils.ts [app-rsc] (ecmascript)" } [app-rsc] (server actions loader, ecmascript) <exports>');
