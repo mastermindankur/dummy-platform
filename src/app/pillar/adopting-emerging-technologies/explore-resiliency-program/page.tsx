@@ -170,7 +170,7 @@ export default function ExploreResiliencyProgramPage() {
                 {lastUpdated && (
                     <Badge variant="outline" className="font-normal">
                         <CalendarClock className="mr-2 h-4 w-4" />
-                        Last updated: {new Date(lastUpdated).toLocaleDateString()}
+                        Last updated: {new Date(lastUpdated).toLocaleString()}
                     </Badge>
                 )}
             </div>
