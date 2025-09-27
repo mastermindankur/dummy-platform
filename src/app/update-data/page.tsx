@@ -27,7 +27,7 @@ import { toast } from '@/hooks/use-toast';
 import type { Pillar, SubItem, Status, ExcelData, ValueMapData, ValueMapItem, ValueMapLever, ValueMapDriver, ValueMapOutcome, ValueMapGroup, User, ActionItem, MeetingEvent, MappingRule, ExcelRow } from '@/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Loader2, Plus, Trash2, Upload, ArrowRight, ChevronsUpDown, Filter, X, Edit, GripVertical, Settings2, Users, CalendarIcon, Briefcase, Check } from 'lucide-react';
+import { Loader2, Plus, Trash2, Upload, ArrowRight, ChevronsUpDown, Filter, X, Edit, GripVertical, Settings2, Users, CalendarIcon, Briefcase, Check, RotateCcw } from 'lucide-react';
 import { processExcelFile, getExcelSheetNames } from '@/lib/excel-utils';
 import Link from 'next/link';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -1231,19 +1231,33 @@ function ExcelUploadSection({
 
   const [isLoading, setIsLoading] = useState(false);
   const [month, setMonth] = useState<string>(isMonthly ? new Date().toISOString().slice(0, 7) : '');
+  
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  const resetState = () => {
+    setFile(null);
+    setFileDataUri('');
+    setSheetNames([]);
+    setSelectedSheet('');
+    setHeaders([]);
+    setAllRows([]);
+    setFilters([]);
+    setMappings([]);
+    setIsLoading(false);
+    if(fileInputRef.current) {
+        fileInputRef.current.value = '';
+    }
+  };
+
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files && files.length > 0) {
         const selectedFile = files[0];
         setFile(selectedFile);
-        // Reset subsequent steps
-        setSheetNames([]);
-        setSelectedSheet('');
-        setHeaders([]);
-        setAllRows([]);
-        setFilters([]);
-        setMappings([]);
+        resetState(); // Reset everything but the file
+        setFile(selectedFile); // re-set the file
+
         setIsLoading(true);
         try {
             const dataUri = await new Promise<string>((resolve, reject) => {
@@ -1263,6 +1277,7 @@ function ExcelUploadSection({
         } catch (error) {
             console.error('Error processing file for sheet names:', error);
             toast({ title: 'Error reading file', description: 'Could not read sheet names from the file.', variant: 'destructive' });
+            resetState();
         } finally {
             setIsLoading(false);
         }
@@ -1282,7 +1297,7 @@ function ExcelUploadSection({
         setHeaders(result.headers);
         setAllRows(result.rows);
     } catch(error) {
-        console.error('Error processing sheet for headers:', error);
+        console.error('Error reading sheet for headers:', error);
         toast({ title: 'Error reading sheet', description: 'Could not read headers from the selected sheet.', variant: 'destructive' });
     } finally {
         setIsLoading(false);
@@ -1376,7 +1391,13 @@ function ExcelUploadSection({
   return (
       <Card className="bg-secondary/30">
         <CardHeader>
-          <CardTitle className="text-xl">{title}</CardTitle>
+          <div className="flex justify-between items-center">
+            <CardTitle className="text-xl">{title}</CardTitle>
+            <Button variant="ghost" size="sm" onClick={resetState} disabled={!file && !isLoading}>
+                <RotateCcw className="mr-2 h-4 w-4"/>
+                Reset
+            </Button>
+          </div>
           <CardDescription>{description}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -1396,6 +1417,7 @@ function ExcelUploadSection({
             <Label htmlFor={`excel-upload-${fileKey}`}>1. Upload Excel File</Label>
             <Input
                 id={`excel-upload-${fileKey}`}
+                ref={fileInputRef}
                 type="file"
                 accept=".xlsx, .xls"
                 onChange={handleFileChange}
@@ -2045,6 +2067,7 @@ export default function UpdateDataPage() {
     </div>
   );
 }
+
 
 
 
