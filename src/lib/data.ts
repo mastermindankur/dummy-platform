@@ -256,7 +256,7 @@ export async function readExcelData(fileKey: string): Promise<ExcelData | null> 
         // A bit of a hack: if it's hackathons.json, it's not ExcelData format but Hackathon[]
         if (fileKey === 'hackathons' || fileKey === 'industry-events') {
           const data = JSON.parse(fileContent);
-          return { headers: [], rows: data };
+          return data;
         }
          if (fileKey === 'users') {
             const users: User[] = JSON.parse(fileContent);
@@ -271,7 +271,7 @@ export async function readExcelData(fileKey: string): Promise<ExcelData | null> 
             try {
                 let emptyContent: string;
                 if (fileKey === 'hackathons' || fileKey === 'industry-events' || fileKey === 'users') {
-                    emptyContent = '[]';
+                    emptyContent = JSON.stringify({ rows: [] });
                 } else {
                     emptyContent = JSON.stringify({ headers: [], rows: [] }, null, 2);
                 }

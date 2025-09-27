@@ -151,10 +151,14 @@ export async function POST(request: Request) {
             if (Object.prototype.hasOwnProperty.call(body.excelData, key)) {
                  if (body.excelData[key]) {
                     // special handling for certain keys
-                    if (key === 'hackathons' || key === 'industry-events') {
-                      await writeExcelData(key, body.excelData[key]);
+                    if (key === 'hackathons') {
+                      await writeExcelData(key, { rows: body.excelData[key] });
                       metadata[key] = now;
                       excelMetadataUpdated = true;
+                    } else if (key === 'industry-events') {
+                        await writeExcelData(key, { rows: body.excelData[key] });
+                        metadata[key] = now;
+                        excelMetadataUpdated = true;
                     } else if (key.startsWith('jira-assistant-adoption')) {
                         const [, month] = key.split(':');
                         if (month) {
