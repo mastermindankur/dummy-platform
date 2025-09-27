@@ -1352,7 +1352,7 @@ function ExcelUploadSection({
         const validFilters = filters.filter(f => f.column && f.value).map(({column, value}) => ({column, value}));
         const validMappings = mappings.filter(m => m.ifColumn && m.ifValue.length > 0 && m.thenColumn && m.thenValue);
         
-        const result = await processExcelFile(dataUri, selectedSheet, validFilters, validMappings);
+        const result = await processExcelFile(fileDataUri, selectedSheet, validFilters, validMappings);
         
         const finalFileKey = isMonthly ? `${fileKey}:${month}` : fileKey;
         onDataProcessed(finalFileKey, result);
@@ -2045,5 +2045,6 @@ export default function UpdateDataPage() {
     </div>
   );
 }
+
 
 
