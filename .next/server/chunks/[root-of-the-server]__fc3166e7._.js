@@ -321,9 +321,15 @@ async function writeData(data) {
 async function readExcelData(fileKey) {
     try {
         const fileContent = await __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["promises"].readFile(dataFilePath(`${fileKey}.json`), 'utf-8');
-        // A bit of a hack: if it's hackathons.json, it's not ExcelData format but Hackathon[]
         if (fileKey === 'hackathons' || fileKey === 'industry-events') {
             const data = JSON.parse(fileContent);
+            // Ensure the data is in the { rows: [...] } format.
+            if (Array.isArray(data)) {
+                return {
+                    headers: [],
+                    rows: data
+                };
+            }
             return data;
         }
         if (fileKey === 'users') {
@@ -345,10 +351,12 @@ async function readExcelData(fileKey) {
         if (error instanceof Error && error.code === 'ENOENT') {
             try {
                 let emptyContent;
-                if (fileKey === 'hackathons' || fileKey === 'industry-events' || fileKey === 'users') {
+                if (fileKey === 'hackathons' || fileKey === 'industry-events') {
                     emptyContent = JSON.stringify({
                         rows: []
                     });
+                } else if (fileKey === 'users') {
+                    emptyContent = JSON.stringify([]);
                 } else {
                     emptyContent = JSON.stringify({
                         headers: [],
@@ -387,7 +395,6 @@ async function readExcelData(fileKey) {
 }
 async function writeExcelData(fileKey, data) {
     try {
-        // A bit of a hack for hackathons data
         const dataToWrite = fileKey === 'hackathons' || fileKey === 'industry-events' ? data : data;
         await __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["promises"].writeFile(dataFilePath(`${fileKey}.json`), JSON.stringify(dataToWrite, null, 2), 'utf-8');
     } catch (error) {

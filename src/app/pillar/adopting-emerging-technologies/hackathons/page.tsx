@@ -18,13 +18,14 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { ArrowLeft, Loader2, Trophy, Users, Swords, Building2, Link as LinkIcon } from 'lucide-react';
+import { ArrowLeft, Loader2, Trophy, Users, Swords, Building2, Link as LinkIcon, CalendarClock } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import type { Hackathon, ExcelRow } from '@/types';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer, LabelList } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { Badge } from '@/components/ui/badge';
 
 const fetchHackathonsData = async (): Promise<Hackathon[]> => {
   const res = await fetch('/api/data?key=hackathons');
@@ -34,16 +35,28 @@ const fetchHackathonsData = async (): Promise<Hackathon[]> => {
   return res.json();
 };
 
+const fetchMetadata = async (key: string) => {
+    const res = await fetch(`/api/data?key=${key}&meta=true`);
+    if (!res.ok) return null;
+    const { lastUpdated } = await res.json();
+    return lastUpdated;
+};
+
 export default function HackathonsDetailsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [hackathons, setHackathons] = useState<Hackathon[]>([]);
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
       try {
-        const data = await fetchHackathonsData();
+        const [data, metadata] = await Promise.all([
+            fetchHackathonsData(),
+            fetchMetadata('hackathons')
+        ]);
         setHackathons(data);
+        setLastUpdated(metadata);
       } catch (error) {
         console.error('Failed to load page data', error);
         toast({
@@ -147,7 +160,15 @@ export default function HackathonsDetailsPage() {
         </div>
         <Card>
           <CardHeader>
-            <CardTitle className="text-3xl">Hackathons</CardTitle>
+             <div className="flex flex-wrap items-center gap-4">
+                <CardTitle className="text-3xl">Hackathons</CardTitle>
+                 {lastUpdated && (
+                    <Badge variant="outline" className="font-normal">
+                        <CalendarClock className="mr-2 h-4 w-4" />
+                        Last updated: {new Date(lastUpdated).toLocaleString()}
+                    </Badge>
+                )}
+            </div>
             <CardDescription>
               Detailed overview of all company-wide hackathons. To add or update data, go to the Manage Hackathons page.
             </CardDescription>
