@@ -14,5 +14,6 @@
   "/pillar/making-design-resilient/app-sherpas/page": "app/pillar/making-design-resilient/app-sherpas/page.js",
   "/pillar/making-design-resilient/arc-trainings/page": "app/pillar/making-design-resilient/arc-trainings/page.js",
   "/pillar/making-design-resilient/jira-assistant-adoption/page": "app/pillar/making-design-resilient/jira-assistant-adoption/page.js",
+  "/pillar/making-design-resilient/squad-onboarding/page": "app/pillar/making-design-resilient/squad-onboarding/page.js",
   "/update-data/page": "app/update-data/page.js"
 }

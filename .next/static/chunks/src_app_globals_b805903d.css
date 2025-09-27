@@ -309,6 +309,10 @@ body {
   color: hsl(var(--foreground));
 }
 
+.dark input[type="date"], .dark input[type="month"] {
+  color-scheme: dark;
+}
+
 .sr-only {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
