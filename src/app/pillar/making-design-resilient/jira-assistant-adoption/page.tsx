@@ -60,13 +60,13 @@ type TestCaseMonthlyStats = {
     adoption: number;
 }
 
-type PlatformAdoptionData = {
-    platform: string;
+type LOBTAdoptionData = {
+    lobt: string;
     monthlyData: { [month: string]: MonthlyStats };
 }
 
-type PlatformTestCaseAdoptionData = {
-    platform: string;
+type LOBTTestCaseAdoptionData = {
+    lobt: string;
     monthlyData: { [month: string]: TestCaseMonthlyStats };
 }
 
@@ -105,11 +105,11 @@ export default function JiraAssistantAdoptionPage() {
     sortedMonths,
     totalRow,
     chartData,
-    platformKeys,
+    lobtKeys,
     testCaseReportData,
     testCaseTotalRow,
     testCaseChartData,
-    testCasePlatformKeys
+    testCaseLOBTKeys
 } = useMemo(() => {
     if (!monthlyData) {
         return {
@@ -117,19 +117,24 @@ export default function JiraAssistantAdoptionPage() {
             sortedMonths: [],
             totalRow: null,
             chartData: [],
-            platformKeys: [],
+            lobtKeys: [],
             testCaseReportData: [],
             testCaseTotalRow: null,
             testCaseChartData: [],
-            testCasePlatformKeys: [],
+            testCaseLOBTKeys: [],
         };
     }
 
     const allMonths = Object.keys(monthlyData).sort();
     const sortedMonthLabels = allMonths.map(m => new Date(m + '-02').toLocaleString('default', { month: 'short', year: '2-digit' }));
+    
+    const findHeader = (headers: string[], possibleNames: string[]) => {
+        const lowerCaseNames = possibleNames.map(n => n.toLowerCase());
+        return headers.find(h => lowerCaseNames.includes(h.toLowerCase()));
+    };
 
-    const platformUserStats = new Map<string, { [month: string]: { totalUsers: Set<string>; activeUsers: Set<string> } }>();
-    const platformTestCaseStats = new Map<string, { [month: string]: { totalCases: number, jaCases: number } }>();
+    const lobtUserStats = new Map<string, { [month: string]: { totalUsers: Set<string>; activeUsers: Set<string> } }>();
+    const lobtTestCaseStats = new Map<string, { [month: string]: { totalCases: number, jaCases: number } }>();
 
     for (const month of allMonths) {
         const monthLabel = new Date(month + '-02').toLocaleString('default', { month: 'short', 'year': '2-digit' });
@@ -138,31 +143,26 @@ export default function JiraAssistantAdoptionPage() {
 
         const { headers, rows: monthRows } = monthData;
         
-        const findHeader = (possibleNames: string[]) => {
-            const lowerCaseNames = possibleNames.map(n => n.toLowerCase());
-            return headers.find(h => lowerCaseNames.includes(h.toLowerCase()));
-        };
+        const userIdKey = findHeader(headers, ['1bankid']);
+        const lobtKey = findHeader(headers, ['LOBT', 'L3 Department']);
+        const testKey = findHeader(headers, ['Test']);
+        const isCreatedViaJAKey = findHeader(headers, ['is_created_via_JA', 'is_created_via_ja']);
 
-        const userIdKey = findHeader(['1bankid']);
-        const platformKey = findHeader(['Platforms']);
-        const testKey = findHeader(['Test']);
-        const isCreatedViaJAKey = findHeader(['is_created_via_JA', 'is_created_via_ja']);
-
-        if (!platformKey) continue;
+        if (!lobtKey) continue;
         
         for (const row of monthRows) {
-            const platform = (row[platformKey] as string) || 'Unknown';
+            const lobt = (row[lobtKey] as string) || 'Unknown';
 
             // User Adoption Logic
             if (userIdKey && isCreatedViaJAKey) {
                 const userId = row[userIdKey];
                 const isAdopted = row[isCreatedViaJAKey] === 1;
 
-                if (!platformUserStats.has(platform)) platformUserStats.set(platform, {});
-                const platformUserData = platformUserStats.get(platform)!;
+                if (!lobtUserStats.has(lobt)) lobtUserStats.set(lobt, {});
+                const lobtUserData = lobtUserStats.get(lobt)!;
                 
-                if (!platformUserData[monthLabel]) platformUserData[monthLabel] = { totalUsers: new Set(), activeUsers: new Set() };
-                const userMonthStats = platformUserData[monthLabel];
+                if (!lobtUserData[monthLabel]) lobtUserData[monthLabel] = { totalUsers: new Set(), activeUsers: new Set() };
+                const userMonthStats = lobtUserData[monthLabel];
 
                 if (userId) {
                     userMonthStats.totalUsers.add(userId);
@@ -176,11 +176,11 @@ export default function JiraAssistantAdoptionPage() {
             if (testKey && isCreatedViaJAKey && row[testKey] === 1) {
                 const isJA = row[isCreatedViaJAKey] === 1;
 
-                if (!platformTestCaseStats.has(platform)) platformTestCaseStats.set(platform, {});
-                const platformTestCaseData = platformTestCaseStats.get(platform)!;
+                if (!lobtTestCaseStats.has(lobt)) lobtTestCaseStats.set(lobt, {});
+                const lobtTestCaseData = lobtTestCaseStats.get(lobt)!;
 
-                if (!platformTestCaseData[monthLabel]) platformTestCaseData[monthLabel] = { totalCases: 0, jaCases: 0 };
-                const testCaseMonthStats = platformTestCaseData[monthLabel];
+                if (!lobtTestCaseData[monthLabel]) lobtTestCaseData[monthLabel] = { totalCases: 0, jaCases: 0 };
+                const testCaseMonthStats = lobtTestCaseData[monthLabel];
                 
                 testCaseMonthStats.totalCases += 1;
                 if (isJA) {
@@ -191,26 +191,26 @@ export default function JiraAssistantAdoptionPage() {
     }
     
     // --- Final processing for User Adoption ---
-    const finalReportData: PlatformAdoptionData[] = [];
-    const allPlatformKeys = Array.from(platformUserStats.keys()).sort();
+    const finalReportData: LOBTAdoptionData[] = [];
+    const allLOBTKeys = Array.from(lobtUserStats.keys()).sort();
 
-    for (const platform of allPlatformKeys) {
-        const monthMap = platformUserStats.get(platform)!;
-        const platformAdoption: PlatformAdoptionData = { platform, monthlyData: {} };
+    for (const lobt of allLOBTKeys) {
+        const monthMap = lobtUserStats.get(lobt)!;
+        const lobtAdoption: LOBTAdoptionData = { lobt, monthlyData: {} };
 
         for(const monthLabel of sortedMonthLabels) {
             const stats = monthMap[monthLabel];
             const totalUsersCount = stats?.totalUsers.size || 0;
             const activeUsersCount = stats?.activeUsers.size || 0;
             const adoption = totalUsersCount > 0 ? (activeUsersCount / totalUsersCount) * 100 : 0;
-            platformAdoption.monthlyData[monthLabel] = { totalUsers: totalUsersCount, activeUsers: activeUsersCount, adoption };
+            lobtAdoption.monthlyData[monthLabel] = { totalUsers: totalUsersCount, activeUsers: activeUsersCount, adoption };
         }
-        finalReportData.push(platformAdoption);
+        finalReportData.push(lobtAdoption);
     }
 
-    const reportDataSorted = finalReportData.sort((a, b) => a.platform.localeCompare(b.platform));
+    const reportDataSorted = finalReportData.sort((a, b) => a.lobt.localeCompare(b.lobt));
 
-    const grandTotalRow: PlatformAdoptionData = { platform: 'Total', monthlyData: {} };
+    const grandTotalRow: LOBTAdoptionData = { lobt: 'Total', monthlyData: {} };
     for(const monthLabel of sortedMonthLabels) {
         let totalUsersForMonth = 0;
         let activeUsersForMonth = 0;
@@ -224,34 +224,34 @@ export default function JiraAssistantAdoptionPage() {
 
     const chartDataFormatted = sortedMonthLabels.map(month => {
         const monthEntry: {[key: string]: any} = { name: month };
-        reportDataSorted.forEach(platformData => {
-            monthEntry[platformData.platform] = platformData.monthlyData[month]?.adoption.toFixed(2);
+        reportDataSorted.forEach(lobtData => {
+            monthEntry[lobtData.lobt] = lobtData.monthlyData[month]?.adoption.toFixed(2);
         });
         monthEntry['Total'] = grandTotalRow.monthlyData[month]?.adoption.toFixed(2);
         return monthEntry;
     });
 
     // --- Final processing for Test Case Adoption ---
-    const finalTestCaseReportData: PlatformTestCaseAdoptionData[] = [];
-    const allTestCasePlatformKeys = Array.from(platformTestCaseStats.keys()).sort();
+    const finalTestCaseReportData: LOBTTestCaseAdoptionData[] = [];
+    const allTestCaseLOBTKeys = Array.from(lobtTestCaseStats.keys()).sort();
 
-    for (const platform of allTestCasePlatformKeys) {
-        const monthMap = platformTestCaseStats.get(platform)!;
-        const platformAdoption: PlatformTestCaseAdoptionData = { platform, monthlyData: {} };
+    for (const lobt of allTestCaseLOBTKeys) {
+        const monthMap = lobtTestCaseStats.get(lobt)!;
+        const lobtAdoption: LOBTTestCaseAdoptionData = { lobt, monthlyData: {} };
 
         for (const monthLabel of sortedMonthLabels) {
             const stats = monthMap[monthLabel];
             const totalCases = stats?.totalCases || 0;
             const jaCases = stats?.jaCases || 0;
             const adoption = totalCases > 0 ? (jaCases / totalCases) * 100 : 0;
-            platformAdoption.monthlyData[monthLabel] = { totalCases, jaCases, adoption };
+            lobtAdoption.monthlyData[monthLabel] = { totalCases, jaCases, adoption };
         }
-        finalTestCaseReportData.push(platformAdoption);
+        finalTestCaseReportData.push(lobtAdoption);
     }
     
-    const testCaseReportDataSorted = finalTestCaseReportData.sort((a, b) => a.platform.localeCompare(b.platform));
+    const testCaseReportDataSorted = finalTestCaseReportData.sort((a, b) => a.lobt.localeCompare(b.lobt));
     
-    const testCaseGrandTotalRow: PlatformTestCaseAdoptionData = { platform: 'Total', monthlyData: {} };
+    const testCaseGrandTotalRow: LOBTTestCaseAdoptionData = { lobt: 'Total', monthlyData: {} };
     for (const monthLabel of sortedMonthLabels) {
         let totalCasesForMonth = 0;
         let jaCasesForMonth = 0;
@@ -265,8 +265,8 @@ export default function JiraAssistantAdoptionPage() {
 
     const testCaseChartDataFormatted = sortedMonthLabels.map(month => {
         const monthEntry: {[key: string]: any} = { name: month };
-        testCaseReportDataSorted.forEach(platformData => {
-            monthEntry[platformData.platform] = platformData.monthlyData[month]?.adoption.toFixed(2);
+        testCaseReportDataSorted.forEach(lobtData => {
+            monthEntry[lobtData.lobt] = lobtData.monthlyData[month]?.adoption.toFixed(2);
         });
         monthEntry['Total'] = testCaseGrandTotalRow.monthlyData[month]?.adoption.toFixed(2);
         return monthEntry;
@@ -277,11 +277,11 @@ export default function JiraAssistantAdoptionPage() {
       sortedMonths: sortedMonthLabels,
       totalRow: grandTotalRow,
       chartData: chartDataFormatted,
-      platformKeys: allPlatformKeys,
+      lobtKeys: allLOBTKeys,
       testCaseReportData: testCaseReportDataSorted,
       testCaseTotalRow: testCaseGrandTotalRow,
       testCaseChartData: testCaseChartDataFormatted,
-      testCasePlatformKeys: allTestCasePlatformKeys,
+      testCaseLOBTKeys: allTestCaseLOBTKeys,
     };
   }, [monthlyData]);
 
@@ -328,7 +328,7 @@ export default function JiraAssistantAdoptionPage() {
                  <Card>
                     <CardHeader>
                         <CardTitle>User Adoption Trend</CardTitle>
-                        <CardDescription>Month-on-month adoption percentage.</CardDescription>
+                        <CardDescription>Month-on-month adoption percentage by LOBT.</CardDescription>
                     </CardHeader>
                     <CardContent>
                         {isLoading && (
@@ -346,7 +346,7 @@ export default function JiraAssistantAdoptionPage() {
                                         <Tooltip content={<ChartTooltipContent indicator="dot" />} />
                                         <ChartLegend />
                                         <Bar dataKey="Total" fill="#ff7300" name="Total Adoption" />
-                                        {platformKeys.map((key, index) => (
+                                        {lobtKeys.map((key, index) => (
                                             <Bar 
                                                 key={key} 
                                                 dataKey={key} 
@@ -368,7 +368,7 @@ export default function JiraAssistantAdoptionPage() {
                 <Card>
                     <CardHeader>
                         <CardTitle>JA Test Cases Adoption Trend</CardTitle>
-                        <CardDescription>Month-on-month test case adoption percentage.</CardDescription>
+                        <CardDescription>Month-on-month test case adoption percentage by LOBT.</CardDescription>
                     </CardHeader>
                     <CardContent>
                         {isLoading && (
@@ -386,7 +386,7 @@ export default function JiraAssistantAdoptionPage() {
                                         <Tooltip content={<ChartTooltipContent indicator="dot" />} />
                                         <ChartLegend />
                                         <Bar dataKey="Total" fill="#ff7300" name="Total Adoption" />
-                                        {testCasePlatformKeys.map((key, index) => (
+                                        {testCaseLOBTKeys.map((key, index) => (
                                             <Bar
                                                 key={key} 
                                                 dataKey={key} 
@@ -411,7 +411,7 @@ export default function JiraAssistantAdoptionPage() {
                 <CardHeader>
                     <CardTitle>User Adoption Details</CardTitle>
                     <CardDescription>
-                        Month-on-month user adoption of Jira Assistant, broken down by platform.
+                        Month-on-month user adoption of Jira Assistant, broken down by LOBT.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -432,7 +432,7 @@ export default function JiraAssistantAdoptionPage() {
                             <Table>
                                 <TableHeader>
                                     <TableRow>
-                                        <TableHead className="min-w-[150px] sticky left-0 bg-secondary" rowSpan={2}>Platform</TableHead>
+                                        <TableHead className="min-w-[150px] sticky left-0 bg-secondary" rowSpan={2}>LOBT</TableHead>
                                         {sortedMonths.map(month => (
                                             <TableHead key={month} className="text-center min-w-[300px] border-l" colSpan={3}>
                                                 {month}
@@ -451,12 +451,12 @@ export default function JiraAssistantAdoptionPage() {
                                 </TableHeader>
                                 <TableBody>
                                     {reportData.map((item) => (
-                                        <TableRow key={item.platform}>
-                                            <TableCell className="font-medium sticky left-0 bg-background">{item.platform}</TableCell>
+                                        <TableRow key={item.lobt}>
+                                            <TableCell className="font-medium sticky left-0 bg-background">{item.lobt}</TableCell>
                                             {sortedMonths.map(month => {
                                                 const monthData = item.monthlyData[month];
                                                 return (
-                                                   <React.Fragment key={`${item.platform}-${month}`}>
+                                                   <React.Fragment key={`${item.lobt}-${month}`}>
                                                         <TableCell className="text-right border-l">{monthData?.totalUsers ?? 'N/A'}</TableCell>
                                                         <TableCell className="text-right">{monthData?.activeUsers ?? 'N/A'}</TableCell>
                                                         <TableCell className="text-right">{monthData?.adoption !== undefined ? `${monthData.adoption.toFixed(2)}%` : 'N/A'}</TableCell>
@@ -467,7 +467,7 @@ export default function JiraAssistantAdoptionPage() {
                                     ))}
                                     {totalRow && (
                                         <TableRow className="font-bold bg-secondary hover:bg-secondary/80">
-                                            <TableCell className="sticky left-0 bg-secondary">{totalRow.platform}</TableCell>
+                                            <TableCell className="sticky left-0 bg-secondary">{totalRow.lobt}</TableCell>
                                             {sortedMonths.map(month => {
                                                 const monthData = totalRow.monthlyData[month];
                                                 return (
@@ -495,7 +495,7 @@ export default function JiraAssistantAdoptionPage() {
             <Card>
                 <CardHeader>
                     <CardTitle>Jira Assist Test Cases Adoption Details</CardTitle>
-                    <CardDescription>Month-on-month test case adoption of Jira Assistant, broken down by Platform.</CardDescription>
+                    <CardDescription>Month-on-month test case adoption of Jira Assistant, broken down by LOBT.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     {isLoading && (
@@ -508,7 +508,7 @@ export default function JiraAssistantAdoptionPage() {
                            <Table>
                                 <TableHeader>
                                     <TableRow>
-                                        <TableHead className="min-w-[150px] sticky left-0 bg-secondary" rowSpan={2}>Platform</TableHead>
+                                        <TableHead className="min-w-[150px] sticky left-0 bg-secondary" rowSpan={2}>LOBT</TableHead>
                                         {sortedMonths.map(month => (
                                             <TableHead key={month} className="text-center min-w-[300px] border-l" colSpan={3}>
                                                 {month}
@@ -527,12 +527,12 @@ export default function JiraAssistantAdoptionPage() {
                                 </TableHeader>
                                 <TableBody>
                                     {testCaseReportData.map((item) => (
-                                        <TableRow key={item.platform}>
-                                            <TableCell className="font-medium sticky left-0 bg-background">{item.platform}</TableCell>
+                                        <TableRow key={item.lobt}>
+                                            <TableCell className="font-medium sticky left-0 bg-background">{item.lobt}</TableCell>
                                             {sortedMonths.map(month => {
                                                 const monthData = item.monthlyData[month];
                                                 return (
-                                                   <React.Fragment key={`${item.platform}-${month}`}>
+                                                   <React.Fragment key={`${item.lobt}-${month}`}>
                                                         <TableCell className="text-right border-l">{monthData?.totalCases ?? 'N/A'}</TableCell>
                                                         <TableCell className="text-right">{monthData?.jaCases ?? 'N/A'}</TableCell>
                                                         <TableCell className="text-right">{monthData?.adoption !== undefined ? `${monthData.adoption.toFixed(2)}%` : 'N/A'}</TableCell>
@@ -543,7 +543,7 @@ export default function JiraAssistantAdoptionPage() {
                                     ))}
                                     {testCaseTotalRow && (
                                         <TableRow className="font-bold bg-secondary hover:bg-secondary/80">
-                                            <TableCell className="sticky left-0 bg-secondary">{testCaseTotalRow.platform}</TableCell>
+                                            <TableCell className="sticky left-0 bg-secondary">{testCaseTotalRow.lobt}</TableCell>
                                             {sortedMonths.map(month => {
                                                 const monthData = testCaseTotalRow.monthlyData[month];
                                                 return (
@@ -572,5 +572,3 @@ export default function JiraAssistantAdoptionPage() {
     </div>
   );
 }
-
-    
