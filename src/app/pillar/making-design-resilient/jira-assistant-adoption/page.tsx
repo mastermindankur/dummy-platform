@@ -134,9 +134,15 @@ export default function JiraAssistantAdoptionPage() {
     // TEST CASE ADOPTION LOGIC
     const platformTestCaseStats = new Map<string, { [month: string]: { totalCases: number, jaCases: number } }>();
 
-    const findKey = (headers: string[], potentialNames: string[]): string | undefined => {
+    // This helper finds the actual header key by checking against a list of potential names, case-insensitively.
+    const findHeaderKey = (headers: string[], potentialNames: string[]): string | undefined => {
         const lowerCaseNames = potentialNames.map(n => n.toLowerCase());
-        return headers.find(header => lowerCaseNames.includes(header.toLowerCase()));
+        for (const header of headers) {
+            if (lowerCaseNames.includes(header.toLowerCase())) {
+                return header;
+            }
+        }
+        return undefined;
     };
 
     for (const month of allMonths) {
@@ -146,14 +152,15 @@ export default function JiraAssistantAdoptionPage() {
 
         const { headers, rows: monthRows } = monthData;
 
-        // Find the correct column keys once per sheet
-        const platformKey = findKey(headers, ['platforms', 'platform']);
-        const userIdKey = findKey(headers, ['1bankid']);
-        const isAdoptedKey = findKey(headers, ['is_created_via_ja']);
-        const issueTypeKey = findKey(headers, ['issue_type']);
+        // Find the correct column keys once per sheet, robustly.
+        const platformKey = findHeaderKey(headers, ['platforms', 'platform']);
+        const userIdKey = findHeaderKey(headers, ['1bankid']);
+        const isAdoptedKey = findHeaderKey(headers, ['is_created_via_ja', 'is_created_via_JA']);
+        const issueTypeKey = findHeaderKey(headers, ['issue_type', 'Issue Type']);
 
+        // Skip this month's data if we can't find the essential columns
         if (!platformKey || !userIdKey || !isAdoptedKey || !issueTypeKey) {
-            console.warn(`Skipping month ${month} due to missing required columns.`);
+            console.warn(`Skipping month ${month} due to missing required columns. Found:`, { platformKey, userIdKey, isAdoptedKey, issueTypeKey });
             continue;
         }
 
@@ -576,5 +583,7 @@ export default function JiraAssistantAdoptionPage() {
     </div>
   );
 }
+
+    
 
     
