@@ -27,7 +27,7 @@ import { toast } from '@/hooks/use-toast';
 import type { Pillar, SubItem, Status, ExcelData, ValueMapData, ValueMapItem, ValueMapLever, ValueMapDriver, ValueMapOutcome, ValueMapGroup, User, ActionItem, MeetingEvent, MappingRule, ExcelRow } from '@/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Loader2, Plus, Trash2, Upload, ArrowRight, ChevronsUpDown, Filter, X, Edit, GripVertical, Settings2, Users, CalendarIcon, Briefcase } from 'lucide-react';
+import { Loader2, Plus, Trash2, Upload, ArrowRight, ChevronsUpDown, Filter, X, Edit, GripVertical, Settings2, Users, CalendarIcon, Briefcase, Check } from 'lucide-react';
 import { processExcelFile, getExcelSheetNames } from '@/lib/excel-utils';
 import Link from 'next/link';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -57,6 +57,14 @@ import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 import { Combobox } from '@/components/ui/combobox';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command"
 
 
 type FilterState = {
@@ -1344,7 +1352,7 @@ function ExcelUploadSection({
         const validFilters = filters.filter(f => f.column && f.value).map(({column, value}) => ({column, value}));
         const validMappings = mappings.filter(m => m.ifColumn && m.ifValue.length > 0 && m.thenColumn && m.thenValue);
         
-        const result = await processExcelFile(fileDataUri, selectedSheet, validFilters, validMappings);
+        const result = await processExcelFile(dataUri, selectedSheet, validFilters, validMappings);
         
         const finalFileKey = isMonthly ? `${fileKey}:${month}` : fileKey;
         onDataProcessed(finalFileKey, result);
@@ -2037,4 +2045,5 @@ export default function UpdateDataPage() {
     </div>
   );
 }
+
 
