@@ -152,8 +152,8 @@ export default function JiraAssistantAdoptionPage() {
 
         for (const row of monthRows) {
             const platform = (findColumn(row, ['Platforms', 'Platform']) as string) || 'Unknown';
-            const userId = row['1bankid'] as string;
-            const isAdopted = row['is_created_via_JA'] === 1;
+            const userId = findColumn(row, ['1bankid']);
+            const isAdopted = findColumn(row, ['is_created_via_JA']) === 1;
             
             // User Adoption Processing
             if (!platformUserStats.has(platform)) {
@@ -569,5 +569,7 @@ export default function JiraAssistantAdoptionPage() {
     </div>
   );
 }
+
+    
 
     
