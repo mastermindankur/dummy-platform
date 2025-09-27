@@ -253,9 +253,13 @@ export async function writeData(data: Pillar[]) {
 export async function readExcelData(fileKey: string): Promise<ExcelData | null> {
     try {
         const fileContent = await fs.readFile(dataFilePath(`${fileKey}.json`), 'utf-8');
-        // A bit of a hack: if it's hackathons.json, it's not ExcelData format but Hackathon[]
+        
         if (fileKey === 'hackathons' || fileKey === 'industry-events') {
           const data = JSON.parse(fileContent);
+          // Ensure the data is in the { rows: [...] } format.
+          if (Array.isArray(data)) {
+            return { headers: [], rows: data };
+          }
           return data;
         }
          if (fileKey === 'users') {
@@ -270,9 +274,12 @@ export async function readExcelData(fileKey: string): Promise<ExcelData | null> 
         if (error instanceof Error && (error as NodeJS.ErrnoException).code === 'ENOENT') {
             try {
                 let emptyContent: string;
-                if (fileKey === 'hackathons' || fileKey === 'industry-events' || fileKey === 'users') {
+                if (fileKey === 'hackathons' || fileKey === 'industry-events') {
                     emptyContent = JSON.stringify({ rows: [] });
-                } else {
+                } else if (fileKey === 'users') {
+                    emptyContent = JSON.stringify([]);
+                }
+                else {
                     emptyContent = JSON.stringify({ headers: [], rows: [] }, null, 2);
                 }
                 
@@ -298,7 +305,6 @@ export async function readExcelData(fileKey: string): Promise<ExcelData | null> 
 
 export async function writeExcelData(fileKey: string, data: any) {
     try {
-        // A bit of a hack for hackathons data
         const dataToWrite = (fileKey === 'hackathons' || fileKey === 'industry-events') ? data : data;
         await fs.writeFile(dataFilePath(`${fileKey}.json`), JSON.stringify(dataToWrite, null, 2), 'utf-8');
     } catch (error) {
@@ -427,3 +433,4 @@ export const writeEvents = (data: MeetingEvent[]) => writeJsonFile('events.json'
 // Metadata for Excel files
 export const getExcelMetadata = () => readJsonFile<ExcelMetadata>('excel-metadata.json', {});
 export const writeExcelMetadata = (data: ExcelMetadata) => writeJsonFile('excel-metadata.json', data);
+

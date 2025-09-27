@@ -324,10 +324,7 @@ async function readExcelData(fileKey) {
         // A bit of a hack: if it's hackathons.json, it's not ExcelData format but Hackathon[]
         if (fileKey === 'hackathons' || fileKey === 'industry-events') {
             const data = JSON.parse(fileContent);
-            return {
-                headers: [],
-                rows: data
-            };
+            return data;
         }
         if (fileKey === 'users') {
             const users = JSON.parse(fileContent);
@@ -349,7 +346,9 @@ async function readExcelData(fileKey) {
             try {
                 let emptyContent;
                 if (fileKey === 'hackathons' || fileKey === 'industry-events' || fileKey === 'users') {
-                    emptyContent = '[]';
+                    emptyContent = JSON.stringify({
+                        rows: []
+                    });
                 } else {
                     emptyContent = JSON.stringify({
                         headers: [],
@@ -670,8 +669,16 @@ async function POST(request) {
                 if (Object.prototype.hasOwnProperty.call(body.excelData, key)) {
                     if (body.excelData[key]) {
                         // special handling for certain keys
-                        if (key === 'hackathons' || key === 'industry-events') {
-                            await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["writeExcelData"])(key, body.excelData[key]);
+                        if (key === 'hackathons') {
+                            await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["writeExcelData"])(key, {
+                                rows: body.excelData[key]
+                            });
+                            metadata[key] = now;
+                            excelMetadataUpdated = true;
+                        } else if (key === 'industry-events') {
+                            await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["writeExcelData"])(key, {
+                                rows: body.excelData[key]
+                            });
                             metadata[key] = now;
                             excelMetadataUpdated = true;
                         } else if (key.startsWith('jira-assistant-adoption')) {
