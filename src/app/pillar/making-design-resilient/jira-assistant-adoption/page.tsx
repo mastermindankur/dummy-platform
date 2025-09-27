@@ -129,7 +129,7 @@ export default function JiraAssistantAdoptionPage() {
     const sortedMonthLabels = allMonths.map(m => new Date(m + '-02').toLocaleString('default', { month: 'short', year: '2-digit' }));
     
     // USER ADOPTION LOGIC
-    const platformMonthlyStats = new Map<string, { [month: string]: { totalUsers: Set<string>; activeUsers: Set<string> } }>();
+    const platformUserStats = new Map<string, { [month: string]: { totalUsers: Set<string>; activeUsers: Set<string> } }>();
     
     // TEST CASE ADOPTION LOGIC
     const platformTestCaseStats = new Map<string, { [month: string]: { totalCases: number, jaCases: number } }>();
@@ -144,20 +144,20 @@ export default function JiraAssistantAdoptionPage() {
             const isAdopted = row['is_created_via_JA'] === 1;
             
             // User Adoption Processing
-            if (!platformMonthlyStats.has(platform)) {
-                platformMonthlyStats.set(platform, {});
+            if (!platformUserStats.has(platform)) {
+                platformUserStats.set(platform, {});
             }
-            const platformData = platformMonthlyStats.get(platform)!;
+            const platformUserData = platformUserStats.get(platform)!;
             
-            if (!platformData[monthLabel]) {
-                platformData[monthLabel] = { totalUsers: new Set(), activeUsers: new Set() };
+            if (!platformUserData[monthLabel]) {
+                platformUserData[monthLabel] = { totalUsers: new Set(), activeUsers: new Set() };
             }
-            const monthStats = platformData[monthLabel];
+            const userMonthStats = platformUserData[monthLabel];
 
             if (userId) {
-                monthStats.totalUsers.add(userId);
+                userMonthStats.totalUsers.add(userId);
                 if (isAdopted) {
-                    monthStats.activeUsers.add(userId);
+                    userMonthStats.activeUsers.add(userId);
                 }
             }
 
@@ -166,12 +166,12 @@ export default function JiraAssistantAdoptionPage() {
                 if (!platformTestCaseStats.has(platform)) {
                     platformTestCaseStats.set(platform, {});
                 }
-                const platformDataForTest = platformTestCaseStats.get(platform)!;
+                const platformTestCaseData = platformTestCaseStats.get(platform)!;
 
-                if (!platformDataForTest[monthLabel]) {
-                    platformDataForTest[monthLabel] = { totalCases: 0, jaCases: 0 };
+                if (!platformTestCaseData[monthLabel]) {
+                    platformTestCaseData[monthLabel] = { totalCases: 0, jaCases: 0 };
                 }
-                const testCaseMonthStats = platformDataForTest[monthLabel];
+                const testCaseMonthStats = platformTestCaseData[monthLabel];
                 testCaseMonthStats.totalCases += 1;
                 if (isAdopted) {
                     testCaseMonthStats.jaCases += 1;
@@ -182,10 +182,10 @@ export default function JiraAssistantAdoptionPage() {
     
     // Final processing for User Adoption
     const finalReportData: PlatformAdoptionData[] = [];
-    const allPlatformKeys = Array.from(platformMonthlyStats.keys()).sort();
+    const allPlatformKeys = Array.from(platformUserStats.keys()).sort();
 
     for (const platform of allPlatformKeys) {
-        const monthMap = platformMonthlyStats.get(platform)!;
+        const monthMap = platformUserStats.get(platform)!;
         const platformAdoption: PlatformAdoptionData = { platform, monthlyData: {} };
 
         for(const monthLabel of sortedMonthLabels) {
