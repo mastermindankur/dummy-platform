@@ -18,12 +18,13 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { ArrowLeft, Loader2, Users } from 'lucide-react';
+import { ArrowLeft, CalendarClock, Loader2, Users } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import type { ExcelData, Pillar, SubItem, ExcelRow } from '@/types';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { Badge } from '@/components/ui/badge';
 
 const fetchSherpasData = async (): Promise<ExcelData | null> => {
   const res = await fetch('/api/data?key=app-sherpas');
@@ -110,12 +111,19 @@ export default function AppSherpasPage() {
         </div>
         <Card>
           <CardHeader>
-            <CardTitle className="text-3xl">
-              App Sherpas
-            </CardTitle>
+            <div className="flex flex-wrap items-center gap-4">
+                <CardTitle className="text-3xl">
+                  App Sherpas
+                </CardTitle>
+                {lastUpdated && (
+                    <Badge variant="outline" className="font-normal">
+                        <CalendarClock className="mr-2 h-4 w-4" />
+                        Last updated: {new Date(lastUpdated).toLocaleDateString()}
+                    </Badge>
+                )}
+            </div>
             <CardDescription>
               This page displays the current data for App Sherpas.
-              {lastUpdated && ` Last updated on ${new Date(lastUpdated).toLocaleDateString()}.`}
             </CardDescription>
           </CardHeader>
           <CardContent>

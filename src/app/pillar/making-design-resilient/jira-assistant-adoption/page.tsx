@@ -18,13 +18,14 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { ArrowLeft, Loader2 } from 'lucide-react';
+import { ArrowLeft, CalendarClock, Loader2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import type { MonthlyExcelData, ExcelRow } from '@/types';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend } from '@/components/ui/chart';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from 'recharts';
+import { Badge } from '@/components/ui/badge';
 
 const fetchAdoptionData = async (): Promise<MonthlyExcelData | null> => {
   const res = await fetch('/api/data?key=jira-assistant-adoption');
@@ -299,10 +300,17 @@ export default function JiraAssistantAdoptionPage() {
         <div className="space-y-8">
              <Card>
                 <CardHeader>
-                    <CardTitle>Jira Assistant Adoption</CardTitle>
+                    <div className="flex flex-wrap items-center gap-4">
+                        <CardTitle>Jira Assistant Adoption</CardTitle>
+                        {lastUpdated && (
+                            <Badge variant="outline" className="font-normal">
+                                <CalendarClock className="mr-2 h-4 w-4" />
+                                Last updated: {new Date(lastUpdated).toLocaleDateString()}
+                            </Badge>
+                        )}
+                    </div>
                     <CardDescription>
                         Month-on-month adoption metrics.
-                        {lastUpdated && ` Last updated on ${new Date(lastUpdated).toLocaleDateString()}.`}
                     </CardDescription>
                 </CardHeader>
             </Card>

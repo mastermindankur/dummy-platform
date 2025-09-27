@@ -77,6 +77,7 @@ var { g: global, __dirname } = __turbopack_context__;
 __turbopack_context__.s({
     "getActionItems": (()=>getActionItems),
     "getEvents": (()=>getEvents),
+    "getExcelMetadata": (()=>getExcelMetadata),
     "getPillarById": (()=>getPillarById),
     "getPillars": (()=>getPillars),
     "getUsers": (()=>getUsers),
@@ -87,6 +88,7 @@ __turbopack_context__.s({
     "writeData": (()=>writeData),
     "writeEvents": (()=>writeEvents),
     "writeExcelData": (()=>writeExcelData),
+    "writeExcelMetadata": (()=>writeExcelMetadata),
     "writeMonthlyData": (()=>writeMonthlyData),
     "writeUsers": (()=>writeUsers),
     "writeValueMapData": (()=>writeValueMapData)
@@ -511,6 +513,8 @@ const getActionItems = ()=>readJsonFile('action-items.json', []);
 const writeActionItems = (data)=>writeJsonFile('action-items.json', data);
 const getEvents = ()=>readJsonFile('events.json', []);
 const writeEvents = (data)=>writeJsonFile('events.json', data);
+const getExcelMetadata = ()=>readJsonFile('excel-metadata.json', {});
+const writeExcelMetadata = (data)=>writeJsonFile('excel-metadata.json', data);
 }}),
 "[project]/src/app/api/data/route.ts [app-route] (ecmascript)": ((__turbopack_context__) => {
 "use strict";
@@ -529,6 +533,19 @@ async function GET(request) {
     const { searchParams } = new URL(request.url);
     const fileKey = searchParams.get('key');
     const month = searchParams.get('month'); // e.g., '2024-08'
+    const includeMetadata = searchParams.get('meta');
+    if (includeMetadata && fileKey) {
+        try {
+            const metadata = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["getExcelMetadata"])();
+            return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+                lastUpdated: metadata[fileKey] || null
+            });
+        } catch (error) {
+            return new __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"]('Internal Server Error', {
+                status: 500
+            });
+        }
+    }
     if (fileKey === 'users') {
         try {
             const data = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["getUsers"])();
@@ -633,6 +650,7 @@ async function GET(request) {
 async function POST(request) {
     try {
         const body = await request.json();
+        let excelMetadataUpdated = false;
         if (body.pillars) {
             await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["writeData"])(body.pillars);
         }
@@ -646,16 +664,22 @@ async function POST(request) {
             await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["writeEvents"])(body.events);
         }
         if (body.excelData) {
+            const metadata = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["getExcelMetadata"])();
+            const now = new Date().toISOString();
             for(const key in body.excelData){
                 if (Object.prototype.hasOwnProperty.call(body.excelData, key)) {
                     if (body.excelData[key]) {
                         // special handling for certain keys
                         if (key === 'hackathons' || key === 'industry-events') {
                             await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["writeExcelData"])(key, body.excelData[key]);
+                            metadata[key] = now;
+                            excelMetadataUpdated = true;
                         } else if (key.startsWith('jira-assistant-adoption')) {
                             const [, month] = key.split(':');
                             if (month) {
                                 await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["writeMonthlyData"])('jira-assistant-adoption', month, body.excelData[key]);
+                                metadata[`jira-assistant-adoption`] = now; // Store one timestamp for the whole dataset
+                                excelMetadataUpdated = true;
                             }
                         } else if (key === 'users') {
                             const usersData = body.excelData[key].rows.map((row)=>({
@@ -666,9 +690,14 @@ async function POST(request) {
                             await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["writeUsers"])(usersData);
                         } else {
                             await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["writeExcelData"])(key, body.excelData[key]);
+                            metadata[key] = now;
+                            excelMetadataUpdated = true;
                         }
                     }
                 }
+            }
+            if (excelMetadataUpdated) {
+                await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["writeExcelMetadata"])(metadata);
             }
         }
         return new __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"]('Data saved successfully', {

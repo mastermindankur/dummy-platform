@@ -805,7 +805,6 @@ const fetchProgramData = async ()=>{
     }
     return res.json();
 };
-// Fetch all pillar data to find the specific sub-item for targets
 const fetchPillarsData = async ()=>{
     const res = await fetch('/api/data');
     if (!res.ok) {
@@ -813,19 +812,28 @@ const fetchPillarsData = async ()=>{
     }
     return res.json();
 };
+const fetchMetadata = async (key)=>{
+    const res = await fetch(`/api/data?key=${key}&meta=true`);
+    if (!res.ok) return null;
+    const { lastUpdated } = await res.json();
+    return lastUpdated;
+};
 function ExploreResiliencyProgramPage() {
     const [isLoading, setIsLoading] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(true);
     const [excelData, setExcelData] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(null);
     const [programSubItem, setProgramSubItem] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(null);
+    const [lastUpdated, setLastUpdated] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(null);
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
         const loadData = async ()=>{
             setIsLoading(true);
             try {
-                const [data, pillars] = await Promise.all([
+                const [data, pillars, metadata] = await Promise.all([
                     fetchProgramData(),
-                    fetchPillarsData()
+                    fetchPillarsData(),
+                    fetchMetadata('explore-resiliency-program')
                 ]);
                 setExcelData(data);
+                setLastUpdated(metadata);
                 if (pillars) {
                     const emergingTechPillar = pillars.find((p)=>p.id === 'adopting-emerging-technologies');
                     const subItem = emergingTechPillar?.subItems.find((s)=>s.id === 'explore-resiliency-program') || null;
@@ -906,7 +914,7 @@ function ExploreResiliencyProgramPage() {
         children: [
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$layout$2f$header$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Header"], {}, void 0, false, {
                 fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                lineNumber: 146,
+                lineNumber: 155,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("main", {
@@ -924,24 +932,24 @@ function ExploreResiliencyProgramPage() {
                                         className: "mr-2 h-4 w-4"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                        lineNumber: 151,
+                                        lineNumber: 160,
                                         columnNumber: 21
                                     }, this),
                                     "Back to Pillar"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                lineNumber: 150,
+                                lineNumber: 159,
                                 columnNumber: 17
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                            lineNumber: 149,
+                            lineNumber: 158,
                             columnNumber: 13
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                        lineNumber: 148,
+                        lineNumber: 157,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
@@ -953,20 +961,23 @@ function ExploreResiliencyProgramPage() {
                                         children: "Explore Resiliency Program"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                        lineNumber: 158,
+                                        lineNumber: 167,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardDescription"], {
-                                        children: 'This page displays the current data for the Explore Resiliency Program. To update this data, please use the Excel upload feature on the "Update Data" page.'
-                                    }, void 0, false, {
+                                        children: [
+                                            "This page displays the current data for the Explore Resiliency Program.",
+                                            lastUpdated && ` Last updated on ${new Date(lastUpdated).toLocaleDateString()}.`
+                                        ]
+                                    }, void 0, true, {
                                         fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                        lineNumber: 159,
+                                        lineNumber: 168,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                lineNumber: 157,
+                                lineNumber: 166,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -977,12 +988,12 @@ function ExploreResiliencyProgramPage() {
                                             className: "h-8 w-8 animate-spin text-muted-foreground"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                            lineNumber: 166,
+                                            lineNumber: 176,
                                             columnNumber: 17
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                        lineNumber: 165,
+                                        lineNumber: 175,
                                         columnNumber: 15
                                     }, this),
                                     !isLoading && !excelData && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -990,7 +1001,7 @@ function ExploreResiliencyProgramPage() {
                                         children: "No data has been uploaded for this program yet."
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                        lineNumber: 171,
+                                        lineNumber: 181,
                                         columnNumber: 15
                                     }, this),
                                     excelData && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1007,20 +1018,20 @@ function ExploreResiliencyProgramPage() {
                                                                         children: "Overall Progress"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                                        lineNumber: 181,
+                                                                        lineNumber: 191,
                                                                         columnNumber: 27
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardDescription"], {
                                                                         children: "Assessments completed against the annual target."
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                                        lineNumber: 182,
+                                                                        lineNumber: 192,
                                                                         columnNumber: 27
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                                lineNumber: 180,
+                                                                lineNumber: 190,
                                                                 columnNumber: 23
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -1034,7 +1045,7 @@ function ExploreResiliencyProgramPage() {
                                                                                 children: completedAssessments
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                                                lineNumber: 187,
+                                                                                lineNumber: 197,
                                                                                 columnNumber: 35
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1046,7 +1057,7 @@ function ExploreResiliencyProgramPage() {
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                                                lineNumber: 188,
+                                                                                lineNumber: 198,
                                                                                 columnNumber: 35
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$progress$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Progress"], {
@@ -1054,29 +1065,29 @@ function ExploreResiliencyProgramPage() {
                                                                                 className: "mt-4 h-3"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                                                lineNumber: 189,
+                                                                                lineNumber: 199,
                                                                                 columnNumber: 35
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                                        lineNumber: 186,
+                                                                        lineNumber: 196,
                                                                         columnNumber: 30
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                                    lineNumber: 185,
+                                                                    lineNumber: 195,
                                                                     columnNumber: 27
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                                lineNumber: 184,
+                                                                lineNumber: 194,
                                                                 columnNumber: 23
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                        lineNumber: 179,
+                                                        lineNumber: 189,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
@@ -1087,20 +1098,20 @@ function ExploreResiliencyProgramPage() {
                                                                         children: "Overall Status"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                                        lineNumber: 196,
+                                                                        lineNumber: 206,
                                                                         columnNumber: 23
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardDescription"], {
                                                                         children: "Distribution of assessment statuses."
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                                        lineNumber: 197,
+                                                                        lineNumber: 207,
                                                                         columnNumber: 23
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                                lineNumber: 195,
+                                                                lineNumber: 205,
                                                                 columnNumber: 21
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -1121,14 +1132,14 @@ function ExploreResiliencyProgramPage() {
                                                                                     strokeDasharray: "3 3"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                                                    lineNumber: 203,
+                                                                                    lineNumber: 213,
                                                                                     columnNumber: 29
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$XAxis$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["XAxis"], {
                                                                                     type: "number"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                                                    lineNumber: 204,
+                                                                                    lineNumber: 214,
                                                                                     columnNumber: 29
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$YAxis$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["YAxis"], {
@@ -1140,18 +1151,18 @@ function ExploreResiliencyProgramPage() {
                                                                                     }
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                                                    lineNumber: 205,
+                                                                                    lineNumber: 215,
                                                                                     columnNumber: 29
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$chart$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["ChartTooltip"], {
                                                                                     content: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$chart$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["ChartTooltipContent"], {}, void 0, false, {
                                                                                         fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                                                        lineNumber: 206,
+                                                                                        lineNumber: 216,
                                                                                         columnNumber: 52
                                                                                     }, void 0)
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                                                    lineNumber: 206,
+                                                                                    lineNumber: 216,
                                                                                     columnNumber: 29
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$Bar$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Bar"], {
@@ -1165,34 +1176,34 @@ function ExploreResiliencyProgramPage() {
                                                                                     ]
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                                                    lineNumber: 207,
+                                                                                    lineNumber: 217,
                                                                                     columnNumber: 29
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                                            lineNumber: 202,
+                                                                            lineNumber: 212,
                                                                             columnNumber: 27
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                                        lineNumber: 201,
+                                                                        lineNumber: 211,
                                                                         columnNumber: 25
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                                    lineNumber: 200,
+                                                                    lineNumber: 210,
                                                                     columnNumber: 23
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                                lineNumber: 199,
+                                                                lineNumber: 209,
                                                                 columnNumber: 21
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                        lineNumber: 194,
+                                                        lineNumber: 204,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
@@ -1203,20 +1214,20 @@ function ExploreResiliencyProgramPage() {
                                                                         children: "LOBT-wise Distribution"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                                        lineNumber: 215,
+                                                                        lineNumber: 225,
                                                                         columnNumber: 23
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardDescription"], {
                                                                         children: "Status breakdown by Line of Business Technology."
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                                        lineNumber: 216,
+                                                                        lineNumber: 226,
                                                                         columnNumber: 23
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                                lineNumber: 214,
+                                                                lineNumber: 224,
                                                                 columnNumber: 21
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -1233,7 +1244,7 @@ function ExploreResiliencyProgramPage() {
                                                                                     strokeDasharray: "3 3"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                                                    lineNumber: 222,
+                                                                                    lineNumber: 232,
                                                                                     columnNumber: 33
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$XAxis$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["XAxis"], {
@@ -1243,28 +1254,28 @@ function ExploreResiliencyProgramPage() {
                                                                                     }
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                                                    lineNumber: 223,
+                                                                                    lineNumber: 233,
                                                                                     columnNumber: 33
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$YAxis$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["YAxis"], {}, void 0, false, {
                                                                                     fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                                                    lineNumber: 224,
+                                                                                    lineNumber: 234,
                                                                                     columnNumber: 33
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$chart$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["ChartTooltip"], {
                                                                                     content: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$chart$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["ChartTooltipContent"], {}, void 0, false, {
                                                                                         fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                                                        lineNumber: 225,
+                                                                                        lineNumber: 235,
                                                                                         columnNumber: 56
                                                                                     }, void 0)
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                                                    lineNumber: 225,
+                                                                                    lineNumber: 235,
                                                                                     columnNumber: 33
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$chart$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["ChartLegend"], {}, void 0, false, {
                                                                                     fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                                                    lineNumber: 226,
+                                                                                    lineNumber: 236,
                                                                                     columnNumber: 33
                                                                                 }, this),
                                                                                 statusList.map((status)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$Bar$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Bar"], {
@@ -1273,40 +1284,40 @@ function ExploreResiliencyProgramPage() {
                                                                                         fill: statusColors[status]
                                                                                     }, status, false, {
                                                                                         fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                                                        lineNumber: 228,
+                                                                                        lineNumber: 238,
                                                                                         columnNumber: 37
                                                                                     }, this))
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                                            lineNumber: 221,
+                                                                            lineNumber: 231,
                                                                             columnNumber: 29
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                                        lineNumber: 220,
+                                                                        lineNumber: 230,
                                                                         columnNumber: 26
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                                    lineNumber: 219,
+                                                                    lineNumber: 229,
                                                                     columnNumber: 23
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                                lineNumber: 218,
+                                                                lineNumber: 228,
                                                                 columnNumber: 21
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                        lineNumber: 213,
+                                                        lineNumber: 223,
                                                         columnNumber: 20
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                lineNumber: 178,
+                                                lineNumber: 188,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1316,7 +1327,7 @@ function ExploreResiliencyProgramPage() {
                                                         children: "Program Data"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                        lineNumber: 238,
+                                                        lineNumber: 248,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1329,17 +1340,17 @@ function ExploreResiliencyProgramPage() {
                                                                                 children: header
                                                                             }, header, false, {
                                                                                 fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                                                lineNumber: 244,
+                                                                                lineNumber: 254,
                                                                                 columnNumber: 29
                                                                             }, this))
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                                        lineNumber: 242,
+                                                                        lineNumber: 252,
                                                                         columnNumber: 25
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                                    lineNumber: 241,
+                                                                    lineNumber: 251,
                                                                     columnNumber: 23
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TableBody"], {
@@ -1348,64 +1359,64 @@ function ExploreResiliencyProgramPage() {
                                                                                     children: String(row[header] ?? '')
                                                                                 }, header, false, {
                                                                                     fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                                                    lineNumber: 252,
+                                                                                    lineNumber: 262,
                                                                                     columnNumber: 31
                                                                                 }, this))
                                                                         }, rowIndex, false, {
                                                                             fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                                            lineNumber: 250,
+                                                                            lineNumber: 260,
                                                                             columnNumber: 27
                                                                         }, this))
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                                    lineNumber: 248,
+                                                                    lineNumber: 258,
                                                                     columnNumber: 23
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                            lineNumber: 240,
+                                                            lineNumber: 250,
                                                             columnNumber: 21
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                        lineNumber: 239,
+                                                        lineNumber: 249,
                                                         columnNumber: 19
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                                lineNumber: 237,
+                                                lineNumber: 247,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                        lineNumber: 177,
+                                        lineNumber: 187,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                                lineNumber: 163,
+                                lineNumber: 173,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                        lineNumber: 156,
+                        lineNumber: 165,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-                lineNumber: 147,
+                lineNumber: 156,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.tsx",
-        lineNumber: 145,
+        lineNumber: 154,
         columnNumber: 5
     }, this);
 }

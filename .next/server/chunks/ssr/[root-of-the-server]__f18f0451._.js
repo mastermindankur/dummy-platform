@@ -255,6 +255,7 @@ var { g: global, __dirname } = __turbopack_context__;
 __turbopack_context__.s({
     "getActionItems": (()=>getActionItems),
     "getEvents": (()=>getEvents),
+    "getExcelMetadata": (()=>getExcelMetadata),
     "getPillarById": (()=>getPillarById),
     "getPillars": (()=>getPillars),
     "getUsers": (()=>getUsers),
@@ -265,6 +266,7 @@ __turbopack_context__.s({
     "writeData": (()=>writeData),
     "writeEvents": (()=>writeEvents),
     "writeExcelData": (()=>writeExcelData),
+    "writeExcelMetadata": (()=>writeExcelMetadata),
     "writeMonthlyData": (()=>writeMonthlyData),
     "writeUsers": (()=>writeUsers),
     "writeValueMapData": (()=>writeValueMapData)
@@ -689,6 +691,8 @@ const getActionItems = ()=>readJsonFile('action-items.json', []);
 const writeActionItems = (data)=>writeJsonFile('action-items.json', data);
 const getEvents = ()=>readJsonFile('events.json', []);
 const writeEvents = (data)=>writeJsonFile('events.json', data);
+const getExcelMetadata = ()=>readJsonFile('excel-metadata.json', {});
+const writeExcelMetadata = (data)=>writeJsonFile('excel-metadata.json', data);
 }}),
 "[project]/src/components/ui/card.tsx [app-rsc] (ecmascript)": ((__turbopack_context__) => {
 "use strict";
