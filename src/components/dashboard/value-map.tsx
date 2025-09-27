@@ -20,7 +20,7 @@ type ValueMapProps = {
 
 type SelectedItem = {
     id: string;
-    type: 'lever' | 'driver' | 'outcome';
+    type: 'lever' | 'driver' | 'outcome' | 'outcomeGroup' | 'driverGroup';
 } | null;
 
 const itemColorClasses = {
@@ -78,14 +78,29 @@ const groupColorClasses = [
     'bg-sky-900/10 border-sky-700/40',
 ];
 
-const GroupContainer = ({ group, children, title, index }: { group?: ValueMapGroup, children: React.ReactNode, title: string, index: number }) => {
+const GroupContainer = ({ group, children, title, index, onClick, isSelected }: { 
+    group?: ValueMapGroup, 
+    children: React.ReactNode, 
+    title: string, 
+    index: number,
+    onClick: () => void,
+    isSelected: boolean
+}) => {
     if (!group) return <>{children}</>;
     
     const colorClass = groupColorClasses[index % groupColorClasses.length];
 
     return (
         <div id={`group-${group.id}`} className={cn("border rounded-lg p-3 relative", colorClass)}>
-            <h3 className="text-sm font-semibold text-muted-foreground absolute -top-2.5 left-3 bg-background px-2">{group.name}</h3>
+            <h3 
+              onClick={onClick}
+              className={cn(
+                "text-sm font-semibold text-muted-foreground absolute -top-2.5 left-3 bg-background px-2 cursor-pointer transition-colors",
+                isSelected && 'text-accent font-bold'
+              )}
+            >
+                {group.name}
+            </h3>
             <div className="space-y-2 pt-2">
                 {children}
             </div>
@@ -179,7 +194,7 @@ export function ValueMap({
         };
     }, [isClient, selectedItem, outcomes, drivers, levers, outcomeDriverConnections, driverLeverConnections, outcomeGroups, driverGroups]);
 
-    const handleItemClick = (id: string, type: 'lever' | 'driver' | 'outcome') => {
+    const handleItemClick = (id: string, type: SelectedItem['type']) => {
         setSelectedItem(prev => (prev?.id === id && prev?.type === type ? null : { id, type }));
     };
 
@@ -229,6 +244,36 @@ export function ValueMap({
             highlightedLevers.push(...connectedLeverIds);
         }
 
+        if (selectedItem.type === 'driverGroup') {
+            const groupDriverIds = drivers.filter(d => d.groupId === selectedItem.id).map(d => d.id);
+            highlightedDrivers.push(...groupDriverIds);
+
+            const connectedLeverIds = driverLeverConnections
+                .filter(c => groupDriverIds.includes(c.driverId))
+                .map(c => c.leverId);
+            highlightedLevers.push(...connectedLeverIds);
+
+            const connectedOutcomeIds = outcomeDriverConnections
+                .filter(c => groupDriverIds.includes(c.driverId))
+                .map(c => c.outcomeId);
+            highlightedOutcomes.push(...connectedOutcomeIds);
+        }
+
+        if (selectedItem.type === 'outcomeGroup') {
+            const groupOutcomeIds = outcomes.filter(o => o.groupId === selectedItem.id).map(o => o.id);
+            highlightedOutcomes.push(...groupOutcomeIds);
+
+            const connectedDriverIds = outcomeDriverConnections
+                .filter(c => groupOutcomeIds.includes(c.outcomeId))
+                .map(c => c.driverId);
+            highlightedDrivers.push(...connectedDriverIds);
+            
+            const connectedLeverIds = driverLeverConnections
+                .filter(c => connectedDriverIds.includes(c.driverId))
+                .map(c => c.leverId);
+            highlightedLevers.push(...connectedLeverIds);
+        }
+
         return { 
             lever: [...new Set(highlightedLevers)], 
             driver: [...new Set(highlightedDrivers)], 
@@ -271,7 +316,14 @@ export function ValueMap({
         return (
             <>
                 {groups.map((group, index) => (
-                    <GroupContainer key={group.id} group={group} title={`${type} Group`} index={index}>
+                    <GroupContainer 
+                        key={group.id} 
+                        group={group} 
+                        title={`${type} Group`} 
+                        index={index}
+                        onClick={() => handleItemClick(group.id, `${type}Group` as SelectedItem['type'])}
+                        isSelected={selectedItem?.id === group.id}
+                    >
                         {groupedItems
                             .filter(item => item.groupId === group.id)
                             .map(item => (
