@@ -127,19 +127,7 @@ export default function JiraAssistantAdoptionPage() {
 
     const allMonths = Object.keys(monthlyData).sort();
     const sortedMonthLabels = allMonths.map(m => new Date(m + '-02').toLocaleString('default', { month: 'short', year: '2-digit' }));
-    
-    // This helper finds the actual header key by checking against a list of potential names, case-insensitively.
-    const findHeaderKey = (headers: string[], potentialNames: string[]): string | undefined => {
-        const lowerCaseNames = potentialNames.map(n => n.toLowerCase());
-        for (const header of headers) {
-            if (lowerCaseNames.includes(header.toLowerCase())) {
-                return header;
-            }
-        }
-        return undefined;
-    };
-    
-    // --- Aggregation Logic ---
+
     const platformUserStats = new Map<string, { [month: string]: { totalUsers: Set<string>; activeUsers: Set<string> } }>();
     const platformTestCaseStats = new Map<string, { [month: string]: { totalCases: number, jaCases: number } }>();
 
@@ -149,47 +137,53 @@ export default function JiraAssistantAdoptionPage() {
         if (!monthData || !monthData.rows) continue;
 
         const { headers, rows: monthRows } = monthData;
+        
+        const findHeader = (possibleNames: string[]) => {
+            const lowerCaseNames = possibleNames.map(n => n.toLowerCase());
+            return headers.find(h => lowerCaseNames.includes(h.toLowerCase()));
+        };
 
-        // Find the correct column keys once per sheet, robustly.
-        const platformKey = findHeaderKey(headers, ['Platforms']);
-        const userIdKey = findHeaderKey(headers, ['1bankid']);
-        const isAdoptedKey = findHeaderKey(headers, ['is_created_via_ja', 'is_created_via_JA']);
-        const issueTypeKey = findHeaderKey(headers, ['issue_type']);
+        const userIdKey = findHeader(['1bankid']);
+        const platformKey = findHeader(['Platforms']);
+        const testKey = findHeader(['Test']);
+        const isCreatedViaJAKey = findHeader(['is_created_via_JA', 'is_created_via_ja']);
 
-        // Skip this month's data if we can't find the essential columns
-        if (!platformKey || !userIdKey || !isAdoptedKey || !issueTypeKey) {
-            console.warn(`Skipping month ${month} due to missing required columns.`);
-            continue;
-        }
-
+        if (!platformKey) continue;
+        
         for (const row of monthRows) {
             const platform = (row[platformKey] as string) || 'Unknown';
-            const userId = row[userIdKey];
-            const isAdopted = row[isAdoptedKey] === 1;
-            
-            // --- User Adoption Processing ---
-            if (!platformUserStats.has(platform)) platformUserStats.set(platform, {});
-            const platformUserData = platformUserStats.get(platform)!;
-            
-            if (!platformUserData[monthLabel]) platformUserData[monthLabel] = { totalUsers: new Set(), activeUsers: new Set() };
-            const userMonthStats = platformUserData[monthLabel];
 
-            if (userId) {
-                userMonthStats.totalUsers.add(userId);
-                if (isAdopted) {
-                    userMonthStats.activeUsers.add(userId);
+            // User Adoption Logic
+            if (userIdKey && isCreatedViaJAKey) {
+                const userId = row[userIdKey];
+                const isAdopted = row[isCreatedViaJAKey] === 1;
+
+                if (!platformUserStats.has(platform)) platformUserStats.set(platform, {});
+                const platformUserData = platformUserStats.get(platform)!;
+                
+                if (!platformUserData[monthLabel]) platformUserData[monthLabel] = { totalUsers: new Set(), activeUsers: new Set() };
+                const userMonthStats = platformUserData[monthLabel];
+
+                if (userId) {
+                    userMonthStats.totalUsers.add(userId);
+                    if (isAdopted) {
+                        userMonthStats.activeUsers.add(userId);
+                    }
                 }
             }
+            
+            // Test Case Adoption Logic
+            if (testKey && isCreatedViaJAKey && row[testKey] === 1) {
+                const isJA = row[isCreatedViaJAKey] === 1;
 
-            // --- Test Case Adoption Processing ---
-            if (String(row[issueTypeKey]).toLowerCase() === 'test') {
                 if (!platformTestCaseStats.has(platform)) platformTestCaseStats.set(platform, {});
                 const platformTestCaseData = platformTestCaseStats.get(platform)!;
 
                 if (!platformTestCaseData[monthLabel]) platformTestCaseData[monthLabel] = { totalCases: 0, jaCases: 0 };
                 const testCaseMonthStats = platformTestCaseData[monthLabel];
+                
                 testCaseMonthStats.totalCases += 1;
-                if (isAdopted) {
+                if (isJA) {
                     testCaseMonthStats.jaCases += 1;
                 }
             }
@@ -578,3 +572,5 @@ export default function JiraAssistantAdoptionPage() {
     </div>
   );
 }
+
+    
