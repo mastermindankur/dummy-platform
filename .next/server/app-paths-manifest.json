@@ -1,6 +1,7 @@
 {
   "/api/data/route": "app/api/data/route.js",
   "/dashboard/page": "app/dashboard/page.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
   "/hackathons/page": "app/hackathons/page.js",
   "/industry-events/page": "app/industry-events/page.js",
   "/page": "app/page.js",

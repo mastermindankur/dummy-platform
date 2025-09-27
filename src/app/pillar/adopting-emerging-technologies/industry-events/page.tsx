@@ -10,7 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { ArrowLeft, Loader2, Calendar, MapPin, Briefcase, Building } from 'lucide-react';
+import { ArrowLeft, Loader2, Calendar, MapPin, Briefcase, Building, CalendarClock } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import type { IndustryEvent, Pillar, SubItem } from '@/types';
 import { Button } from '@/components/ui/button';
@@ -34,21 +34,31 @@ const fetchPillarsData = async (): Promise<Pillar[] | null> => {
     return res.json();
 };
 
+const fetchMetadata = async (key: string) => {
+    const res = await fetch(`/api/data?key=${key}&meta=true`);
+    if (!res.ok) return null;
+    const { lastUpdated } = await res.json();
+    return lastUpdated;
+};
+
 export default function IndustryEventsDetailsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [events, setEvents] = useState<IndustryEvent[]>([]);
   const [eventSubItem, setEventSubItem] = useState<SubItem | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
       try {
-        const [eventsData, pillarsData] = await Promise.all([
+        const [eventsData, pillarsData, metadata] = await Promise.all([
           fetchEventsData(),
-          fetchPillarsData()
+          fetchPillarsData(),
+          fetchMetadata('industry-events')
         ]);
         
         setEvents(eventsData);
+        setLastUpdated(metadata);
 
         if (pillarsData) {
             const emergingTechPillar = pillarsData.find(p => p.id === 'adopting-emerging-technologies');
@@ -109,7 +119,15 @@ export default function IndustryEventsDetailsPage() {
         </div>
         <Card>
           <CardHeader>
-            <CardTitle className="text-3xl">Industry Events</CardTitle>
+            <div className="flex flex-wrap items-center gap-4">
+                <CardTitle className="text-3xl">Industry Events</CardTitle>
+                 {lastUpdated && (
+                    <Badge variant="outline" className="font-normal">
+                        <CalendarClock className="mr-2 h-4 w-4" />
+                        Last updated: {new Date(lastUpdated).toLocaleString()}
+                    </Badge>
+                )}
+            </div>
             <CardDescription>
               Overview of all internal and external industry events. To add or update data, go to the Manage Industry Events page.
             </CardDescription>
