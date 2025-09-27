@@ -46,22 +46,32 @@ const fetchPillarsData = async (): Promise<Pillar[] | null> => {
     return res.json();
 };
 
+const fetchMetadata = async (key: string) => {
+    const res = await fetch(`/api/data?key=${key}&meta=true`);
+    if (!res.ok) return null;
+    const { lastUpdated } = await res.json();
+    return lastUpdated;
+};
+
 
 export default function ArcTrainingsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [excelData, setExcelData] = useState<ExcelData | null>(null);
   const [trainingSubItem, setTrainingSubItem] = useState<SubItem | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
       try {
-        const [data, pillars] = await Promise.all([
+        const [data, pillars, metadata] = await Promise.all([
             fetchTrainingsData(),
-            fetchPillarsData()
+            fetchPillarsData(),
+            fetchMetadata('arc-trainings')
         ]);
         
         setExcelData(data);
+        setLastUpdated(metadata);
 
         if (pillars) {
             const resilientPillar = pillars.find(p => p.id === 'making-design-resilient');
@@ -137,7 +147,8 @@ export default function ArcTrainingsPage() {
               ARC Trainings
             </CardTitle>
             <CardDescription>
-              This page displays the current data for ARC Trainings. To update this data, please use the Excel upload feature on the &quot;Update Data&quot; page.
+              This page displays the current data for ARC Trainings.
+              {lastUpdated && ` Last updated on ${new Date(lastUpdated).toLocaleDateString()}.`}
             </CardDescription>
           </CardHeader>
           <CardContent>

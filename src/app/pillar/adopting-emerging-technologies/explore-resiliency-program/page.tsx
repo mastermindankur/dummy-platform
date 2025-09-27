@@ -38,7 +38,6 @@ const fetchProgramData = async (): Promise<ExcelData | null> => {
   return res.json();
 };
 
-// Fetch all pillar data to find the specific sub-item for targets
 const fetchPillarsData = async (): Promise<Pillar[] | null> => {
     const res = await fetch('/api/data');
     if (!res.ok) {
@@ -47,21 +46,31 @@ const fetchPillarsData = async (): Promise<Pillar[] | null> => {
     return res.json();
 };
 
+const fetchMetadata = async (key: string) => {
+    const res = await fetch(`/api/data?key=${key}&meta=true`);
+    if (!res.ok) return null;
+    const { lastUpdated } = await res.json();
+    return lastUpdated;
+};
+
 
 export default function ExploreResiliencyProgramPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [excelData, setExcelData] = useState<ExcelData | null>(null);
   const [programSubItem, setProgramSubItem] = useState<SubItem | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
       try {
-        const [data, pillars] = await Promise.all([
+        const [data, pillars, metadata] = await Promise.all([
             fetchProgramData(),
-            fetchPillarsData()
+            fetchPillarsData(),
+            fetchMetadata('explore-resiliency-program')
         ]);
         setExcelData(data);
+        setLastUpdated(metadata);
 
         if (pillars) {
             const emergingTechPillar = pillars.find(p => p.id === 'adopting-emerging-technologies');
@@ -157,7 +166,8 @@ export default function ExploreResiliencyProgramPage() {
           <CardHeader>
             <CardTitle className="text-3xl">Explore Resiliency Program</CardTitle>
             <CardDescription>
-              This page displays the current data for the Explore Resiliency Program. To update this data, please use the Excel upload feature on the &quot;Update Data&quot; page.
+              This page displays the current data for the Explore Resiliency Program.
+              {lastUpdated && ` Last updated on ${new Date(lastUpdated).toLocaleDateString()}.`}
             </CardDescription>
           </CardHeader>
           <CardContent>

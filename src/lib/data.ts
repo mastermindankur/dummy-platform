@@ -7,7 +7,7 @@ import {
   Cpu,
   Landmark,
 } from "lucide-react";
-import type { Pillar, SubItem, ExcelData, MonthlyExcelData, ValueMapData, User, ActionItem, MeetingEvent } from "@/types";
+import type { Pillar, SubItem, ExcelData, MonthlyExcelData, ValueMapData, User, ActionItem, MeetingEvent, ExcelMetadata } from "@/types";
 import { promises as fs } from 'fs';
 import path from 'path';
 
@@ -422,3 +422,8 @@ export const writeActionItems = (data: ActionItem[]) => writeJsonFile('action-it
 
 export const getEvents = () => readJsonFile<MeetingEvent[]>('events.json', []);
 export const writeEvents = (data: MeetingEvent[]) => writeJsonFile('events.json', data);
+
+
+// Metadata for Excel files
+export const getExcelMetadata = () => readJsonFile<ExcelMetadata>('excel-metadata.json', {});
+export const writeExcelMetadata = (data: ExcelMetadata) => writeJsonFile('excel-metadata.json', data);

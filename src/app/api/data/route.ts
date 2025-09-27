@@ -15,6 +15,8 @@ import {
     writeActionItems,
     getEvents,
     writeEvents,
+    getExcelMetadata,
+    writeExcelMetadata
 } from '@/lib/data';
 import type { Pillar } from '@/types';
 
@@ -22,6 +24,17 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const fileKey = searchParams.get('key');
   const month = searchParams.get('month'); // e.g., '2024-08'
+  const includeMetadata = searchParams.get('meta');
+
+  if (includeMetadata && fileKey) {
+      try {
+        const metadata = await getExcelMetadata();
+        return NextResponse.json({ lastUpdated: metadata[fileKey] || null });
+      } catch (error) {
+        return new NextResponse('Internal Server Error', { status: 500 });
+      }
+  }
+
 
   if (fileKey === 'users') {
       try {
@@ -116,6 +129,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
+    let excelMetadataUpdated = false;
 
     if (body.pillars) {
         await writeData(body.pillars);
@@ -130,16 +144,23 @@ export async function POST(request: Request) {
         await writeEvents(body.events);
     }
     if (body.excelData) {
+        const metadata = await getExcelMetadata();
+        const now = new Date().toISOString();
+
         for (const key in body.excelData) {
             if (Object.prototype.hasOwnProperty.call(body.excelData, key)) {
                  if (body.excelData[key]) {
                     // special handling for certain keys
                     if (key === 'hackathons' || key === 'industry-events') {
                       await writeExcelData(key, body.excelData[key]);
+                      metadata[key] = now;
+                      excelMetadataUpdated = true;
                     } else if (key.startsWith('jira-assistant-adoption')) {
                         const [, month] = key.split(':');
                         if (month) {
                             await writeMonthlyData('jira-assistant-adoption', month, body.excelData[key]);
+                            metadata[`jira-assistant-adoption`] = now; // Store one timestamp for the whole dataset
+                            excelMetadataUpdated = true;
                         }
                     } else if (key === 'users') {
                         const usersData = body.excelData[key].rows.map((row: any) => ({
@@ -151,9 +172,14 @@ export async function POST(request: Request) {
                     }
                     else {
                       await writeExcelData(key, body.excelData[key]);
+                      metadata[key] = now;
+                      excelMetadataUpdated = true;
                     }
                  }
             }
+        }
+         if (excelMetadataUpdated) {
+            await writeExcelMetadata(metadata);
         }
     }
 

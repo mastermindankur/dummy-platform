@@ -46,22 +46,32 @@ const fetchPillarsData = async (): Promise<Pillar[] | null> => {
     return res.json();
 };
 
+const fetchMetadata = async (key: string) => {
+    const res = await fetch(`/api/data?key=${key}&meta=true`);
+    if (!res.ok) return null;
+    const { lastUpdated } = await res.json();
+    return lastUpdated;
+};
+
 
 export default function MaintenanceScreensPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [excelData, setExcelData] = useState<ExcelData | null>(null);
   const [subItemData, setSubItemData] = useState<SubItem | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
       try {
-        const [data, pillars] = await Promise.all([
+        const [data, pillars, metadata] = await Promise.all([
             fetchMaintenanceData(),
-            fetchPillarsData()
+            fetchPillarsData(),
+            fetchMetadata('maintenance-screens')
         ]);
         
         setExcelData(data);
+        setLastUpdated(metadata);
 
         if (pillars) {
             const reliableProductsPillar = pillars.find(p => p.id === 'building-reliable-products');
@@ -143,7 +153,8 @@ export default function MaintenanceScreensPage() {
               Maintenance Screens
             </CardTitle>
             <CardDescription>
-              This page displays the current data for Maintenance Screens. To update this data, please use the Excel upload feature on the &quot;Update Data&quot; page.
+              This page displays the current data for Maintenance Screens.
+              {lastUpdated && ` Last updated on ${new Date(lastUpdated).toLocaleDateString()}.`}
             </CardDescription>
           </CardHeader>
           <CardContent>

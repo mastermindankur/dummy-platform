@@ -46,22 +46,32 @@ const fetchPillarsData = async (): Promise<Pillar[] | null> => {
     return res.json();
 };
 
+const fetchMetadata = async (key: string) => {
+    const res = await fetch(`/api/data?key=${key}&meta=true`);
+    if (!res.ok) return null;
+    const { lastUpdated } = await res.json();
+    return lastUpdated;
+};
+
 
 export default function TechSphereSessionsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [excelData, setExcelData] = useState<ExcelData | null>(null);
   const [sessionSubItem, setSessionSubItem] = useState<SubItem | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
       try {
-        const [data, pillars] = await Promise.all([
+        const [data, pillars, metadata] = await Promise.all([
             fetchSessionsData(),
-            fetchPillarsData()
+            fetchPillarsData(),
+            fetchMetadata('tech-sphere-sessions')
         ]);
         
         setExcelData(data);
+        setLastUpdated(metadata);
 
         if (pillars) {
             const emergingTechPillar = pillars.find(p => p.id === 'adopting-emerging-technologies');
@@ -137,7 +147,8 @@ export default function TechSphereSessionsPage() {
               Tech Sphere Sessions
             </CardTitle>
             <CardDescription>
-              This page displays the current data for Tech Sphere Sessions. To update this data, please use the Excel upload feature on the &quot;Update Data&quot; page.
+              This page displays the current data for Tech Sphere Sessions.
+              {lastUpdated && ` Last updated on ${new Date(lastUpdated).toLocaleDateString()}.`}
             </CardDescription>
           </CardHeader>
           <CardContent>

@@ -1,5 +1,12 @@
 {
   "/api/data/route": "app/api/data/route.js",
+  "/dashboard/page": "app/dashboard/page.js",
+  "/industry-events/page": "app/industry-events/page.js",
   "/page": "app/page.js",
+  "/pillar/[id]/page": "app/pillar/[id]/page.js",
+  "/pillar/adopting-emerging-technologies/explore-resiliency-program/page": "app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.js",
+  "/pillar/adopting-emerging-technologies/hackathons/page": "app/pillar/adopting-emerging-technologies/hackathons/page.js",
+  "/pillar/adopting-emerging-technologies/industry-events/page": "app/pillar/adopting-emerging-technologies/industry-events/page.js",
+  "/pillar/making-design-resilient/jira-assistant-adoption/page": "app/pillar/making-design-resilient/jira-assistant-adoption/page.js",
   "/update-data/page": "app/update-data/page.js"
 }

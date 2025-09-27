@@ -149,3 +149,7 @@ export type ActionItem = {
     eventId?: string; // Optional event ID
     createdAt: string;
 };
+
+export type ExcelMetadata = {
+    [key: string]: string; // key is the fileKey, value is the ISO date string
+};

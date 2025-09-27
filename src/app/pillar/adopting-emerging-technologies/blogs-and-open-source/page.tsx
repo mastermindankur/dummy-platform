@@ -38,7 +38,6 @@ const fetchBlogsData = async (): Promise<ExcelData | null> => {
   return res.json();
 };
 
-// Fetch all pillar data to find the specific sub-item for targets
 const fetchPillarsData = async (): Promise<Pillar[] | null> => {
     const res = await fetch('/api/data');
     if (!res.ok) {
@@ -47,22 +46,31 @@ const fetchPillarsData = async (): Promise<Pillar[] | null> => {
     return res.json();
 };
 
+const fetchMetadata = async (key: string) => {
+    const res = await fetch(`/api/data?key=${key}&meta=true`);
+    if (!res.ok) return null;
+    const { lastUpdated } = await res.json();
+    return lastUpdated;
+};
 
 export default function BlogsAndOpenSourcePage() {
   const [isLoading, setIsLoading] = useState(true);
   const [excelData, setExcelData] = useState<ExcelData | null>(null);
   const [blogSubItem, setBlogSubItem] = useState<SubItem | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
       try {
-        const [data, pillars] = await Promise.all([
+        const [data, pillars, metadata] = await Promise.all([
             fetchBlogsData(),
-            fetchPillarsData()
+            fetchPillarsData(),
+            fetchMetadata('dti-tech-blogs')
         ]);
         
         setExcelData(data);
+        setLastUpdated(metadata);
 
         if (pillars) {
             const emergingTechPillar = pillars.find(p => p.id === 'adopting-emerging-technologies');
@@ -126,7 +134,8 @@ export default function BlogsAndOpenSourcePage() {
               Blogs and Open Source
             </CardTitle>
             <CardDescription>
-              This page displays the current data for blogs and open source contributions. To update this data, please use the Excel upload feature on the &quot;Update Data&quot; page.
+              This page displays the current data for blogs and open source contributions.
+              {lastUpdated && ` Last updated on ${new Date(lastUpdated).toLocaleDateString()}.`}
             </CardDescription>
           </CardHeader>
           <CardContent>

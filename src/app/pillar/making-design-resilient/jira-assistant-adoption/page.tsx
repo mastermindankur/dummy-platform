@@ -39,6 +39,14 @@ const fetchAdoptionData = async (): Promise<MonthlyExcelData | null> => {
   return data;
 };
 
+const fetchMetadata = async (key: string) => {
+    const res = await fetch(`/api/data?key=${key}&meta=true`);
+    if (!res.ok) return null;
+    const { lastUpdated } = await res.json();
+    return lastUpdated;
+};
+
+
 type MonthlyStats = {
     totalUsers: number;
     activeUsers: number;
@@ -65,13 +73,18 @@ type PlatformTestCaseAdoptionData = {
 export default function JiraAssistantAdoptionPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [monthlyData, setMonthlyData] = useState<MonthlyExcelData | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
       try {
-        const data = await fetchAdoptionData();
+        const [data, metadata] = await Promise.all([
+            fetchAdoptionData(),
+            fetchMetadata('jira-assistant-adoption')
+        ]);
         setMonthlyData(data);
+        setLastUpdated(metadata);
       } catch (error) {
         console.error('Failed to load page data', error);
         toast({
@@ -284,6 +297,15 @@ export default function JiraAssistantAdoptionPage() {
             </Button>
         </div>
         <div className="space-y-8">
+             <Card>
+                <CardHeader>
+                    <CardTitle>Jira Assistant Adoption</CardTitle>
+                    <CardDescription>
+                        Month-on-month adoption metrics.
+                        {lastUpdated && ` Last updated on ${new Date(lastUpdated).toLocaleDateString()}.`}
+                    </CardDescription>
+                </CardHeader>
+            </Card>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                  <Card>
                     <CardHeader>
@@ -369,7 +391,7 @@ export default function JiraAssistantAdoptionPage() {
 
             <Card>
                 <CardHeader>
-                    <CardTitle>User Adoption</CardTitle>
+                    <CardTitle>User Adoption Details</CardTitle>
                     <CardDescription>
                         Month-on-month user adoption of Jira Assistant, broken down by platform.
                     </CardDescription>
@@ -449,7 +471,7 @@ export default function JiraAssistantAdoptionPage() {
 
             <Card>
                 <CardHeader>
-                    <CardTitle>Jira Assist Test Cases Adoption</CardTitle>
+                    <CardTitle>Jira Assist Test Cases Adoption Details</CardTitle>
                     <CardDescription>Month-on-month test case adoption of Jira Assistant, broken down by Platform.</CardDescription>
                 </CardHeader>
                 <CardContent>
