@@ -162,7 +162,7 @@ export default function JiraAssistantAdoptionPage() {
             }
 
             // Test Case Adoption Processing
-            if (row['issue_type'] === 'Test') {
+            if (String(row['issue_type']).toLowerCase() === 'test') {
                 if (!platformTestCaseStats.has(platform)) {
                     platformTestCaseStats.set(platform, {});
                 }
