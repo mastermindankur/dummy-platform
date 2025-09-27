@@ -134,28 +134,35 @@ export default function JiraAssistantAdoptionPage() {
     // TEST CASE ADOPTION LOGIC
     const platformTestCaseStats = new Map<string, { [month: string]: { totalCases: number, jaCases: number } }>();
 
-    const findColumnValue = (row: ExcelRow, potentialNames: string[]): any => {
-      const rowKeys = Object.keys(row);
-      for (const name of potentialNames) {
-        const foundKey = rowKeys.find(key => key.toLowerCase() === name.toLowerCase());
-        if (foundKey) {
-          return row[foundKey];
-        }
-      }
-      return undefined;
+    const findKey = (headers: string[], potentialNames: string[]): string | undefined => {
+        const lowerCaseNames = potentialNames.map(n => n.toLowerCase());
+        return headers.find(header => lowerCaseNames.includes(header.toLowerCase()));
     };
-
 
     for (const month of allMonths) {
         const monthLabel = new Date(month + '-02').toLocaleString('default', { month: 'short', 'year': '2-digit' });
-        const monthRows = monthlyData[month].rows;
+        const monthData = monthlyData[month];
+        if (!monthData || !monthData.rows) continue;
+
+        const { headers, rows: monthRows } = monthData;
+
+        // Find the correct column keys once per sheet
+        const platformKey = findKey(headers, ['platforms', 'platform']);
+        const userIdKey = findKey(headers, ['1bankid']);
+        const isAdoptedKey = findKey(headers, ['is_created_via_ja']);
+        const issueTypeKey = findKey(headers, ['issue_type']);
+
+        if (!platformKey || !userIdKey || !isAdoptedKey || !issueTypeKey) {
+            console.warn(`Skipping month ${month} due to missing required columns.`);
+            continue;
+        }
 
         for (const row of monthRows) {
-            const platform = (findColumnValue(row, ['platforms', 'platform']) as string) || 'Unknown';
-            const userId = findColumnValue(row, ['1bankid']);
-            const isAdopted = findColumnValue(row, ['is_created_via_ja']) === 1;
+            const platform = (row[platformKey] as string) || 'Unknown';
+            const userId = row[userIdKey];
+            const isAdopted = row[isAdoptedKey] === 1;
             
-            // User Adoption Processing
+            // --- User Adoption Processing ---
             if (!platformUserStats.has(platform)) {
                 platformUserStats.set(platform, {});
             }
@@ -173,8 +180,8 @@ export default function JiraAssistantAdoptionPage() {
                 }
             }
 
-            // Test Case Adoption Processing
-            if (String(findColumnValue(row, ['issue_type'])).toLowerCase() === 'test') {
+            // --- Test Case Adoption Processing ---
+            if (String(row[issueTypeKey]).toLowerCase() === 'test') {
                 if (!platformTestCaseStats.has(platform)) {
                     platformTestCaseStats.set(platform, {});
                 }
@@ -192,7 +199,7 @@ export default function JiraAssistantAdoptionPage() {
         }
     }
     
-    // Final processing for User Adoption
+    // --- Final processing for User Adoption ---
     const finalReportData: PlatformAdoptionData[] = [];
     const allPlatformKeys = Array.from(platformUserStats.keys()).sort();
 
@@ -233,7 +240,7 @@ export default function JiraAssistantAdoptionPage() {
         return monthEntry;
     });
 
-    // Final processing for Test Case Adoption
+    // --- Final processing for Test Case Adoption ---
     const finalTestCaseReportData: PlatformTestCaseAdoptionData[] = [];
     const allTestCasePlatformKeys = Array.from(platformTestCaseStats.keys()).sort();
 
