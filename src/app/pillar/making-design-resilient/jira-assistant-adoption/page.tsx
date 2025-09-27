@@ -133,13 +133,25 @@ export default function JiraAssistantAdoptionPage() {
     
     // TEST CASE ADOPTION LOGIC
     const platformTestCaseStats = new Map<string, { [month: string]: { totalCases: number, jaCases: number } }>();
+    
+    const findColumn = (row: ExcelRow, potentialNames: string[]): any => {
+        const rowKeys = Object.keys(row);
+        for (const name of potentialNames) {
+            const foundKey = rowKeys.find(key => key.toLowerCase() === name.toLowerCase());
+            if (foundKey) {
+                return row[foundKey];
+            }
+        }
+        return undefined;
+    };
+
 
     for (const month of allMonths) {
         const monthLabel = new Date(month + '-02').toLocaleString('default', { month: 'short', 'year': '2-digit' });
         const monthRows = monthlyData[month].rows;
 
         for (const row of monthRows) {
-            const platform = (row['Platforms'] as string) || 'Unknown';
+            const platform = (findColumn(row, ['Platforms', 'Platform']) as string) || 'Unknown';
             const userId = row['1bankid'] as string;
             const isAdopted = row['is_created_via_JA'] === 1;
             
@@ -162,7 +174,7 @@ export default function JiraAssistantAdoptionPage() {
             }
 
             // Test Case Adoption Processing
-            if (String(row['issue_type']).toLowerCase() === 'test') {
+            if (String(findColumn(row, ['issue_type'])).toLowerCase() === 'test') {
                 if (!platformTestCaseStats.has(platform)) {
                     platformTestCaseStats.set(platform, {});
                 }
@@ -557,3 +569,5 @@ export default function JiraAssistantAdoptionPage() {
     </div>
   );
 }
+
+    
