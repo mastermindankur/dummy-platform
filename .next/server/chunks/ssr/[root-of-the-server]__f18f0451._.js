@@ -253,14 +253,20 @@ module.exports = mod;
 var { g: global, __dirname } = __turbopack_context__;
 {
 __turbopack_context__.s({
+    "getActionItems": (()=>getActionItems),
+    "getEvents": (()=>getEvents),
     "getPillarById": (()=>getPillarById),
     "getPillars": (()=>getPillars),
+    "getUsers": (()=>getUsers),
     "getValueMapData": (()=>getValueMapData),
     "readExcelData": (()=>readExcelData),
     "readMonthlyData": (()=>readMonthlyData),
+    "writeActionItems": (()=>writeActionItems),
     "writeData": (()=>writeData),
+    "writeEvents": (()=>writeEvents),
     "writeExcelData": (()=>writeExcelData),
     "writeMonthlyData": (()=>writeMonthlyData),
+    "writeUsers": (()=>writeUsers),
     "writeValueMapData": (()=>writeValueMapData)
 });
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$trending$2d$up$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__$3c$export__default__as__TrendingUp$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/trending-up.js [app-rsc] (ecmascript) <export default as TrendingUp>");
@@ -499,17 +505,44 @@ async function readExcelData(fileKey) {
                 rows: data
             };
         }
+        if (fileKey === 'users') {
+            const users = JSON.parse(fileContent);
+            const rows = users.map((user)=>({
+                    'Name': user.name,
+                    'Email': user.email,
+                    'LOBT': user.lobt
+                }));
+            const headers = users.length > 0 ? Object.keys(rows[0]) : [];
+            return {
+                headers,
+                rows
+            };
+        }
         return JSON.parse(fileContent);
     } catch (error) {
         // It's okay if the file doesn't exist, it just means no data has been uploaded yet.
         if (error instanceof Error && error.code === 'ENOENT') {
             try {
-                // If the file doesn't exist, create it with empty data
-                const emptyContent = fileKey === 'hackathons' || fileKey === 'industry-events' ? '[]' : JSON.stringify({
-                    headers: [],
-                    rows: []
-                }, null, 2);
+                let emptyContent;
+                if (fileKey === 'hackathons' || fileKey === 'industry-events' || fileKey === 'users') {
+                    emptyContent = '[]';
+                } else {
+                    emptyContent = JSON.stringify({
+                        headers: [],
+                        rows: []
+                    }, null, 2);
+                }
                 await __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["promises"].writeFile(dataFilePath(`${fileKey}.json`), emptyContent, 'utf-8');
+                if (fileKey === 'users') {
+                    return {
+                        headers: [
+                            'Name',
+                            'Email',
+                            'LOBT'
+                        ],
+                        rows: []
+                    };
+                }
                 if (fileKey === 'hackathons' || fileKey === 'industry-events') {
                     return {
                         headers: [],
@@ -626,6 +659,36 @@ async function writeValueMapData(data) {
         throw new Error("Failed to save Value Map data.");
     }
 }
+// User and Action Item data functions
+async function readJsonFile(fileName, defaultValue) {
+    const filePath = dataFilePath(fileName);
+    try {
+        const fileContent = await __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["promises"].readFile(filePath, 'utf-8');
+        return JSON.parse(fileContent);
+    } catch (error) {
+        if (error instanceof Error && error.code === 'ENOENT') {
+            await writeJsonFile(fileName, defaultValue);
+            return defaultValue;
+        }
+        console.error(`Could not read or parse ${fileName}:`, error);
+        throw new Error(`Failed to read ${fileName}.`);
+    }
+}
+async function writeJsonFile(fileName, data) {
+    try {
+        const filePath = dataFilePath(fileName);
+        await __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["promises"].writeFile(filePath, JSON.stringify(data, null, 2), 'utf-8');
+    } catch (error) {
+        console.error(`Could not write to ${fileName}:`, error);
+        throw new Error(`Failed to save ${fileName}.`);
+    }
+}
+const getUsers = ()=>readJsonFile('users.json', []);
+const writeUsers = (data)=>writeJsonFile('users.json', data);
+const getActionItems = ()=>readJsonFile('action-items.json', []);
+const writeActionItems = (data)=>writeJsonFile('action-items.json', data);
+const getEvents = ()=>readJsonFile('events.json', []);
+const writeEvents = (data)=>writeJsonFile('events.json', data);
 }}),
 "[project]/src/components/ui/card.tsx [app-rsc] (ecmascript)": ((__turbopack_context__) => {
 "use strict";

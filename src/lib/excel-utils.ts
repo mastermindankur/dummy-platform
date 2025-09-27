@@ -9,6 +9,11 @@ type Filter = {
     value: string;
 };
 
+type HelperColumn = {
+    name: string;
+    value: string;
+}
+
 export async function getExcelSheetNames(fileAsDataUri: string): Promise<string[]> {
     const base64Data = fileAsDataUri.split(',')[1];
     const buffer = Buffer.from(base64Data, 'base64');
@@ -19,7 +24,8 @@ export async function getExcelSheetNames(fileAsDataUri: string): Promise<string[
 export async function processExcelFile(
     fileAsDataUri: string, 
     sheetName: string,
-    filters?: Filter[]
+    filters?: Filter[],
+    helperColumn?: HelperColumn
 ): Promise<ExcelData> {
   const base64Data = fileAsDataUri.split(',')[1];
   const buffer = Buffer.from(base64Data, 'base64');
@@ -36,7 +42,7 @@ export async function processExcelFile(
     return { headers: [], rows: [] };
   }
 
-  const headers = jsonData[0].map(String);
+  let headers = jsonData[0].map(String);
   let rows = jsonData.slice(1).map(row => {
     const rowData: ExcelRow = {};
     headers.forEach((header, index) => {
@@ -54,6 +60,17 @@ export async function processExcelFile(
               return true;
           });
       });
+  }
+
+  if (helperColumn) {
+      rows = rows.map(row => ({
+          ...row,
+          [helperColumn.name]: helperColumn.value
+      }));
+      
+      if (!headers.includes(helperColumn.name)) {
+          headers = [...headers, helperColumn.name];
+      }
   }
   
   return { headers, rows };

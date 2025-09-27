@@ -1148,6 +1148,8 @@ function ExcelUploadSection({
   const [headers, setHeaders] = useState<string[]>([]);
   const [filters, setFilters] = useState<FilterState[]>([]);
   const [filterCounter, setFilterCounter] = useState(0);
+  const [helperColumnName, setHelperColumnName] = useState('');
+  const [helperColumnValue, setHelperColumnValue] = useState('');
 
   const [isLoading, setIsLoading] = useState(false);
   const [month, setMonth] = useState<string>(isMonthly ? new Date().toISOString().slice(0, 7) : '');
@@ -1162,6 +1164,8 @@ function ExcelUploadSection({
         setSelectedSheet('');
         setHeaders([]);
         setFilters([]);
+        setHelperColumnName('');
+        setHelperColumnValue('');
         setIsLoading(true);
         try {
             const dataUri = await new Promise<string>((resolve, reject) => {
@@ -1241,7 +1245,10 @@ function ExcelUploadSection({
 
     try {
         const validFilters = filters.filter(f => f.column && f.value).map(({column, value}) => ({column, value}));
-        const result = await processExcelFile(fileDataUri, selectedSheet, validFilters);
+        const helperColumn = (helperColumnName && helperColumnValue) ? { name: helperColumnName, value: helperColumnValue } : undefined;
+        
+        const result = await processExcelFile(fileDataUri, selectedSheet, validFilters, helperColumn);
+        
         const finalFileKey = isMonthly ? `${fileKey}:${month}` : fileKey;
         onDataProcessed(finalFileKey, result);
         toast({
@@ -1335,6 +1342,22 @@ function ExcelUploadSection({
                                    <Button variant="ghost" size="icon" onClick={() => handleRemoveFilter(filter.id)}><X className="h-4 w-4 text-destructive"/></Button>
                                </div>
                            ))}
+                        </div>
+                        <div className="space-y-2">
+                           <Label>4. Add Helper Column (Optional)</Label>
+                           <div className="flex gap-2 items-center">
+                               <Input
+                                   placeholder="Column Name"
+                                   value={helperColumnName}
+                                   onChange={e => setHelperColumnName(e.target.value)}
+                                />
+                               <Input
+                                   placeholder="Column Value"
+                                   value={helperColumnValue}
+                                   onChange={e => setHelperColumnValue(e.target.value)}
+                                />
+                           </div>
+                           <p className="text-xs text-muted-foreground">This will add or overwrite a column with the specified value for all processed rows.</p>
                         </div>
                         <Button onClick={handleProcessAndLoad} disabled={isLoading || !file}>
                             {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
