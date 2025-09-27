@@ -128,12 +128,6 @@ export default function JiraAssistantAdoptionPage() {
     const allMonths = Object.keys(monthlyData).sort();
     const sortedMonthLabels = allMonths.map(m => new Date(m + '-02').toLocaleString('default', { month: 'short', year: '2-digit' }));
     
-    // USER ADOPTION LOGIC
-    const platformUserStats = new Map<string, { [month: string]: { totalUsers: Set<string>; activeUsers: Set<string> } }>();
-    
-    // TEST CASE ADOPTION LOGIC
-    const platformTestCaseStats = new Map<string, { [month: string]: { totalCases: number, jaCases: number } }>();
-
     // This helper finds the actual header key by checking against a list of potential names, case-insensitively.
     const findHeaderKey = (headers: string[], potentialNames: string[]): string | undefined => {
         const lowerCaseNames = potentialNames.map(n => n.toLowerCase());
@@ -144,6 +138,10 @@ export default function JiraAssistantAdoptionPage() {
         }
         return undefined;
     };
+    
+    // --- Aggregation Logic ---
+    const platformUserStats = new Map<string, { [month: string]: { totalUsers: Set<string>; activeUsers: Set<string> } }>();
+    const platformTestCaseStats = new Map<string, { [month: string]: { totalCases: number, jaCases: number } }>();
 
     for (const month of allMonths) {
         const monthLabel = new Date(month + '-02').toLocaleString('default', { month: 'short', 'year': '2-digit' });
@@ -153,14 +151,14 @@ export default function JiraAssistantAdoptionPage() {
         const { headers, rows: monthRows } = monthData;
 
         // Find the correct column keys once per sheet, robustly.
-        const platformKey = findHeaderKey(headers, ['platforms', 'platform']);
+        const platformKey = findHeaderKey(headers, ['Platforms']);
         const userIdKey = findHeaderKey(headers, ['1bankid']);
         const isAdoptedKey = findHeaderKey(headers, ['is_created_via_ja', 'is_created_via_JA']);
-        const issueTypeKey = findHeaderKey(headers, ['issue_type', 'Issue Type']);
+        const issueTypeKey = findHeaderKey(headers, ['issue_type']);
 
         // Skip this month's data if we can't find the essential columns
         if (!platformKey || !userIdKey || !isAdoptedKey || !issueTypeKey) {
-            console.warn(`Skipping month ${month} due to missing required columns. Found:`, { platformKey, userIdKey, isAdoptedKey, issueTypeKey });
+            console.warn(`Skipping month ${month} due to missing required columns.`);
             continue;
         }
 
@@ -170,14 +168,10 @@ export default function JiraAssistantAdoptionPage() {
             const isAdopted = row[isAdoptedKey] === 1;
             
             // --- User Adoption Processing ---
-            if (!platformUserStats.has(platform)) {
-                platformUserStats.set(platform, {});
-            }
+            if (!platformUserStats.has(platform)) platformUserStats.set(platform, {});
             const platformUserData = platformUserStats.get(platform)!;
             
-            if (!platformUserData[monthLabel]) {
-                platformUserData[monthLabel] = { totalUsers: new Set(), activeUsers: new Set() };
-            }
+            if (!platformUserData[monthLabel]) platformUserData[monthLabel] = { totalUsers: new Set(), activeUsers: new Set() };
             const userMonthStats = platformUserData[monthLabel];
 
             if (userId) {
@@ -189,14 +183,10 @@ export default function JiraAssistantAdoptionPage() {
 
             // --- Test Case Adoption Processing ---
             if (String(row[issueTypeKey]).toLowerCase() === 'test') {
-                if (!platformTestCaseStats.has(platform)) {
-                    platformTestCaseStats.set(platform, {});
-                }
+                if (!platformTestCaseStats.has(platform)) platformTestCaseStats.set(platform, {});
                 const platformTestCaseData = platformTestCaseStats.get(platform)!;
 
-                if (!platformTestCaseData[monthLabel]) {
-                    platformTestCaseData[monthLabel] = { totalCases: 0, jaCases: 0 };
-                }
+                if (!platformTestCaseData[monthLabel]) platformTestCaseData[monthLabel] = { totalCases: 0, jaCases: 0 };
                 const testCaseMonthStats = platformTestCaseData[monthLabel];
                 testCaseMonthStats.totalCases += 1;
                 if (isAdopted) {
@@ -443,7 +433,7 @@ export default function JiraAssistantAdoptionPage() {
                     </div>
                     )}
 
-                    {!isLoading && monthlyData && Object.keys(monthlyData).length > 0 && (
+                    {!isLoading && monthlyData && Object.keys(monthlyData).length > 0 && reportData.length > 0 && (
                         <div className="border rounded-lg overflow-x-auto">
                             <Table>
                                 <TableHeader>
@@ -500,6 +490,11 @@ export default function JiraAssistantAdoptionPage() {
                             </Table>
                         </div>
                     )}
+                    {!isLoading && reportData.length === 0 && (
+                        <div className="text-center text-muted-foreground p-8">
+                            No user adoption data available to display.
+                        </div>
+                    )}
                 </CardContent>
             </Card>
 
@@ -512,11 +507,6 @@ export default function JiraAssistantAdoptionPage() {
                     {isLoading && (
                         <div className="flex items-center justify-center p-8">
                             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                        </div>
-                    )}
-                    {!isLoading && testCaseReportData.length === 0 && (
-                         <div className="text-center text-muted-foreground p-8">
-                            No test case data is available to display.
                         </div>
                     )}
                     {!isLoading && testCaseReportData.length > 0 && (
@@ -576,6 +566,11 @@ export default function JiraAssistantAdoptionPage() {
                             </Table>
                          </div>
                     )}
+                     {!isLoading && testCaseReportData.length === 0 && (
+                         <div className="text-center text-muted-foreground p-8">
+                            No test case data is available to display.
+                        </div>
+                    )}
                 </CardContent>
             </Card>
         </div>
@@ -583,7 +578,3 @@ export default function JiraAssistantAdoptionPage() {
     </div>
   );
 }
-
-    
-
-    
