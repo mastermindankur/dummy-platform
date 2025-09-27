@@ -133,16 +133,16 @@ export default function JiraAssistantAdoptionPage() {
     
     // TEST CASE ADOPTION LOGIC
     const platformTestCaseStats = new Map<string, { [month: string]: { totalCases: number, jaCases: number } }>();
-    
-    const findColumn = (row: ExcelRow, potentialNames: string[]): any => {
-        const rowKeys = Object.keys(row);
-        for (const name of potentialNames) {
-            const foundKey = rowKeys.find(key => key.toLowerCase() === name.toLowerCase());
-            if (foundKey) {
-                return row[foundKey];
-            }
+
+    const findColumnValue = (row: ExcelRow, potentialNames: string[]): any => {
+      const rowKeys = Object.keys(row);
+      for (const name of potentialNames) {
+        const foundKey = rowKeys.find(key => key.toLowerCase() === name.toLowerCase());
+        if (foundKey) {
+          return row[foundKey];
         }
-        return undefined;
+      }
+      return undefined;
     };
 
 
@@ -151,9 +151,9 @@ export default function JiraAssistantAdoptionPage() {
         const monthRows = monthlyData[month].rows;
 
         for (const row of monthRows) {
-            const platform = (findColumn(row, ['Platforms', 'Platform']) as string) || 'Unknown';
-            const userId = findColumn(row, ['1bankid']);
-            const isAdopted = findColumn(row, ['is_created_via_JA']) === 1;
+            const platform = (findColumnValue(row, ['platforms', 'platform']) as string) || 'Unknown';
+            const userId = findColumnValue(row, ['1bankid']);
+            const isAdopted = findColumnValue(row, ['is_created_via_ja']) === 1;
             
             // User Adoption Processing
             if (!platformUserStats.has(platform)) {
@@ -174,7 +174,7 @@ export default function JiraAssistantAdoptionPage() {
             }
 
             // Test Case Adoption Processing
-            if (String(findColumn(row, ['issue_type'])).toLowerCase() === 'test') {
+            if (String(findColumnValue(row, ['issue_type'])).toLowerCase() === 'test') {
                 if (!platformTestCaseStats.has(platform)) {
                     platformTestCaseStats.set(platform, {});
                 }
@@ -569,7 +569,5 @@ export default function JiraAssistantAdoptionPage() {
     </div>
   );
 }
-
-    
 
     
