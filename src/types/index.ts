@@ -45,7 +45,7 @@ export type MonthlyExcelData = {
 export type MappingRule = {
     id: number;
     ifColumn: string;
-    ifValue: string;
+    ifValue: string[];
     thenColumn: string;
     thenValue: string;
 };

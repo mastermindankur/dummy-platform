@@ -70,7 +70,8 @@ async function processExcelFile(fileAsDataUri, sheetName, filters, mappings) {
                 ...row
             };
             mappings.forEach((mapping)=>{
-                if (String(row[mapping.ifColumn] ?? '').trim() === mapping.ifValue.trim()) {
+                const cellValue = String(row[mapping.ifColumn] ?? '').trim();
+                if (mapping.ifValue.includes(cellValue)) {
                     newRow[mapping.thenColumn] = mapping.thenValue;
                 }
             });

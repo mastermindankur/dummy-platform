@@ -1129,6 +1129,73 @@ function ValueMapItemCard({ item, onUpdate, onDelete, levers, drivers, driverGro
 
 // ## EXCEL UPLOAD SECTION ##
 
+function MultiSelectCombobox({
+  options,
+  selectedValues,
+  onSelectionChange,
+  placeholder = "Select options...",
+}: {
+  options: { value: string; label: string }[];
+  selectedValues: string[];
+  onSelectionChange: (newSelection: string[]) => void;
+  placeholder?: string;
+}) {
+  const handleSelect = (value: string) => {
+    const newSelection = selectedValues.includes(value)
+      ? selectedValues.filter((v) => v !== value)
+      : [...selectedValues, value];
+    onSelectionChange(newSelection);
+  };
+
+  const displayText = selectedValues.length > 0
+    ? `${selectedValues.length} selected`
+    : placeholder;
+
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          role="combobox"
+          className="w-full justify-between"
+        >
+          <span className="truncate">{displayText}</span>
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+        <Command>
+          <CommandInput placeholder="Search values..." />
+          <CommandList>
+            <CommandEmpty>No results found.</CommandEmpty>
+            <CommandGroup>
+              <ScrollArea className="h-48">
+                {options.map((option) => (
+                  <CommandItem
+                    key={option.value}
+                    onSelect={() => handleSelect(option.value)}
+                  >
+                    <Check
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        selectedValues.includes(option.value)
+                          ? "opacity-100"
+                          : "opacity-0"
+                      )}
+                    />
+                    {option.label}
+                  </CommandItem>
+                ))}
+              </ScrollArea>
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+
 function ExcelUploadSection({
   title,
   description,
@@ -1228,7 +1295,7 @@ function ExcelUploadSection({
   }
 
   const handleAddMapping = () => {
-    setMappings([...mappings, { id: mappingCounter, ifColumn: '', ifValue: '', thenColumn: '', thenValue: ''}]);
+    setMappings([...mappings, { id: mappingCounter, ifColumn: '', ifValue: [], thenColumn: '', thenValue: ''}]);
     setMappingCounter(prev => prev + 1);
   };
 
@@ -1236,7 +1303,7 @@ function ExcelUploadSection({
       setMappings(mappings.filter(m => m.id !== id));
   };
 
-  const handleMappingChange = (id: number, field: keyof Omit<MappingRule, 'id'>, value: string) => {
+  const handleMappingChange = (id: number, field: keyof Omit<MappingRule, 'id'>, value: string | string[]) => {
       setMappings(mappings.map(m => m.id === id ? {...m, [field]: value} : m));
   };
   
@@ -1275,7 +1342,7 @@ function ExcelUploadSection({
 
     try {
         const validFilters = filters.filter(f => f.column && f.value).map(({column, value}) => ({column, value}));
-        const validMappings = mappings.filter(m => m.ifColumn && m.ifValue && m.thenColumn && m.thenValue);
+        const validMappings = mappings.filter(m => m.ifColumn && m.ifValue.length > 0 && m.thenColumn && m.thenValue);
         
         const result = await processExcelFile(fileDataUri, selectedSheet, validFilters, validMappings);
         
@@ -1379,7 +1446,7 @@ function ExcelUploadSection({
                              <Label>4. Conditional Mappings (Optional)</Label>
                              <Button variant="outline" size="sm" onClick={handleAddMapping}><Plus className="mr-2 h-3 w-3" /> Add Rule</Button>
                            </div>
-                           <p className="text-xs text-muted-foreground">Add new columns with values based on conditions. For example: IF `Country` equals `France`, THEN set `Continent` to `Europe`.</p>
+                           <p className="text-xs text-muted-foreground">Add new columns with values based on conditions. For example: IF `Country` is one of (`France`, `Germany`), THEN set `Continent` to `Europe`.</p>
                            {mappings.map((mapping) => (
                                <div key={mapping.id} className="p-3 border rounded-md bg-secondary/50 space-y-2">
                                     <div className="flex justify-end">
@@ -1398,11 +1465,11 @@ function ExcelUploadSection({
                                                 {headers.map(header => <SelectItem key={header} value={header}>{header}</SelectItem>)}
                                             </SelectContent>
                                         </Select>
-                                        <Combobox
+                                        <MultiSelectCombobox
                                             options={getUniqueColumnValues(mapping.ifColumn)}
-                                            selectedValue={mapping.ifValue}
-                                            onSelect={(value) => handleMappingChange(mapping.id, 'ifValue', value)}
-                                            placeholder="Select or type value..."
+                                            selectedValues={mapping.ifValue}
+                                            onSelectionChange={(values) => handleMappingChange(mapping.id, 'ifValue', values)}
+                                            placeholder="Select values..."
                                         />
                                     </div>
                                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">

@@ -65,7 +65,8 @@ export async function processExcelFile(
       rows = rows.map(row => {
           const newRow = { ...row };
           mappings.forEach(mapping => {
-              if (String(row[mapping.ifColumn] ?? '').trim() === mapping.ifValue.trim()) {
+              const cellValue = String(row[mapping.ifColumn] ?? '').trim();
+              if (mapping.ifValue.includes(cellValue)) {
                   newRow[mapping.thenColumn] = mapping.thenValue;
               }
           });

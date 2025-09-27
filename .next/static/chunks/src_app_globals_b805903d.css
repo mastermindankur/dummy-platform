@@ -728,6 +728,10 @@ body {
   max-height: 24rem;
 }
 
+.max-h-\[300px\] {
+  max-height: 300px;
+}
+
 .max-h-\[500px\] {
   max-height: 500px;
 }
@@ -846,6 +850,10 @@ body {
 
 .w-\[--radix-dropdown-menu-trigger-width\] {
   width: var(--radix-dropdown-menu-trigger-width);
+}
+
+.w-\[--radix-popover-trigger-width\] {
+  width: var(--radix-popover-trigger-width);
 }
 
 .w-\[--sidebar-width\] {
@@ -1225,6 +1233,20 @@ body {
   overflow-x: auto;
 }
 
+.overflow-y-auto {
+  overflow-y: auto;
+}
+
+.overflow-x-hidden {
+  overflow-x: hidden;
+}
+
+.truncate {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
 .whitespace-nowrap {
   white-space: nowrap;
 }
@@ -1503,6 +1525,10 @@ body {
   background-color: hsl(var(--secondary) / .3);
 }
 
+.bg-secondary\/50 {
+  background-color: hsl(var(--secondary) / .5);
+}
+
 .bg-sidebar {
   background-color: hsl(var(--sidebar-background));
 }
@@ -1517,10 +1543,6 @@ body {
 
 .bg-transparent {
   background-color: #0000;
-}
-
-.bg-secondary\/50 {
-  background-color: hsl(var(--secondary) / .5);
 }
 
 .fill-current {
@@ -1617,6 +1639,11 @@ body {
 .py-4 {
   padding-top: 1rem;
   padding-bottom: 1rem;
+}
+
+.py-6 {
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
 }
 
 .pb-2 {
@@ -2475,7 +2502,7 @@ body {
   opacity: 1;
 }
 
-.data-\[disabled\]\:pointer-events-none[data-disabled] {
+.data-\[disabled\=true\]\:pointer-events-none[data-disabled="true"], .data-\[disabled\]\:pointer-events-none[data-disabled] {
   pointer-events: none;
 }
 
@@ -2599,7 +2626,7 @@ body {
   color: hsl(var(--muted-foreground));
 }
 
-.data-\[disabled\]\:opacity-50[data-disabled] {
+.data-\[disabled\=true\]\:opacity-50[data-disabled="true"], .data-\[disabled\]\:opacity-50[data-disabled] {
   opacity: .5;
 }
 
@@ -3237,6 +3264,68 @@ body {
 .\[\&_\.recharts-sector\]\:outline-none .recharts-sector, .\[\&_\.recharts-surface\]\:outline-none .recharts-surface {
   outline-offset: 2px;
   outline: 2px solid #0000;
+}
+
+.\[\&_\[cmdk-group-heading\]\]\:px-2 [cmdk-group-heading] {
+  padding-left: .5rem;
+  padding-right: .5rem;
+}
+
+.\[\&_\[cmdk-group-heading\]\]\:py-1\.5 [cmdk-group-heading] {
+  padding-top: .375rem;
+  padding-bottom: .375rem;
+}
+
+.\[\&_\[cmdk-group-heading\]\]\:text-xs [cmdk-group-heading] {
+  font-size: .75rem;
+  line-height: 1rem;
+}
+
+.\[\&_\[cmdk-group-heading\]\]\:font-medium [cmdk-group-heading] {
+  font-weight: 500;
+}
+
+.\[\&_\[cmdk-group-heading\]\]\:text-muted-foreground [cmdk-group-heading] {
+  color: hsl(var(--muted-foreground));
+}
+
+.\[\&_\[cmdk-group\]\:not\(\[hidden\]\)_\~\[cmdk-group\]\]\:pt-0 [cmdk-group]:not([hidden]) ~ [cmdk-group] {
+  padding-top: 0;
+}
+
+.\[\&_\[cmdk-group\]\]\:px-2 [cmdk-group] {
+  padding-left: .5rem;
+  padding-right: .5rem;
+}
+
+.\[\&_\[cmdk-input-wrapper\]_svg\]\:h-5 [cmdk-input-wrapper] svg {
+  height: 1.25rem;
+}
+
+.\[\&_\[cmdk-input-wrapper\]_svg\]\:w-5 [cmdk-input-wrapper] svg {
+  width: 1.25rem;
+}
+
+.\[\&_\[cmdk-input\]\]\:h-12 [cmdk-input] {
+  height: 3rem;
+}
+
+.\[\&_\[cmdk-item\]\]\:px-2 [cmdk-item] {
+  padding-left: .5rem;
+  padding-right: .5rem;
+}
+
+.\[\&_\[cmdk-item\]\]\:py-3 [cmdk-item] {
+  padding-top: .75rem;
+  padding-bottom: .75rem;
+}
+
+.\[\&_\[cmdk-item\]_svg\]\:h-5 [cmdk-item] svg {
+  height: 1.25rem;
+}
+
+.\[\&_\[cmdk-item\]_svg\]\:w-5 [cmdk-item] svg {
+  width: 1.25rem;
 }
 
 .\[\&_p\]\:leading-relaxed p {
