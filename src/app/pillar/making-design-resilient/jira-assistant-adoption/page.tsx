@@ -130,7 +130,12 @@ export default function JiraAssistantAdoptionPage() {
     
     const findHeader = (headers: string[], possibleNames: string[]) => {
         const lowerCaseNames = possibleNames.map(n => n.toLowerCase());
-        return headers.find(h => lowerCaseNames.includes(h.toLowerCase()));
+        for (const header of headers) {
+            if (lowerCaseNames.includes(header.toLowerCase())) {
+                return header;
+            }
+        }
+        return null;
     };
 
     const lobtUserStats = new Map<string, { [month: string]: { totalUsers: Set<string>; activeUsers: Set<string> } }>();
@@ -144,9 +149,9 @@ export default function JiraAssistantAdoptionPage() {
         const { headers, rows: monthRows } = monthData;
         
         const userIdKey = findHeader(headers, ['1bankid']);
-        const lobtKey = findHeader(headers, ['LOBT', 'L3 Department']);
+        const lobtKey = findHeader(headers, ['LOBT']);
         const testKey = findHeader(headers, ['Test']);
-        const isCreatedViaJAKey = findHeader(headers, ['is_created_via_JA', 'is_created_via_ja']);
+        const isCreatedViaJAKey = findHeader(headers, ['is_created_via_JA']);
 
         if (!lobtKey) continue;
         
@@ -320,7 +325,7 @@ export default function JiraAssistantAdoptionPage() {
                         )}
                     </div>
                     <CardDescription>
-                        Month-on-month adoption metrics.
+                        Month-on-month adoption metrics, grouped by LOBT.
                     </CardDescription>
                 </CardHeader>
             </Card>
