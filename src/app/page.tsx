@@ -69,7 +69,7 @@ export default function LandingPage() {
               <Card className="h-full hover:border-primary hover:shadow-lg transition-all duration-300">
                   <CardHeader className="relative text-center">
                       <Badge variant="outline" className="absolute top-4 right-4">Work in progress</Badge>
-                      <div className="flex justify-center mb-4 pt-6">
+                      <div className="flex justify-center mb-4">
                           <Target className="h-12 w-12 text-accent" />
                       </div>
                       <CardTitle>Impact Showcase</CardTitle>
