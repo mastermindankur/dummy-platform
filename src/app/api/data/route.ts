@@ -146,6 +146,9 @@ export async function POST(request: Request) {
     }
     if (body.valueMap) {
         await writeValueMapData(body.valueMap);
+        const metadata = await getExcelMetadata();
+        metadata['value-map'] = new Date().toISOString();
+        await writeExcelMetadata(metadata);
     }
     if (body.actionItems) {
         await writeActionItems(body.actionItems);
