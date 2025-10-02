@@ -22,7 +22,7 @@ export default function WhatsNewPage() {
             </CardHeader>
             <CardContent className="space-y-8">
               <div className="space-y-4">
-                <h3 className="text-xl font-semibold flex items-center"><CheckCircle2 className="mr-3 h-6 w-6 text-green-500" />Value Map Enhancements</h3>
+                <h3 className="text-xl font-bold text-foreground">Value Map Enhancements</h3>
                 <ol className="list-decimal list-inside space-y-2 pl-4 text-muted-foreground">
                   <li><strong>Interactive Filtering:</strong> The legend on the Executive Value Map is now clickable. You can filter the view to instantly highlight all items marked as "New", "Retired", or part of the "Book of Work 25".</li>
                   <li><strong>Traceability:</strong> Selecting any item on the Value Map now highlights its entire upstream and downstream chain, making it easy to trace connections from Levers to Outcomes.</li>
@@ -31,7 +31,7 @@ export default function WhatsNewPage() {
                 </ol>
               </div>
               <div className="space-y-4">
-                <h3 className="text-xl font-semibold flex items-center"><CheckCircle2 className="mr-3 h-6 w-6 text-green-500" />Impact Showcase Section</h3>
+                <h3 className="text-xl font-bold text-foreground">Impact Showcase Section</h3>
                 <ol className="list-decimal list-inside space-y-2 pl-4 text-muted-foreground">
                   <li><strong>Impact Showcase Page:</strong> A new "Impact Showcase" page has been added to quantify and display the business value delivered by our key engineering initiatives.</li>
                   <li><strong>Categorized Initiatives:</strong> Impact metrics are now grouped into three distinct categories: "Productivity & Efficiency Gains," "Quality & Reliability Improvement," and "Developer Engagement & Skill Uplift."</li>
