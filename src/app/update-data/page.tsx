@@ -864,6 +864,7 @@ function ValueMapManager() {
             description: '',
             isWceBookOfWork: false,
             isNew: true,
+            isRetired: false,
         };
         
         if (type === 'outcomes') {
@@ -1148,7 +1149,7 @@ function ValueMapItemCard({ item, onUpdate, onDelete, levers, drivers, driverGro
         <Dialog open={isEditing} onOpenChange={setIsEditing}>
             <Card className="flex-1 cursor-pointer bg-background">
                 <div className="flex items-center justify-between p-3">
-                    <p className="font-medium text-sm flex-1">{item.name}</p>
+                    <p className={cn("font-medium text-sm flex-1", item.isRetired && "line-through text-muted-foreground")}>{item.name}</p>
                     <div className="flex">
                         <DialogTrigger asChild>
                             <Button variant="ghost" size="icon"><Edit className="h-4 w-4"/></Button>
@@ -1190,6 +1191,14 @@ function ValueMapItemCard({ item, onUpdate, onDelete, levers, drivers, driverGro
                                 onCheckedChange={checked => setEditedItem({...editedItem, isNew: checked})}
                             />
                             <Label htmlFor={`new-switch-${editedItem.id}`}>Mark as New</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                            <Switch
+                                id={`retired-switch-${editedItem.id}`}
+                                checked={editedItem.isRetired}
+                                onCheckedChange={checked => setEditedItem({...editedItem, isRetired: checked})}
+                            />
+                            <Label htmlFor={`retired-switch-${editedItem.id}`}>Mark as Retired</Label>
                         </div>
                     </div>
                     

@@ -1969,6 +1969,10 @@ body {
   color: rgb(161 98 7 / var(--tw-text-opacity, 1));
 }
 
+.line-through {
+  text-decoration-line: line-through;
+}
+
 .underline-offset-4 {
   text-underline-offset: 4px;
 }

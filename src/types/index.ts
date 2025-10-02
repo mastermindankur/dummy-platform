@@ -90,6 +90,7 @@ export type ValueMapItem = {
     status?: Status;
     isWceBookOfWork?: boolean;
     isNew?: boolean;
+    isRetired?: boolean;
     groupId?: string;
 };
 

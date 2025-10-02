@@ -51,10 +51,11 @@ const ItemCard = ({ item, type, onClick, isHighlighted, isSelected, selectedItem
             "transition-all duration-300 cursor-pointer",
             isHighlighted ? selectedItemColorClasses[type] : itemColorClasses[type],
             selectedItem ? (isHighlighted ? 'opacity-100 shadow-lg' : 'opacity-30') : 'opacity-100',
-            isSelected && 'ring-2 ring-white'
+            isSelected && 'ring-2 ring-white',
+            item.isRetired && 'opacity-60'
         )}>
         <CardHeader className="p-3">
-            <CardTitle className="text-sm">{item.name}</CardTitle>
+            <CardTitle className={cn("text-sm", item.isRetired && "line-through")}>{item.name}</CardTitle>
             {item.status && <StatusIndicator status={item.status} className="text-xs" />}
         </CardHeader>
         {(item.description || item.isWceBookOfWork || item.isNew) && (
@@ -65,7 +66,7 @@ const ItemCard = ({ item, type, onClick, isHighlighted, isSelected, selectedItem
                 {item.isWceBookOfWork && (
                     <Badge variant={isHighlighted ? "default" : "secondary"} className={cn(isHighlighted && "bg-background/20 text-foreground")}>BOW25</Badge>
                 )}
-                {item.isNew && (
+                {item.isNew && !item.isRetired && (
                     <Badge variant={isHighlighted ? "default" : "secondary"} className={cn("bg-accent/80 text-accent-foreground", isHighlighted && "bg-background/20 text-foreground")}>New</Badge>
                 )}
             </CardContent>
