@@ -47,7 +47,14 @@ export default function WhatsNewPage() {
               <div className="space-y-4">
                 <h3 className="text-xl font-bold text-foreground">What's Coming Soon</h3>
                 <ol className="list-decimal list-inside space-y-2 pl-4 text-muted-foreground">
-                  <li>More exciting features are on the way!</li>
+                  <li><span className="text-foreground">Productivity Dashboard Completion:</span> The "Improving Productivity" dashboard will be finalized and rolled out.</li>
+                  <li><span className="text-foreground">WCCG Dashboard Enhancements:</span> The "World Class Corporate Governance" dashboard will be enhanced to include awards and other relevant metrics.</li>
+                  <li><span className="text-foreground">Integrated View:</span> Create a direct inter-relationship between the "Value Map" and the "WCE YTD Progress" dashboards for seamless navigation.</li>
+                  <li><span className="text-foreground">Expanded Impact Metrics:</span> The "Impact Showcase" will support a wider variety of units of measurement for more flexible quantification of success.</li>
+                  <li><span className="text-foreground">Linked-Up Impact:</span> Initiatives on the "Impact Showcase" will be linkable back to the "Value Map" and "WCE YTD Progress" to show direct connections.</li>
+                  <li><span className="text-foreground">Personalized Action View:</span> A "person-wide" view will be added to the "Action Items & Status" page, allowing individuals to see all tasks assigned to them.</li>
+                  <li><span className="text-foreground">LOBT-Specific Dashboards:</span> A new "LOBT-wide" view will allow different Lines of Business Technology to see a dashboard tailored to their specific data.</li>
+                  <li><span className="text-foreground">Time-Based Progress Tracking:</span> Implement a time-series comparison feature to visualize how progress is made over different time scales.</li>
                 </ol>
               </div>
             </CardContent>
