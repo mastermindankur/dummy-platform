@@ -14,7 +14,7 @@ export default function WhatsNewPage() {
     <div className="flex min-h-screen w-full flex-col">
       <Header />
       <main className="flex-1 p-4 md:p-8">
-        <div className="mx-auto w-full">
+        <div className="mx-auto w-full space-y-8">
           <Card>
             <CardHeader className="text-center">
               <CardTitle className="text-3xl font-bold">What's New in the Dashboard</CardTitle>
@@ -44,8 +44,15 @@ export default function WhatsNewPage() {
                   <li><span className="text-foreground">What's New Page:</span> This very page was created to provide a central place for you to see all the latest updates and improvements to the dashboard.</li>
                 </ol>
               </div>
-              <div className="space-y-4">
-                <h3 className="text-xl font-bold text-foreground">What's Coming Soon</h3>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl font-bold text-foreground">What's Coming Soon</CardTitle>
+              <CardDescription>A look at the features and improvements on our roadmap.</CardDescription>
+            </CardHeader>
+            <CardContent>
                 <ol className="list-decimal list-inside space-y-2 pl-4 text-muted-foreground">
                   <li><span className="text-foreground">Productivity Dashboard Completion:</span> The "Improving Productivity" dashboard will be finalized and rolled out.</li>
                   <li><span className="text-foreground">WCCG Dashboard Enhancements:</span> The "World Class Corporate Governance" dashboard will be enhanced to include awards and other relevant metrics.</li>
@@ -56,7 +63,6 @@ export default function WhatsNewPage() {
                   <li><span className="text-foreground">LOBT-Specific Dashboards:</span> A new "LOBT-wide" view will allow different Lines of Business Technology to see a dashboard tailored to their specific data.</li>
                   <li><span className="text-foreground">Time-Based Progress Tracking:</span> Implement a time-series comparison feature to visualize how progress is made over different time scales.</li>
                 </ol>
-              </div>
             </CardContent>
           </Card>
         </div>
