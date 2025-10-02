@@ -65,7 +65,7 @@ export default function LandingPage() {
               </Card>
             </Link>
             
-            <Link href="#">
+            <Link href="/impact-showcase">
               <Card className="h-full hover:border-primary hover:shadow-lg transition-all duration-300">
                   <CardHeader className="text-center">
                       <div className="flex justify-center mb-4">
