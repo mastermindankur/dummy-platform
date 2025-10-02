@@ -479,20 +479,25 @@ export function ValueMap({
             </div>
         </div>
         <div className="flex justify-end pt-4">
-            <div className="flex flex-col items-start gap-2">
-                <Button variant={activeFilter === 'new' ? 'secondary': 'ghost'} size="sm" onClick={() => handleFilterClick('new')} className="flex items-center gap-2 justify-start w-full">
-                    <Badge variant="secondary" className="bg-accent/80 text-accent-foreground">New</Badge>
-                    <span>Newly Added</span>
-                </Button>
-                <Button variant={activeFilter === 'retired' ? 'secondary': 'ghost'} size="sm" onClick={() => handleFilterClick('retired')} className="flex items-center gap-2 justify-start w-full">
-                    <span className="line-through">Retired Item</span>
-                    <span>Retired</span>
-                </Button>
-                <Button variant={activeFilter === 'bow' ? 'secondary': 'ghost'} size="sm" onClick={() => handleFilterClick('bow')} className="flex items-center gap-2 justify-start w-full">
-                    <Badge variant="secondary">BOW25</Badge>
-                    <span>WCE Book of Work 2025</span>
-                </Button>
-            </div>
+             <Card className="max-w-sm">
+                <CardHeader className="pb-2">
+                    <CardTitle className="text-sm">Legend & Filters</CardTitle>
+                </CardHeader>
+                <CardContent className="flex flex-col items-start gap-2">
+                    <Button variant={activeFilter === 'new' ? 'secondary': 'ghost'} size="sm" onClick={() => handleFilterClick('new')} className="flex items-center gap-2 justify-start w-full">
+                        <Badge variant="secondary" className="bg-accent/80 text-accent-foreground">New</Badge>
+                        <span>Newly Added</span>
+                    </Button>
+                    <Button variant={activeFilter === 'retired' ? 'secondary': 'ghost'} size="sm" onClick={() => handleFilterClick('retired')} className="flex items-center gap-2 justify-start w-full">
+                        <span className="line-through">Retired Item</span>
+                        <span>Retired</span>
+                    </Button>
+                    <Button variant={activeFilter === 'bow' ? 'secondary': 'ghost'} size="sm" onClick={() => handleFilterClick('bow')} className="flex items-center gap-2 justify-start w-full">
+                        <Badge variant="secondary">BOW25</Badge>
+                        <span>WCE Book of Work 2025</span>
+                    </Button>
+                </CardContent>
+            </Card>
         </div>
     </div>
   );
