@@ -61,7 +61,7 @@ const ItemCard = ({ item, type, onClick, isHighlighted, isSelected, selectedItem
         {(item.description || item.isWceBookOfWork || item.isNew) && (
             <CardContent className="p-3 pt-0 space-y-2 flex flex-wrap gap-2">
                 {item.description && (
-                    <CardDescription className={cn("text-xs w-full", isHighlighted ? 'text-inherit' : 'text-muted-foreground')}>{item.description}</CardDescription>
+                    <CardDescription className={cn("text-xs w-full", isHighlighted ? 'text-inherit' : 'text-muted-foreground', item.isRetired && "line-through")}>{item.description}</CardDescription>
                 )}
                 {item.isWceBookOfWork && (
                     <Badge variant={isHighlighted ? "default" : "secondary"} className={cn(isHighlighted && "bg-background/20 text-foreground")}>BOW25</Badge>
