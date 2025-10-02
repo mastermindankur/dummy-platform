@@ -78,6 +78,7 @@ __turbopack_context__.s({
     "getActionItems": (()=>getActionItems),
     "getEvents": (()=>getEvents),
     "getExcelMetadata": (()=>getExcelMetadata),
+    "getImpactInitiatives": (()=>getImpactInitiatives),
     "getPillarById": (()=>getPillarById),
     "getPillars": (()=>getPillars),
     "getUsers": (()=>getUsers),
@@ -89,6 +90,7 @@ __turbopack_context__.s({
     "writeEvents": (()=>writeEvents),
     "writeExcelData": (()=>writeExcelData),
     "writeExcelMetadata": (()=>writeExcelMetadata),
+    "writeImpactInitiatives": (()=>writeImpactInitiatives),
     "writeMonthlyData": (()=>writeMonthlyData),
     "writeUsers": (()=>writeUsers),
     "writeValueMapData": (()=>writeValueMapData)
@@ -198,9 +200,9 @@ async function readData() {
                 }));
         }
         // Attach hackathons count
-        const hackathonsData = dataCache['hackathons'];
-        if (hackathonsData && hackathonsData.rows.length > 0) {
-            const hackathonsCount = hackathonsData.rows.length;
+        const hackathonsData = await readExcelData('hackathons');
+        if (hackathonsData && Array.isArray(hackathonsData)) {
+            const hackathonsCount = hackathonsData.length;
             jsonData = jsonData.map((pillar)=>({
                     ...pillar,
                     subItems: pillar.subItems.map((subItem)=>subItem.dataKey === 'hackathons' ? {
@@ -210,9 +212,9 @@ async function readData() {
                 }));
         }
         // Attach industry events count
-        const industryEventsData = dataCache['industry-events'];
-        if (industryEventsData && industryEventsData.rows.length > 0) {
-            const industryEventsCount = industryEventsData.rows.length;
+        const industryEventsData = await readExcelData('industry-events');
+        if (industryEventsData && Array.isArray(industryEventsData)) {
+            const industryEventsCount = industryEventsData.length;
             jsonData = jsonData.map((pillar)=>({
                     ...pillar,
                     subItems: pillar.subItems.map((subItem)=>subItem.dataKey === 'industry-events' ? {
@@ -323,14 +325,14 @@ async function readExcelData(fileKey) {
         const fileContent = await __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["promises"].readFile(dataFilePath(`${fileKey}.json`), 'utf-8');
         if (fileKey === 'hackathons' || fileKey === 'industry-events') {
             const data = JSON.parse(fileContent);
-            // Ensure the data is in the { rows: [...] } format.
+            // Ensure the data is an array for these keys.
             if (Array.isArray(data)) {
-                return {
-                    headers: [],
-                    rows: data
-                };
+                return data;
             }
-            return data;
+            if (data && Array.isArray(data.rows)) {
+                return data.rows;
+            }
+            return [];
         }
         if (fileKey === 'users') {
             const users = JSON.parse(fileContent);
@@ -351,11 +353,7 @@ async function readExcelData(fileKey) {
         if (error instanceof Error && error.code === 'ENOENT') {
             try {
                 let emptyContent;
-                if (fileKey === 'hackathons' || fileKey === 'industry-events') {
-                    emptyContent = JSON.stringify({
-                        rows: []
-                    });
-                } else if (fileKey === 'users') {
+                if (fileKey === 'hackathons' || fileKey === 'industry-events' || fileKey === 'users' || fileKey === 'impact-initiatives') {
                     emptyContent = JSON.stringify([]);
                 } else {
                     emptyContent = JSON.stringify({
@@ -374,11 +372,8 @@ async function readExcelData(fileKey) {
                         rows: []
                     };
                 }
-                if (fileKey === 'hackathons' || fileKey === 'industry-events') {
-                    return {
-                        headers: [],
-                        rows: []
-                    };
+                if (fileKey === 'hackathons' || fileKey === 'industry-events' || fileKey === 'impact-initiatives') {
+                    return [];
                 }
                 return {
                     headers: [],
@@ -395,8 +390,7 @@ async function readExcelData(fileKey) {
 }
 async function writeExcelData(fileKey, data) {
     try {
-        const dataToWrite = fileKey === 'hackathons' || fileKey === 'industry-events' ? data : data;
-        await __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["promises"].writeFile(dataFilePath(`${fileKey}.json`), JSON.stringify(dataToWrite, null, 2), 'utf-8');
+        await __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["promises"].writeFile(dataFilePath(`${fileKey}.json`), JSON.stringify(data, null, 2), 'utf-8');
     } catch (error) {
         console.error(`Could not write to ${fileKey}.json:`, error);
         throw new Error(`Failed to save ${fileKey} data.`);
@@ -519,6 +513,8 @@ const getActionItems = ()=>readJsonFile('action-items.json', []);
 const writeActionItems = (data)=>writeJsonFile('action-items.json', data);
 const getEvents = ()=>readJsonFile('events.json', []);
 const writeEvents = (data)=>writeJsonFile('events.json', data);
+const getImpactInitiatives = ()=>readJsonFile('impact-initiatives.json', []);
+const writeImpactInitiatives = (data)=>writeJsonFile('impact-initiatives.json', data);
 const getExcelMetadata = ()=>readJsonFile('excel-metadata.json', {});
 const writeExcelMetadata = (data)=>writeJsonFile('excel-metadata.json', data);
 }}),
@@ -582,6 +578,16 @@ async function GET(request) {
             });
         }
     }
+    if (fileKey === 'impact-initiatives') {
+        try {
+            const data = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["getImpactInitiatives"])();
+            return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json(data);
+        } catch (error) {
+            return new __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"]('Internal Server Error', {
+                status: 500
+            });
+        }
+    }
     if (fileKey === 'value-map') {
         try {
             const data = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["getValueMapData"])();
@@ -607,11 +613,11 @@ async function GET(request) {
             if (fileKey === 'hackathons') {
                 const data = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["readExcelData"])('hackathons');
                 // hackathons are not in ExcelData format, they are just an array in the `rows` property
-                return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json(data?.rows ?? []);
+                return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json(data ?? []);
             }
             if (fileKey === 'industry-events') {
                 const data = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["readExcelData"])('industry-events');
-                return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json(data?.rows ?? []);
+                return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json(data ?? []);
             }
             if (fileKey === 'squad-onboarding') {
                 const data = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["readExcelData"])('squad-onboarding');
@@ -669,6 +675,9 @@ async function POST(request) {
         if (body.events) {
             await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["writeEvents"])(body.events);
         }
+        if (body.impactInitiatives) {
+            await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["writeImpactInitiatives"])(body.impactInitiatives);
+        }
         if (body.excelData) {
             const metadata = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["getExcelMetadata"])();
             const now = new Date().toISOString();
@@ -677,15 +686,11 @@ async function POST(request) {
                     if (body.excelData[key]) {
                         // special handling for certain keys
                         if (key === 'hackathons') {
-                            await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["writeExcelData"])(key, {
-                                rows: body.excelData[key]
-                            });
+                            await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["writeExcelData"])(key, body.excelData[key]);
                             metadata[key] = now;
                             excelMetadataUpdated = true;
                         } else if (key === 'industry-events') {
-                            await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["writeExcelData"])(key, {
-                                rows: body.excelData[key]
-                            });
+                            await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["writeExcelData"])(key, body.excelData[key]);
                             metadata[key] = now;
                             excelMetadataUpdated = true;
                         } else if (key.startsWith('jira-assistant-adoption')) {
