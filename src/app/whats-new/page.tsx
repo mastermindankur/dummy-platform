@@ -91,8 +91,9 @@ export default function WhatsNewPage() {
                     <CardDescription>Help us shape the future of this dashboard.</CardDescription>
                 </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
                 <p className="text-muted-foreground">We are looking for passionate individuals to help build this dashboard further. The application is built with a modern tech stack, including Next.js (App Router), React (Server Components), TypeScript, ShadCN for UI components, and Tailwind CSS for styling. If you have skills in these areas and are interested in contributing, please reach out to the project lead.</p>
+                <p className="text-muted-foreground">We are also looking for a <span className="text-foreground">Product person</span> to help enhance the user experience and understand the needs of our different users. If you have a knack for product management and a passion for creating great user-centric tools, we'd love to have you on board.</p>
             </CardContent>
           </Card>
         </div>
