@@ -1,4 +1,6 @@
 
+'use client';
+
 import { Header } from "@/components/layout/header";
 import {
   Card,
@@ -8,8 +10,19 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { CheckCircle2 } from "lucide-react";
+import { useState, useEffect } from 'react';
 
 export default function WhatsNewPage() {
+  const [currentDate, setCurrentDate] = useState('');
+
+  useEffect(() => {
+    setCurrentDate(new Date().toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    }));
+  }, []);
+
   return (
     <div className="flex min-h-screen w-full flex-col">
       <Header />
@@ -18,7 +31,11 @@ export default function WhatsNewPage() {
           <Card>
             <CardHeader className="text-center">
               <CardTitle className="text-3xl font-bold">What's New in the Dashboard</CardTitle>
-              <CardDescription className="text-lg text-muted-foreground">A summary of recent features and improvements.</CardDescription>
+              {currentDate && (
+                <CardDescription className="text-md text-muted-foreground pt-1">
+                  Last updated on {currentDate}
+                </CardDescription>
+              )}
             </CardHeader>
             <CardContent className="space-y-8">
               <div className="space-y-4">
