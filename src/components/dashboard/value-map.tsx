@@ -437,6 +437,10 @@ export function ValueMap({
         <div className="flex justify-end pt-4 pr-4">
             <div className="flex items-center gap-4 text-xs text-muted-foreground">
                 <div className="flex items-center gap-2">
+                    <span className="line-through">Example</span>
+                    <span>Retired</span>
+                </div>
+                <div className="flex items-center gap-2">
                     <Badge variant="secondary" className="bg-accent/80 text-accent-foreground">New</Badge>
                     <span>Newly Added</span>
                 </div>
