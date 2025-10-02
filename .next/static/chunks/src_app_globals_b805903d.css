@@ -1577,6 +1577,10 @@ body {
   background-color: #0000;
 }
 
+.bg-accent\/80 {
+  background-color: hsl(var(--accent) / .8);
+}
+
 .fill-current {
   fill: currentColor;
 }

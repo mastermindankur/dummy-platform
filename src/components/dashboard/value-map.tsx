@@ -57,13 +57,16 @@ const ItemCard = ({ item, type, onClick, isHighlighted, isSelected, selectedItem
             <CardTitle className="text-sm">{item.name}</CardTitle>
             {item.status && <StatusIndicator status={item.status} className="text-xs" />}
         </CardHeader>
-        {(item.description || item.isWceBookOfWork) && (
-            <CardContent className="p-3 pt-0 space-y-2">
+        {(item.description || item.isWceBookOfWork || item.isNew) && (
+            <CardContent className="p-3 pt-0 space-y-2 flex flex-wrap gap-2">
                 {item.description && (
-                    <CardDescription className={cn("text-xs", isHighlighted ? 'text-inherit' : 'text-muted-foreground')}>{item.description}</CardDescription>
+                    <CardDescription className={cn("text-xs w-full", isHighlighted ? 'text-inherit' : 'text-muted-foreground')}>{item.description}</CardDescription>
                 )}
                 {item.isWceBookOfWork && (
                     <Badge variant={isHighlighted ? "default" : "secondary"} className={cn(isHighlighted && "bg-background/20 text-foreground")}>BOW25</Badge>
+                )}
+                {item.isNew && (
+                    <Badge variant={isHighlighted ? "default" : "secondary"} className={cn("bg-accent/80 text-accent-foreground", isHighlighted && "bg-background/20 text-foreground")}>New</Badge>
                 )}
             </CardContent>
         )}
@@ -431,9 +434,15 @@ export function ValueMap({
             </div>
         </div>
         <div className="flex justify-end pt-4 pr-4">
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <Badge variant="secondary">BOW25</Badge>
-                <span>WCE Book of Work 2025</span>
+            <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                <div className="flex items-center gap-2">
+                    <Badge variant="secondary" className="bg-accent/80 text-accent-foreground">New</Badge>
+                    <span>Newly Added</span>
+                </div>
+                <div className="flex items-center gap-2">
+                    <Badge variant="secondary">BOW25</Badge>
+                    <span>WCE Book of Work 2025</span>
+                </div>
             </div>
         </div>
     </div>

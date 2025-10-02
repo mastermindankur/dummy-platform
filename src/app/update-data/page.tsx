@@ -863,6 +863,7 @@ function ValueMapManager() {
             name: `New ${type.slice(0, -1)}`,
             description: '',
             isWceBookOfWork: false,
+            isNew: true,
         };
         
         if (type === 'outcomes') {
@@ -1173,13 +1174,23 @@ function ValueMapItemCard({ item, onUpdate, onDelete, levers, drivers, driverGro
                         <Label>Description</Label>
                         <Textarea value={editedItem.description} onChange={e => setEditedItem({...editedItem, description: e.target.value })}/>
                     </div>
-                    <div className="flex items-center space-x-2">
-                        <Switch
-                            id={`wce-switch-${editedItem.id}`}
-                            checked={editedItem.isWceBookOfWork}
-                            onCheckedChange={checked => setEditedItem({...editedItem, isWceBookOfWork: checked})}
-                        />
-                        <Label htmlFor={`wce-switch-${editedItem.id}`}>Part of WCE 2025 Book of Work</Label>
+                    <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                            <Switch
+                                id={`wce-switch-${editedItem.id}`}
+                                checked={editedItem.isWceBookOfWork}
+                                onCheckedChange={checked => setEditedItem({...editedItem, isWceBookOfWork: checked})}
+                            />
+                            <Label htmlFor={`wce-switch-${editedItem.id}`}>Part of WCE 2025 Book of Work</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                            <Switch
+                                id={`new-switch-${editedItem.id}`}
+                                checked={editedItem.isNew}
+                                onCheckedChange={checked => setEditedItem({...editedItem, isNew: checked})}
+                            />
+                            <Label htmlFor={`new-switch-${editedItem.id}`}>Mark as New</Label>
+                        </div>
                     </div>
                     
                     {isOutcome && drivers && (
