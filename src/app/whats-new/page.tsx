@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, UserPlus } from "lucide-react";
 import { useState, useEffect } from 'react';
 
 export default function WhatsNewPage() {
@@ -80,6 +80,19 @@ export default function WhatsNewPage() {
                   <li><span className="text-foreground">LOBT-Specific Dashboards:</span> A new "LOBT-wide" view will allow different Lines of Business Technology to see a dashboard tailored to their specific data.</li>
                   <li><span className="text-foreground">Time-Based Progress Tracking:</span> Implement a time-series comparison feature to visualize how progress is made over different time scales.</li>
                 </ol>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center gap-4">
+                <UserPlus className="h-8 w-8 text-accent" />
+                <div>
+                    <CardTitle className="text-2xl font-bold text-foreground">Join Our Team!</CardTitle>
+                    <CardDescription>Help us shape the future of this dashboard.</CardDescription>
+                </div>
+            </CardHeader>
+            <CardContent>
+                <p className="text-muted-foreground">We are looking for passionate individuals with skills in React, Next.js, and data visualization to help build this dashboard further. If you're interested in contributing, please reach out to the project lead.</p>
             </CardContent>
           </Card>
         </div>
