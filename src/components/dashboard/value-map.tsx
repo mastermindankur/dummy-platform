@@ -7,6 +7,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { StatusIndicator } from '@/components/dashboard/status-indicator';
 import type { ValueMapItem, OutcomeDriverConnection, DriverLeverConnection, ValueMapDriver, ValueMapOutcome, ValueMapLever, ValueMapGroup } from '@/types';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 
 type ValueMapProps = {
     outcomes: ValueMapOutcome[];
@@ -23,6 +24,9 @@ type SelectedItem = {
     type: 'lever' | 'driver' | 'outcome' | 'outcomeGroup' | 'driverGroup';
 } | null;
 
+type ActiveFilter = 'new' | 'bow' | 'retired' | null;
+
+
 const itemColorClasses = {
     lever: 'bg-blue-950/30 border-blue-700/40 text-foreground',
     driver: 'bg-green-950/30 border-green-700/40 text-foreground',
@@ -36,13 +40,14 @@ const selectedItemColorClasses = {
 }
 
 
-const ItemCard = ({ item, type, onClick, isHighlighted, isSelected, selectedItem }: {
+const ItemCard = ({ item, type, onClick, isHighlighted, isSelected, selectedItem, activeFilter }: {
     item: ValueMapItem;
     type: 'lever' | 'driver' | 'outcome';
     onClick: () => void;
     isHighlighted: boolean;
     isSelected: boolean;
     selectedItem: SelectedItem;
+    activeFilter: ActiveFilter;
 }) => (
     <Card 
         id={`card-${item.id}`} 
@@ -50,7 +55,7 @@ const ItemCard = ({ item, type, onClick, isHighlighted, isSelected, selectedItem
         className={cn(
             "transition-all duration-300 cursor-pointer",
             isHighlighted ? selectedItemColorClasses[type] : itemColorClasses[type],
-            selectedItem ? (isHighlighted ? 'opacity-100 shadow-lg' : 'opacity-30') : 'opacity-100',
+            (selectedItem || activeFilter) ? (isHighlighted ? 'opacity-100 shadow-lg' : 'opacity-30') : 'opacity-100',
             isSelected && 'ring-2 ring-white',
             item.isRetired && 'opacity-60'
         )}>
@@ -122,6 +127,7 @@ export function ValueMap({
     driverLeverConnections,
 }: ValueMapProps) {
     const [selectedItem, setSelectedItem] = useState<SelectedItem>(null);
+    const [activeFilter, setActiveFilter] = useState<ActiveFilter>(null);
     const [isClient, setIsClient] = useState(false);
     const svgRef = useRef<SVGSVGElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -196,87 +202,114 @@ export function ValueMap({
             }
             clearTimeout(timeoutId);
         };
-    }, [isClient, selectedItem, outcomes, drivers, levers, outcomeDriverConnections, driverLeverConnections, outcomeGroups, driverGroups]);
+    }, [isClient, selectedItem, outcomes, drivers, levers, outcomeDriverConnections, driverLeverConnections, outcomeGroups, driverGroups, activeFilter]);
 
     const handleItemClick = (id: string, type: SelectedItem['type']) => {
         setSelectedItem(prev => (prev?.id === id && prev?.type === type ? null : { id, type }));
+        setActiveFilter(null);
+    };
+
+    const handleFilterClick = (filter: ActiveFilter) => {
+        setActiveFilter(prev => prev === filter ? null : filter);
+        setSelectedItem(null);
     };
 
     const getHighlightedIds = () => {
-        if (!selectedItem) return { lever: [], driver: [], outcome: [] };
-
+        if (!selectedItem && !activeFilter) return { lever: [], driver: [], outcome: [] };
+        
         let highlightedLevers: string[] = [];
         let highlightedDrivers: string[] = [];
         let highlightedOutcomes: string[] = [];
 
-        if (selectedItem.type === 'lever') {
-            highlightedLevers.push(selectedItem.id);
-            const connectedDriverIds = driverLeverConnections
-                .filter(c => c.leverId === selectedItem.id)
-                .map(c => c.driverId);
-            highlightedDrivers.push(...connectedDriverIds);
-
-            const connectedOutcomeIds = outcomeDriverConnections
-                .filter(c => connectedDriverIds.includes(c.driverId))
-                .map(c => c.outcomeId);
-            highlightedOutcomes.push(...connectedOutcomeIds);
+        // Handle category filtering
+        if (activeFilter) {
+            const allItems = [...levers, ...drivers, ...outcomes];
+            const matchingItems = allItems.filter(item => 
+                (activeFilter === 'new' && item.isNew) ||
+                (activeFilter === 'bow' && item.isWceBookOfWork) ||
+                (activeFilter === 'retired' && item.isRetired)
+            );
+            
+            matchingItems.forEach(item => {
+                if (levers.some(l => l.id === item.id)) highlightedLevers.push(item.id);
+                if (drivers.some(d => d.id === item.id)) highlightedDrivers.push(item.id);
+                if (outcomes.some(o => o.id === item.id)) highlightedOutcomes.push(item.id);
+            });
         }
 
-        if (selectedItem.type === 'driver') {
-            highlightedDrivers.push(selectedItem.id);
-            const connectedLeverIds = driverLeverConnections
-                .filter(c => c.driverId === selectedItem.id)
-                .map(c => c.leverId);
-            highlightedLevers.push(...connectedLeverIds);
 
-            const connectedOutcomeIds = outcomeDriverConnections
-                .filter(c => c.driverId === selectedItem.id)
-                .map(c => c.outcomeId);
-            highlightedOutcomes.push(...connectedOutcomeIds);
+        // Handle item selection tracing
+        if (selectedItem) {
+            if (selectedItem.type === 'lever') {
+                highlightedLevers.push(selectedItem.id);
+                const connectedDriverIds = driverLeverConnections
+                    .filter(c => c.leverId === selectedItem.id)
+                    .map(c => c.driverId);
+                highlightedDrivers.push(...connectedDriverIds);
+
+                const connectedOutcomeIds = outcomeDriverConnections
+                    .filter(c => connectedDriverIds.includes(c.driverId))
+                    .map(c => c.outcomeId);
+                highlightedOutcomes.push(...connectedOutcomeIds);
+            }
+
+            if (selectedItem.type === 'driver') {
+                highlightedDrivers.push(selectedItem.id);
+                const connectedLeverIds = driverLeverConnections
+                    .filter(c => c.driverId === selectedItem.id)
+                    .map(c => c.leverId);
+                highlightedLevers.push(...connectedLeverIds);
+
+                const connectedOutcomeIds = outcomeDriverConnections
+                    .filter(c => c.driverId === selectedItem.id)
+                    .map(c => c.outcomeId);
+                highlightedOutcomes.push(...connectedOutcomeIds);
+            }
+            
+            if (selectedItem.type === 'outcome') {
+                highlightedOutcomes.push(selectedItem.id);
+                const connectedDriverIds = outcomeDriverConnections
+                    .filter(c => c.outcomeId === selectedItem.id)
+                    .map(c => c.driverId);
+                highlightedDrivers.push(...connectedDriverIds);
+
+                const connectedLeverIds = driverLeverConnections
+                    .filter(c => connectedDriverIds.includes(c.driverId))
+                    .map(c => c.leverId);
+                highlightedLevers.push(...connectedLeverIds);
+            }
+
+            if (selectedItem.type === 'driverGroup') {
+                const groupDriverIds = drivers.filter(d => d.groupId === selectedItem.id).map(d => d.id);
+                highlightedDrivers.push(...groupDriverIds);
+
+                const connectedLeverIds = driverLeverConnections
+                    .filter(c => groupDriverIds.includes(c.driverId))
+                    .map(c => c.leverId);
+                highlightedLevers.push(...connectedLeverIds);
+
+                const connectedOutcomeIds = outcomeDriverConnections
+                    .filter(c => groupDriverIds.includes(c.driverId))
+                    .map(c => c.outcomeId);
+                highlightedOutcomes.push(...connectedOutcomeIds);
+            }
+
+            if (selectedItem.type === 'outcomeGroup') {
+                const groupOutcomeIds = outcomes.filter(o => o.groupId === selectedItem.id).map(o => o.id);
+                highlightedOutcomes.push(...groupOutcomeIds);
+
+                const connectedDriverIds = outcomeDriverConnections
+                    .filter(c => groupOutcomeIds.includes(c.outcomeId))
+                    .map(c => c.driverId);
+                highlightedDrivers.push(...connectedDriverIds);
+                
+                const connectedLeverIds = driverLeverConnections
+                    .filter(c => connectedDriverIds.includes(c.driverId))
+                    .map(c => c.leverId);
+                highlightedLevers.push(...connectedLeverIds);
+            }
         }
         
-        if (selectedItem.type === 'outcome') {
-            highlightedOutcomes.push(selectedItem.id);
-            const connectedDriverIds = outcomeDriverConnections
-                .filter(c => c.outcomeId === selectedItem.id)
-                .map(c => c.driverId);
-            highlightedDrivers.push(...connectedDriverIds);
-
-            const connectedLeverIds = driverLeverConnections
-                .filter(c => connectedDriverIds.includes(c.driverId))
-                .map(c => c.leverId);
-            highlightedLevers.push(...connectedLeverIds);
-        }
-
-        if (selectedItem.type === 'driverGroup') {
-            const groupDriverIds = drivers.filter(d => d.groupId === selectedItem.id).map(d => d.id);
-            highlightedDrivers.push(...groupDriverIds);
-
-            const connectedLeverIds = driverLeverConnections
-                .filter(c => groupDriverIds.includes(c.driverId))
-                .map(c => c.leverId);
-            highlightedLevers.push(...connectedLeverIds);
-
-            const connectedOutcomeIds = outcomeDriverConnections
-                .filter(c => groupDriverIds.includes(c.driverId))
-                .map(c => c.outcomeId);
-            highlightedOutcomes.push(...connectedOutcomeIds);
-        }
-
-        if (selectedItem.type === 'outcomeGroup') {
-            const groupOutcomeIds = outcomes.filter(o => o.groupId === selectedItem.id).map(o => o.id);
-            highlightedOutcomes.push(...groupOutcomeIds);
-
-            const connectedDriverIds = outcomeDriverConnections
-                .filter(c => groupOutcomeIds.includes(c.outcomeId))
-                .map(c => c.driverId);
-            highlightedDrivers.push(...connectedDriverIds);
-            
-            const connectedLeverIds = driverLeverConnections
-                .filter(c => connectedDriverIds.includes(c.driverId))
-                .map(c => c.leverId);
-            highlightedLevers.push(...connectedLeverIds);
-        }
 
         return { 
             lever: [...new Set(highlightedLevers)], 
@@ -288,12 +321,12 @@ export function ValueMap({
     const highlighted = getHighlightedIds();
 
     const isHighlighted = (id: string, type: 'lever' | 'driver' | 'outcome') => {
-        if (!selectedItem) return false;
+        if (!selectedItem && !activeFilter) return false;
         return highlighted[type].includes(id);
     };
 
     const isConnectionHighlighted = (conn: DriverLeverConnection | OutcomeDriverConnection) => {
-        if (!selectedItem) return false;
+        if (!selectedItem && !activeFilter) return false;
     
         const isDriverLever = 'leverId' in conn;
     
@@ -339,6 +372,7 @@ export function ValueMap({
                                     isHighlighted={isHighlighted(item.id, type)}
                                     isSelected={selectedItem?.id === item.id}
                                     selectedItem={selectedItem}
+                                    activeFilter={activeFilter}
                                 />
                             ))
                         }
@@ -353,6 +387,7 @@ export function ValueMap({
                         isHighlighted={isHighlighted(item.id, type)}
                         isSelected={selectedItem?.id === item.id}
                         selectedItem={selectedItem}
+                        activeFilter={activeFilter}
                     />
                 ))}
             </>
@@ -383,7 +418,7 @@ export function ValueMap({
                             strokeWidth={styles.strokeWidth}
                             markerEnd={isConnectionHighlighted(conn) ? "url(#arrowhead-highlight)" : "url(#arrowhead)"}
                             className={'transition-all duration-300'}
-                            style={{ opacity: selectedItem ? (isConnectionHighlighted(conn) ? 1 : 0.3) : 1 }}
+                            style={{ opacity: (selectedItem || activeFilter) ? (isConnectionHighlighted(conn) ? 1 : 0.3) : 1 }}
                         />
                     )
                 })}
@@ -398,7 +433,7 @@ export function ValueMap({
                             strokeWidth={styles.strokeWidth}
                             markerEnd={isConnectionHighlighted(conn) ? "url(#arrowhead-highlight)" : "url(#arrowhead)"}
                             className={'transition-all duration-300'}
-                            style={{ opacity: selectedItem ? (isConnectionHighlighted(conn) ? 1 : 0.3) : 1 }}
+                            style={{ opacity: (selectedItem || activeFilter) ? (isConnectionHighlighted(conn) ? 1 : 0.3) : 1 }}
                         />
                     )
                 })}
@@ -418,6 +453,7 @@ export function ValueMap({
                         isHighlighted={isHighlighted(lever.id, 'lever')}
                         isSelected={selectedItem?.id === lever.id}
                         selectedItem={selectedItem}
+                        activeFilter={activeFilter}
                     />
                 ))}
             </div>
@@ -436,18 +472,18 @@ export function ValueMap({
         </div>
         <div className="flex justify-end pt-4">
             <div className="flex flex-col items-start gap-2 text-sm">
-                <div className="flex items-center gap-2">
+                <Button variant={activeFilter === 'new' ? 'secondary': 'ghost'} size="sm" onClick={() => handleFilterClick('new')} className="flex items-center gap-2 justify-start w-full">
                     <Badge variant="secondary" className="bg-accent/80 text-accent-foreground">New</Badge>
                     <span>Newly Added</span>
-                </div>
-                 <div className="flex items-center gap-2">
+                </Button>
+                <Button variant={activeFilter === 'retired' ? 'secondary': 'ghost'} size="sm" onClick={() => handleFilterClick('retired')} className="flex items-center gap-2 justify-start w-full">
                     <span className="line-through">Retired Item</span>
                     <span>Retired</span>
-                </div>
-                <div className="flex items-center gap-2">
+                </Button>
+                <Button variant={activeFilter === 'bow' ? 'secondary': 'ghost'} size="sm" onClick={() => handleFilterClick('bow')} className="flex items-center gap-2 justify-start w-full">
                     <Badge variant="secondary">BOW25</Badge>
                     <span>WCE Book of Work 2025</span>
-                </div>
+                </Button>
             </div>
         </div>
     </div>
