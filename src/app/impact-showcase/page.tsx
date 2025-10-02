@@ -12,88 +12,49 @@ import {
 } from '@/components/ui/card';
 import { Loader2, Zap, ShieldCheck, Users, BrainCircuit } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
-import type { ExcelData, MonthlyExcelData, Hackathon } from '@/types';
+import type { ImpactInitiative, ImpactCategory } from '@/types';
 
-type ImpactMetrics = {
-  jiraAdoption: number;
-  squadOnboarded: number;
-  developerEngagement: number;
-  hackathonParticipants: number;
-};
-
-async function fetchData(key: string): Promise<any> {
+async function fetchImpactData(): Promise<ImpactInitiative[]> {
     try {
-        const res = await fetch(`/api/data?key=${key}`);
-        if (!res.ok || res.status === 404) {
-            return null;
+        const res = await fetch(`/api/data?key=impact-initiatives`);
+        if (!res.ok) {
+            toast({ title: 'Failed to fetch impact data', variant: 'destructive' });
+            return [];
         }
         return res.json();
     } catch (error) {
-        console.error(`Failed to fetch ${key}`, error);
-        return null;
+        console.error(`Failed to fetch impact initiatives`, error);
+        toast({ title: 'Error loading impact data', variant: 'destructive' });
+        return [];
     }
 }
 
+const categoryDetails: Record<ImpactCategory, { title: string, icon: React.ElementType }> = {
+    productivity: { title: 'Productivity & Efficiency Gains', icon: Zap },
+    quality: { title: 'Quality & Reliability Improvement', icon: ShieldCheck },
+    engagement: { title: 'Developer Engagement & Skill Uplift', icon: Users },
+};
+
 export default function ImpactShowcasePage() {
-  const [metrics, setMetrics] = useState<ImpactMetrics | null>(null);
+  const [initiatives, setInitiatives] = useState<ImpactInitiative[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function loadMetrics() {
       setIsLoading(true);
-      try {
-        const [
-          jiraData,
-          squadData,
-          arcTrainingsData,
-          techSphereData,
-          hackathonsData,
-        ] = await Promise.all([
-          fetchData('jira-assistant-adoption') as Promise<MonthlyExcelData | null>,
-          fetchData('squad-onboarding') as Promise<ExcelData | null>,
-          fetchData('arc-trainings') as Promise<ExcelData | null>,
-          fetchData('tech-sphere-sessions') as Promise<ExcelData | null>,
-          fetchData('hackathons') as Promise<Hackathon[] | null>,
-        ]);
-
-        let jiraAdoption = 0;
-        if (jiraData && Object.keys(jiraData).length > 0) {
-            const latestMonth = Object.keys(jiraData).sort().pop();
-            if (latestMonth && jiraData[latestMonth]) {
-                const latestMonthRows = jiraData[latestMonth].rows;
-                const testCases = latestMonthRows.filter(row => row['Test'] === 1);
-                const totalTestCases = testCases.length;
-                const jaTestCases = testCases.filter(row => row['is_created_via_JA'] === 1).length;
-                if (totalTestCases > 0) {
-                    jiraAdoption = Math.round((jaTestCases / totalTestCases) * 100);
-                }
-            }
-        }
-        
-        const squadOnboarded = squadData?.rows.length || 0;
-
-        const arcParticipants = arcTrainingsData?.rows.reduce((sum, row) => sum + (Number(row['Participation']) || 0), 0) || 0;
-        const techSphereParticipants = techSphereData?.rows.reduce((sum, row) => sum + (Number(row['Participation']) || 0), 0) || 0;
-        const developerEngagement = arcParticipants + techSphereParticipants;
-
-        const hackathonParticipants = hackathonsData?.reduce((sum: number, h: any) => sum + (h.participants || 0), 0) || 0;
-
-        setMetrics({
-          jiraAdoption,
-          squadOnboarded,
-          developerEngagement,
-          hackathonParticipants,
-        });
-
-      } catch (error) {
-        console.error("Failed to calculate metrics", error);
-        toast({ title: 'Error loading impact data', variant: 'destructive' });
-      } finally {
-        setIsLoading(false);
-      }
+      const data = await fetchImpactData();
+      setInitiatives(data);
+      setIsLoading(false);
     }
     loadMetrics();
   }, []);
+
+  const groupedInitiatives = initiatives.reduce((acc, initiative) => {
+    (acc[initiative.category] = acc[initiative.category] || []).push(initiative);
+    return acc;
+  }, {} as Record<ImpactCategory, ImpactInitiative[]>);
+
+  const orderedCategories: ImpactCategory[] = ['productivity', 'quality', 'engagement'];
 
   return (
     <div className="flex min-h-screen w-full flex-col">
@@ -108,52 +69,43 @@ export default function ImpactShowcasePage() {
             <div className="flex justify-center items-center h-64">
                 <Loader2 className="h-8 w-8 animate-spin" />
             </div>
-        ) : metrics ? (
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-medium">Jira Assistant Adoption</CardTitle>
-                        <Zap className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-4xl font-bold">{metrics.jiraAdoption}%</div>
-                        <p className="text-xs text-muted-foreground">of test cases created via JA (latest month)</p>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-medium">Critical App Onboarding</CardTitle>
-                        <ShieldCheck className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-4xl font-bold">{metrics.squadOnboarded}</div>
-                        <p className="text-xs text-muted-foreground">CAT1/CAT2 applications onboarded to SQUAD</p>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-medium">Developer Engagement</CardTitle>
-                        <Users className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-4xl font-bold">{metrics.developerEngagement.toLocaleString()}</div>
-                        <p className="text-xs text-muted-foreground">participants in ARC & Tech Sphere sessions</p>
-                    </CardContent>
-                </Card>
-                 <Card>
-                    <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-medium">Innovation Community</CardTitle>
-                        <BrainCircuit className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-4xl font-bold">{metrics.hackathonParticipants.toLocaleString()}</div>
-                        <p className="text-xs text-muted-foreground">participants across all hackathons</p>
-                    </CardContent>
-                </Card>
+        ) : initiatives.length > 0 ? (
+            <div className="space-y-10">
+                {orderedCategories.map(category => {
+                    const details = categoryDetails[category];
+                    const categoryInitiatives = groupedInitiatives[category];
+
+                    if (!categoryInitiatives || categoryInitiatives.length === 0) {
+                        return null;
+                    }
+
+                    return (
+                        <div key={category}>
+                            <div className="flex items-center gap-3 mb-4">
+                                <details.icon className="h-7 w-7 text-primary"/>
+                                <h2 className="text-2xl font-semibold">{details.title}</h2>
+                            </div>
+                            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                                {categoryInitiatives.map(initiative => (
+                                    <Card key={initiative.id}>
+                                        <CardHeader>
+                                            <CardTitle className="text-lg">{initiative.name}</CardTitle>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <div className="text-4xl font-bold">{initiative.metric}</div>
+                                            <p className="text-sm text-muted-foreground">{initiative.metricUnit}</p>
+                                            <p className="text-sm text-muted-foreground mt-2">{initiative.description}</p>
+                                        </CardContent>
+                                    </Card>
+                                ))}
+                            </div>
+                        </div>
+                    )
+                })}
             </div>
         ) : (
              <div className="text-center text-muted-foreground p-8 border-dashed border-2 rounded-md mt-8">
-                <p>No impact data available yet. Upload data in the "Update Data" page to see metrics here.</p>
+                <p>No impact initiatives have been added yet. Go to the "Update Data" page to add them.</p>
             </div>
         )}
       </main>

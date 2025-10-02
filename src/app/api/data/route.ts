@@ -16,7 +16,9 @@ import {
     getEvents,
     writeEvents,
     getExcelMetadata,
-    writeExcelMetadata
+    writeExcelMetadata,
+    getImpactInitiatives,
+    writeImpactInitiatives
 } from '@/lib/data';
 import type { Pillar } from '@/types';
 
@@ -60,6 +62,14 @@ export async function GET(request: Request) {
         return new NextResponse('Internal Server Error', { status: 500 });
     }
   }
+  if (fileKey === 'impact-initiatives') {
+    try {
+        const data = await getImpactInitiatives();
+        return NextResponse.json(data);
+    } catch (error) {
+        return new NextResponse('Internal Server Error', { status: 500 });
+    }
+  }
 
 
   if (fileKey === 'value-map') {
@@ -85,11 +95,11 @@ export async function GET(request: Request) {
         if (fileKey === 'hackathons') {
             const data = await readExcelData('hackathons');
             // hackathons are not in ExcelData format, they are just an array in the `rows` property
-            return NextResponse.json(data?.rows ?? []); 
+            return NextResponse.json(data ?? []); 
         }
         if (fileKey === 'industry-events') {
             const data = await readExcelData('industry-events');
-            return NextResponse.json(data?.rows ?? []);
+            return NextResponse.json(data ?? []);
         }
         if (fileKey === 'squad-onboarding') {
             const data = await readExcelData('squad-onboarding');
@@ -143,6 +153,9 @@ export async function POST(request: Request) {
     if (body.events) {
         await writeEvents(body.events);
     }
+    if (body.impactInitiatives) {
+        await writeImpactInitiatives(body.impactInitiatives);
+    }
     if (body.excelData) {
         const metadata = await getExcelMetadata();
         const now = new Date().toISOString();
@@ -152,11 +165,11 @@ export async function POST(request: Request) {
                  if (body.excelData[key]) {
                     // special handling for certain keys
                     if (key === 'hackathons') {
-                      await writeExcelData(key, { rows: body.excelData[key] });
+                      await writeExcelData(key, body.excelData[key]);
                       metadata[key] = now;
                       excelMetadataUpdated = true;
                     } else if (key === 'industry-events') {
-                        await writeExcelData(key, { rows: body.excelData[key] });
+                        await writeExcelData(key, body.excelData[key]);
                         metadata[key] = now;
                         excelMetadataUpdated = true;
                     } else if (key.startsWith('jira-assistant-adoption')) {
@@ -193,5 +206,3 @@ export async function POST(request: Request) {
     return new NextResponse('Internal Server Error', { status: 500 });
   }
 }
-
-    

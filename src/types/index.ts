@@ -153,3 +153,16 @@ export type ActionItem = {
 export type ExcelMetadata = {
     [key: string]: string; // key is the fileKey, value is the ISO date string
 };
+
+// Impact Initiatives
+export type ImpactCategory = 'productivity' | 'quality' | 'engagement';
+
+export type ImpactInitiative = {
+  id: string;
+  category: ImpactCategory;
+  name: string;
+  description: string;
+  metric: string;
+  metricUnit: string;
+  icon: 'zap' | 'shieldCheck' | 'users';
+};

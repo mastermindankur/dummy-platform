@@ -24,10 +24,10 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/use-toast';
-import type { Pillar, SubItem, Status, ExcelData, ValueMapData, ValueMapItem, ValueMapLever, ValueMapDriver, ValueMapOutcome, ValueMapGroup, User, ActionItem, MeetingEvent, MappingRule, ExcelRow } from '@/types';
+import type { Pillar, SubItem, Status, ExcelData, ValueMapData, ValueMapItem, ValueMapLever, ValueMapDriver, ValueMapOutcome, ValueMapGroup, User, ActionItem, MeetingEvent, MappingRule, ExcelRow, ImpactInitiative, ImpactCategory } from '@/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Loader2, Plus, Trash2, Upload, ArrowRight, ChevronsUpDown, Filter, X, Edit, GripVertical, Settings2, Users, CalendarIcon, Briefcase, Check, RotateCcw } from 'lucide-react';
+import { Loader2, Plus, Trash2, Upload, ArrowRight, ChevronsUpDown, Filter, X, Edit, GripVertical, Settings2, Users, CalendarIcon, Briefcase, Check, RotateCcw, Zap, ShieldCheck } from 'lucide-react';
 import { processExcelFile, getExcelSheetNames } from '@/lib/excel-utils';
 import Link from 'next/link';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -72,6 +72,151 @@ type FilterState = {
     column: string;
     value: string;
 };
+
+// ## IMPACT INITIATIVES DATA MANAGEMENT ##
+function ImpactInitiativesManager({
+    initialInitiatives,
+    onInitiativesChange,
+}: {
+    initialInitiatives: ImpactInitiative[];
+    onInitiativesChange: (initiatives: ImpactInitiative[]) => void;
+}) {
+    const [initiatives, setInitiatives] = useState(initialInitiatives);
+
+    useEffect(() => {
+        onInitiativesChange(initiatives);
+    }, [initiatives, onInitiativesChange]);
+
+    const handleAddInitiative = (category: ImpactCategory) => {
+        const newInitiative: ImpactInitiative = {
+            id: `impact-${Date.now()}`,
+            category,
+            name: 'New Initiative',
+            description: '',
+            metric: '0',
+            metricUnit: '%',
+            icon: 'zap',
+        };
+        setInitiatives(prev => [...prev, newInitiative]);
+    };
+
+    const handleUpdateInitiative = (updatedInitiative: ImpactInitiative) => {
+        setInitiatives(prev => prev.map(i => i.id === updatedInitiative.id ? updatedInitiative : i));
+    };
+
+    const handleRemoveInitiative = (id: string) => {
+        setInitiatives(prev => prev.filter(i => i.id !== id));
+    };
+
+    const groupedInitiatives = initiatives.reduce((acc, initiative) => {
+        (acc[initiative.category] = acc[initiative.category] || []).push(initiative);
+        return acc;
+    }, {} as Record<ImpactCategory, ImpactInitiative[]>);
+
+    const categoryDetails: Record<ImpactCategory, { title: string, icon: React.ElementType }> = {
+        productivity: { title: 'Productivity & Efficiency Gains', icon: Zap },
+        quality: { title: 'Quality & Reliability Improvement', icon: ShieldCheck },
+        engagement: { title: 'Developer Engagement & Skill Uplift', icon: Users },
+    };
+
+    return (
+        <div className="space-y-6">
+            {Object.entries(categoryDetails).map(([category, details]) => (
+                <Card key={category}>
+                    <CardHeader>
+                        <div className="flex items-center justify-between">
+                            <CardTitle className="flex items-center gap-2">
+                                <details.icon className="h-6 w-6" />
+                                {details.title}
+                            </CardTitle>
+                            <Button variant="outline" size="sm" onClick={() => handleAddInitiative(category as ImpactCategory)}>
+                                <Plus className="mr-2 h-4 w-4" /> Add Initiative
+                            </Button>
+                        </div>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        {(groupedInitiatives[category as ImpactCategory] || []).map(initiative => (
+                            <InitiativeCard
+                                key={initiative.id}
+                                initiative={initiative}
+                                onUpdate={handleUpdateInitiative}
+                                onRemove={handleRemoveInitiative}
+                            />
+                        ))}
+                        {(!groupedInitiatives[category as ImpactCategory] || groupedInitiatives[category as ImpactCategory].length === 0) && (
+                            <p className="text-sm text-muted-foreground text-center py-4">No initiatives in this category yet.</p>
+                        )}
+                    </CardContent>
+                </Card>
+            ))}
+        </div>
+    );
+}
+
+function InitiativeCard({
+    initiative,
+    onUpdate,
+    onRemove,
+}: {
+    initiative: ImpactInitiative,
+    onUpdate: (initiative: ImpactInitiative) => void,
+    onRemove: (id: string) => void,
+}) {
+    const [isEditing, setIsEditing] = useState(false);
+    const [editedInitiative, setEditedInitiative] = useState(initiative);
+
+    useEffect(() => {
+        setEditedInitiative(initiative);
+    }, [initiative]);
+
+    const handleSave = () => {
+        onUpdate(editedInitiative);
+        setIsEditing(false);
+        toast({ title: "Initiative updated", description: "Don't forget to save all changes."});
+    };
+
+    return (
+        <Card className="bg-background">
+            <CardContent className="p-4">
+                <div className="flex justify-between items-start">
+                    <div>
+                        <p className="font-semibold">{initiative.name}</p>
+                        <p className="text-sm text-muted-foreground">{initiative.description}</p>
+                        <div className="text-2xl font-bold mt-2">{initiative.metric} <span className="text-lg font-normal text-muted-foreground">{initiative.metricUnit}</span></div>
+                    </div>
+                    <div className="flex items-center">
+                        <Dialog open={isEditing} onOpenChange={setIsEditing}>
+                            <DialogTrigger asChild>
+                                <Button variant="ghost" size="icon"><Edit className="h-4 w-4" /></Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                                <DialogHeader>
+                                    <DialogTitle>Edit Initiative</DialogTitle>
+                                </DialogHeader>
+                                <div className="space-y-4 py-4">
+                                    <div><Label>Name</Label><Input value={editedInitiative.name} onChange={e => setEditedInitiative(prev => ({ ...prev, name: e.target.value }))} /></div>
+                                    <div><Label>Description</Label><Textarea value={editedInitiative.description} onChange={e => setEditedInitiative(prev => ({ ...prev, description: e.target.value }))} /></div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div><Label>Metric Value</Label><Input value={editedInitiative.metric} onChange={e => setEditedInitiative(prev => ({ ...prev, metric: e.target.value }))} /></div>
+                                        <div><Label>Metric Unit</Label><Input value={editedInitiative.metricUnit} onChange={e => setEditedInitiative(prev => ({ ...prev, metricUnit: e.target.value }))} /></div>
+                                    </div>
+                                </div>
+                                <DialogFooter>
+                                    <DialogClose asChild><Button variant="ghost">Cancel</Button></DialogClose>
+                                    <Button onClick={handleSave}>Save</Button>
+                                </DialogFooter>
+                            </DialogContent>
+                        </Dialog>
+                        <Button variant="ghost" size="icon" className="text-destructive" onClick={() => onRemove(initiative.id)}>
+                            <Trash2 className="h-4 w-4" />
+                        </Button>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+    );
+}
+
 
 // ## ACTION ITEMS DATA MANAGEMENT ##
 
@@ -1551,18 +1696,20 @@ export default function UpdateDataPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [events, setEvents] = useState<MeetingEvent[]>([]);
   const [actionItems, setActionItems] = useState<ActionItem[]>([]);
+  const [impactInitiatives, setImpactInitiatives] = useState<ImpactInitiative[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [activeTab, setActiveTab] = useState<string | undefined>('action-items');
+  const [activeTab, setActiveTab] = useState<string | undefined>('impact-initiatives');
 
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      const [pillarRes, usersRes, actionItemsRes, eventsRes] = await Promise.all([
+      const [pillarRes, usersRes, actionItemsRes, eventsRes, impactRes] = await Promise.all([
           fetch('/api/data'),
           fetch('/api/data?key=users'),
           fetch('/api/data?key=action-items'),
           fetch('/api/data?key=events'),
+          fetch('/api/data?key=impact-initiatives'),
       ]);
 
       if (!pillarRes.ok) throw new Error('Failed to fetch pillar data');
@@ -1572,6 +1719,7 @@ export default function UpdateDataPage() {
       if (usersRes.ok) setUsers(await usersRes.json());
       if (actionItemsRes.ok) setActionItems(await actionItemsRes.json());
       if (eventsRes.ok) setEvents(await eventsRes.json());
+      if (impactRes.ok) setImpactInitiatives(await impactRes.json());
 
     } catch (error) {
       console.error(error);
@@ -1671,11 +1819,13 @@ export default function UpdateDataPage() {
         pillars: Pillar[] | null;
         actionItems: ActionItem[];
         events: MeetingEvent[];
+        impactInitiatives: ImpactInitiative[];
         excelData: Record<string, any>;
       } = {
         pillars: data,
         actionItems: actionItems,
         events: events,
+        impactInitiatives: impactInitiatives,
         excelData: {
             ...excelData,
             users: {
@@ -1733,7 +1883,8 @@ export default function UpdateDataPage() {
               </div>
             ) : (
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                    <TabsList className="grid w-full grid-cols-3 md:grid-cols-7 h-auto mb-6">
+                    <TabsList className="grid w-full grid-cols-4 md:grid-cols-8 h-auto mb-6">
+                        <TabsTrigger value="impact-initiatives">Impact</TabsTrigger>
                         <TabsTrigger value="value-map">Value Map</TabsTrigger>
                         <TabsTrigger value="action-items">Action Items</TabsTrigger>
                         {data?.map((pillar) => (
@@ -1742,6 +1893,13 @@ export default function UpdateDataPage() {
                             </TabsTrigger>
                         ))}
                     </TabsList>
+
+                    <TabsContent value="impact-initiatives">
+                        <ImpactInitiativesManager
+                            initialInitiatives={impactInitiatives}
+                            onInitiativesChange={setImpactInitiatives}
+                        />
+                    </TabsContent>
 
                     <TabsContent value="value-map">
                         <ValueMapManager />
@@ -2067,7 +2225,3 @@ export default function UpdateDataPage() {
     </div>
   );
 }
-
-
-
-

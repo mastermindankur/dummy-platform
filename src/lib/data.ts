@@ -7,7 +7,7 @@ import {
   Cpu,
   Landmark,
 } from "lucide-react";
-import type { Pillar, SubItem, ExcelData, MonthlyExcelData, ValueMapData, User, ActionItem, MeetingEvent, ExcelMetadata } from "@/types";
+import type { Pillar, SubItem, ExcelData, MonthlyExcelData, ValueMapData, User, ActionItem, MeetingEvent, ExcelMetadata, ImpactInitiative } from "@/types";
 import { promises as fs } from 'fs';
 import path from 'path';
 
@@ -114,23 +114,24 @@ async function readData(): Promise<Pillar[]> {
     }
 
     // Attach hackathons count
-    const hackathonsData = dataCache['hackathons'];
-    if (hackathonsData && hackathonsData.rows.length > 0) {
-        const hackathonsCount = hackathonsData.rows.length;
-        jsonData = jsonData.map(pillar => ({
-            ...pillar,
-            subItems: pillar.subItems.map(subItem => 
-                subItem.dataKey === 'hackathons' 
-                ? { ...subItem, percentageComplete: hackathonsCount } 
-                : subItem
-            ),
-        }));
+    const hackathonsData = await readExcelData('hackathons');
+    if (hackathonsData && Array.isArray(hackathonsData)) {
+      const hackathonsCount = hackathonsData.length;
+      jsonData = jsonData.map((pillar) => ({
+        ...pillar,
+        subItems: pillar.subItems.map((subItem) =>
+          subItem.dataKey === 'hackathons'
+            ? { ...subItem, percentageComplete: hackathonsCount }
+            : subItem
+        ),
+      }));
     }
 
+
      // Attach industry events count
-    const industryEventsData = dataCache['industry-events'];
-    if (industryEventsData && industryEventsData.rows.length > 0) {
-        const industryEventsCount = industryEventsData.rows.length;
+    const industryEventsData = await readExcelData('industry-events');
+    if (industryEventsData && Array.isArray(industryEventsData)) {
+        const industryEventsCount = industryEventsData.length;
         jsonData = jsonData.map(pillar => ({
             ...pillar,
             subItems: pillar.subItems.map(subItem => 
@@ -250,18 +251,22 @@ export async function writeData(data: Pillar[]) {
     }
 }
 
-export async function readExcelData(fileKey: string): Promise<ExcelData | null> {
+export async function readExcelData(fileKey: string): Promise<any> {
     try {
         const fileContent = await fs.readFile(dataFilePath(`${fileKey}.json`), 'utf-8');
         
         if (fileKey === 'hackathons' || fileKey === 'industry-events') {
           const data = JSON.parse(fileContent);
-          // Ensure the data is in the { rows: [...] } format.
+          // Ensure the data is an array for these keys.
           if (Array.isArray(data)) {
-            return { headers: [], rows: data };
+            return data;
           }
-          return data;
+          if (data && Array.isArray(data.rows)) {
+            return data.rows;
+          }
+          return [];
         }
+
          if (fileKey === 'users') {
             const users: User[] = JSON.parse(fileContent);
             const rows = users.map(user => ({ 'Name': user.name, 'Email': user.email, 'LOBT': user.lobt }));
@@ -274,9 +279,7 @@ export async function readExcelData(fileKey: string): Promise<ExcelData | null> 
         if (error instanceof Error && (error as NodeJS.ErrnoException).code === 'ENOENT') {
             try {
                 let emptyContent: string;
-                if (fileKey === 'hackathons' || fileKey === 'industry-events') {
-                    emptyContent = JSON.stringify({ rows: [] });
-                } else if (fileKey === 'users') {
+                if (fileKey === 'hackathons' || fileKey === 'industry-events' || fileKey === 'users' || fileKey === 'impact-initiatives') {
                     emptyContent = JSON.stringify([]);
                 }
                 else {
@@ -288,8 +291,8 @@ export async function readExcelData(fileKey: string): Promise<ExcelData | null> 
                 if (fileKey === 'users') {
                     return { headers: ['Name', 'Email', 'LOBT'], rows: [] };
                 }
-                if (fileKey === 'hackathons' || fileKey === 'industry-events') {
-                    return { headers: [], rows: [] };
+                if (fileKey === 'hackathons' || fileKey === 'industry-events' || fileKey === 'impact-initiatives') {
+                    return [];
                 }
                 return { headers: [], rows: [] };
             } catch (writeError) {
@@ -305,8 +308,7 @@ export async function readExcelData(fileKey: string): Promise<ExcelData | null> 
 
 export async function writeExcelData(fileKey: string, data: any) {
     try {
-        const dataToWrite = (fileKey === 'hackathons' || fileKey === 'industry-events') ? data : data;
-        await fs.writeFile(dataFilePath(`${fileKey}.json`), JSON.stringify(dataToWrite, null, 2), 'utf-8');
+        await fs.writeFile(dataFilePath(`${fileKey}.json`), JSON.stringify(data, null, 2), 'utf-8');
     } catch (error) {
         console.error(`Could not write to ${fileKey}.json:`, error);
         throw new Error(`Failed to save ${fileKey} data.`);
@@ -429,8 +431,10 @@ export const writeActionItems = (data: ActionItem[]) => writeJsonFile('action-it
 export const getEvents = () => readJsonFile<MeetingEvent[]>('events.json', []);
 export const writeEvents = (data: MeetingEvent[]) => writeJsonFile('events.json', data);
 
+export const getImpactInitiatives = () => readJsonFile<ImpactInitiative[]>('impact-initiatives.json', []);
+export const writeImpactInitiatives = (data: ImpactInitiative[]) => writeJsonFile('impact-initiatives.json', data);
+
 
 // Metadata for Excel files
 export const getExcelMetadata = () => readJsonFile<ExcelMetadata>('excel-metadata.json', {});
 export const writeExcelMetadata = (data: ExcelMetadata) => writeJsonFile('excel-metadata.json', data);
-
