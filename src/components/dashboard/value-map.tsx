@@ -434,15 +434,15 @@ export function ValueMap({
                 {renderGroupedItems(outcomes, outcomeGroups, 'outcome')}
             </div>
         </div>
-        <div className="flex justify-end pt-4 pr-4">
+        <div className="flex justify-start pt-4 pr-4">
             <div className="flex flex-col items-start gap-2 text-xs">
-                <div className="flex items-center gap-2">
-                    <span className="line-through">Example</span>
-                    <span>Retired</span>
-                </div>
                 <div className="flex items-center gap-2">
                     <Badge variant="secondary" className="bg-accent/80 text-accent-foreground">New</Badge>
                     <span>Newly Added</span>
+                </div>
+                 <div className="flex items-center gap-2">
+                    <span className="line-through">Example</span>
+                    <span>Retired</span>
                 </div>
                 <div className="flex items-center gap-2">
                     <Badge variant="secondary">BOW25</Badge>
