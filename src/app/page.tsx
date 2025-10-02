@@ -67,15 +67,17 @@ export default function LandingPage() {
             
             <Link href="/impact-showcase">
               <Card className="h-full hover:border-primary hover:shadow-lg transition-all duration-300">
-                  <CardHeader className="relative text-center">
+                  <CardHeader className="relative">
                       <Badge variant="outline" className="absolute top-2 right-2 px-2 py-0.5 text-[10px] font-medium">Work in progress</Badge>
-                      <div className="flex justify-center mb-4">
-                          <Target className="h-12 w-12 text-accent" />
+                      <div className="text-center">
+                        <div className="flex justify-center mb-4">
+                            <Target className="h-12 w-12 text-accent" />
+                        </div>
+                        <CardTitle>Impact Showcase</CardTitle>
+                        <CardDescription className="text-sm">
+                            Quantify the business impact of different initiatives.
+                        </CardDescription>
                       </div>
-                      <CardTitle>Impact Showcase</CardTitle>
-                      <CardDescription className="text-sm">
-                          Quantify the business impact of different initiatives.
-                      </CardDescription>
                   </CardHeader>
               </Card>
             </Link>
