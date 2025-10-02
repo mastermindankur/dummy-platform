@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/card';
 import { Loader2, Zap, ShieldCheck, Users, BrainCircuit } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
-import type { ExcelData, MonthlyExcelData } from '@/types';
+import type { ExcelData, MonthlyExcelData, Hackathon } from '@/types';
 
 type ImpactMetrics = {
   jiraAdoption: number;
@@ -53,7 +53,7 @@ export default function ImpactShowcasePage() {
           fetchData('squad-onboarding') as Promise<ExcelData | null>,
           fetchData('arc-trainings') as Promise<ExcelData | null>,
           fetchData('tech-sphere-sessions') as Promise<ExcelData | null>,
-          fetchData('hackathons') as Promise<ExcelData | null>,
+          fetchData('hackathons') as Promise<Hackathon[] | null>,
         ]);
 
         let jiraAdoption = 0;
@@ -76,7 +76,7 @@ export default function ImpactShowcasePage() {
         const techSphereParticipants = techSphereData?.rows.reduce((sum, row) => sum + (Number(row['Participation']) || 0), 0) || 0;
         const developerEngagement = arcParticipants + techSphereParticipants;
 
-        const hackathonParticipants = hackathonsData?.rows.reduce((sum: number, h: any) => sum + (h.participants || 0), 0) || 0;
+        const hackathonParticipants = hackathonsData?.reduce((sum: number, h: any) => sum + (h.participants || 0), 0) || 0;
 
         setMetrics({
           jiraAdoption,
