@@ -6,5 +6,6 @@
   "/favicon.ico/route": "app/favicon.ico/route.js",
   "/impact-showcase/page": "app/impact-showcase/page.js",
   "/page": "app/page.js",
-  "/update-data/page": "app/update-data/page.js"
+  "/update-data/page": "app/update-data/page.js",
+  "/whats-new/page": "app/whats-new/page.js"
 }
