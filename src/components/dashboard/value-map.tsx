@@ -235,6 +235,11 @@ export function ValueMap({
                 if (drivers.some(d => d.id === item.id)) highlightedDrivers.push(item.id);
                 if (outcomes.some(o => o.id === item.id)) highlightedOutcomes.push(item.id);
             });
+             return { 
+                lever: highlightedLevers, 
+                driver: highlightedDrivers, 
+                outcome: highlightedOutcomes 
+            };
         }
 
 
@@ -327,6 +332,9 @@ export function ValueMap({
 
     const isConnectionHighlighted = (conn: DriverLeverConnection | OutcomeDriverConnection) => {
         if (!selectedItem && !activeFilter) return false;
+
+        // Connections are only highlighted during item selection, not filtering
+        if (activeFilter) return false;
     
         const isDriverLever = 'leverId' in conn;
     
@@ -471,7 +479,7 @@ export function ValueMap({
             </div>
         </div>
         <div className="flex justify-end pt-4">
-            <div className="flex flex-col items-start gap-2 text-sm">
+            <div className="flex flex-col items-start gap-2">
                 <Button variant={activeFilter === 'new' ? 'secondary': 'ghost'} size="sm" onClick={() => handleFilterClick('new')} className="flex items-center gap-2 justify-start w-full">
                     <Badge variant="secondary" className="bg-accent/80 text-accent-foreground">New</Badge>
                     <span>Newly Added</span>
@@ -489,3 +497,5 @@ export function ValueMap({
     </div>
   );
 }
+
+    
