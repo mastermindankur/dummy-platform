@@ -9,20 +9,20 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
-import { ArrowRight, ListChecks, Map } from "lucide-react";
+import { ArrowRight, ListChecks, Map, Target } from "lucide-react";
 
 export default function LandingPage() {
   return (
     <div className="flex min-h-screen w-full flex-col">
       <Header />
       <main className="flex-1 flex items-center justify-center p-4 md:p-8">
-        <div className="max-w-4xl w-full">
+        <div className="max-w-6xl w-full">
             <div className="text-center mb-12">
                 <h1 className="text-4xl font-bold tracking-tight">WCE 2025 Program</h1>
                 <p className="text-lg text-muted-foreground mt-2">Your central hub for tracking progress, value, and actions.</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             <Link href="/executive">
               <Card className="h-full hover:border-primary hover:shadow-lg transition-all duration-300">
                 <CardHeader className="text-center">
@@ -60,6 +60,20 @@ export default function LandingPage() {
                       <CardTitle>Action Items & Status</CardTitle>
                       <CardDescription className="text-sm">
                           Track key actions and their completion status.
+                      </CardDescription>
+                  </CardHeader>
+              </Card>
+            </Link>
+            
+            <Link href="#">
+              <Card className="h-full hover:border-primary hover:shadow-lg transition-all duration-300">
+                  <CardHeader className="text-center">
+                      <div className="flex justify-center mb-4">
+                          <Target className="h-12 w-12 text-accent" />
+                      </div>
+                      <CardTitle>Impact Showcase</CardTitle>
+                      <CardDescription className="text-sm">
+                          Quantify the business impact of different initiatives.
                       </CardDescription>
                   </CardHeader>
               </Card>

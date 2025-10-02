@@ -1,19 +1,8 @@
 {
+  "/action-items/page": "app/action-items/page.js",
   "/api/data/route": "app/api/data/route.js",
   "/dashboard/page": "app/dashboard/page.js",
+  "/executive/page": "app/executive/page.js",
   "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/hackathons/page": "app/hackathons/page.js",
-  "/industry-events/page": "app/industry-events/page.js",
-  "/page": "app/page.js",
-  "/pillar/[id]/page": "app/pillar/[id]/page.js",
-  "/pillar/adopting-emerging-technologies/blogs-and-open-source/page": "app/pillar/adopting-emerging-technologies/blogs-and-open-source/page.js",
-  "/pillar/adopting-emerging-technologies/explore-resiliency-program/page": "app/pillar/adopting-emerging-technologies/explore-resiliency-program/page.js",
-  "/pillar/adopting-emerging-technologies/hackathons/page": "app/pillar/adopting-emerging-technologies/hackathons/page.js",
-  "/pillar/adopting-emerging-technologies/industry-events/page": "app/pillar/adopting-emerging-technologies/industry-events/page.js",
-  "/pillar/adopting-emerging-technologies/tech-sphere-sessions/page": "app/pillar/adopting-emerging-technologies/tech-sphere-sessions/page.js",
-  "/pillar/making-design-resilient/app-sherpas/page": "app/pillar/making-design-resilient/app-sherpas/page.js",
-  "/pillar/making-design-resilient/arc-trainings/page": "app/pillar/making-design-resilient/arc-trainings/page.js",
-  "/pillar/making-design-resilient/jira-assistant-adoption/page": "app/pillar/making-design-resilient/jira-assistant-adoption/page.js",
-  "/pillar/making-design-resilient/squad-onboarding/page": "app/pillar/making-design-resilient/squad-onboarding/page.js",
-  "/update-data/page": "app/update-data/page.js"
+  "/page": "app/page.js"
 }
