@@ -44,6 +44,12 @@ export default function WhatsNewPage() {
                   <li><span className="text-foreground">What's New Page:</span> This very page was created to provide a central place for you to see all the latest updates and improvements to the dashboard.</li>
                 </ol>
               </div>
+              <div className="space-y-4">
+                <h3 className="text-xl font-bold text-foreground">What's Coming Soon</h3>
+                <ol className="list-decimal list-inside space-y-2 pl-4 text-muted-foreground">
+                  <li>More exciting features are on the way!</li>
+                </ol>
+              </div>
             </CardContent>
           </Card>
         </div>
