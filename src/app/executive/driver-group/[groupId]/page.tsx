@@ -52,15 +52,32 @@ export default function DriverGroupPage() {
       setGroupName(group.name);
 
       const groupDrivers = valueMapData.drivers.filter(d => d.groupId === groupId);
-      const groupDriverIds = groupDrivers.map(d => d.id);
-      
-      const connectedLeverConnections = valueMapData.driverLeverConnections?.filter(c => groupDriverIds.includes(c.driverId)) || [];
-      const connectedLeverIds = [...new Set(connectedLeverConnections.map(c => c.leverId))];
-      const groupLevers = valueMapData.levers.filter(l => connectedLeverIds.includes(l.id));
+      const groupDriverIds = new Set(groupDrivers.map(d => d.id));
 
-      const connectedOutcomeConnections = valueMapData.outcomeDriverConnections?.filter(c => groupDriverIds.includes(c.driverId)) || [];
-      const connectedOutcomeIds = [...new Set(connectedOutcomeConnections.map(c => c.outcomeId))];
-      const groupOutcomes = valueMapData.outcomes.filter(o => connectedOutcomeIds.includes(o.id));
+      const driverLeverConnections = (valueMapData.levers || []).flatMap(lever => 
+        (lever.connectedDriverIds || []).map(driverId => ({ leverId: lever.id, driverId }))
+      );
+
+      const outcomeDriverConnections = (valueMapData.drivers || []).flatMap(driver => 
+        (driver.connectedOutcomeIds || []).map(outcomeId => ({ driverId: driver.id, outcomeId }))
+      );
+
+      const filteredDriverLeverConnections = driverLeverConnections.filter(c => groupDriverIds.has(c.driverId));
+      const connectedLeverIds = new Set(filteredDriverLeverConnections.map(c => c.leverId));
+      const groupLevers = valueMapData.levers.filter(l => connectedLeverIds.has(l.id));
+
+      const filteredOutcomeDriverConnections = outcomeDriverConnections.filter(c => groupDriverIds.has(c.driverId));
+      const connectedOutcomeIds = new Set(filteredOutcomeDriverConnections.map(c => c.outcomeId));
+      const groupOutcomes = valueMapData.outcomes.filter(o => connectedOutcomeIds.has(o.id));
+      
+      const legacyOutcomeDriverConnections: OutcomeDriverConnection[] = valueMapData.outcomes.flatMap(o =>
+        (o.connectedDriverIds || []).map(driverId => ({ outcomeId: o.id, driverId }))
+      ).filter(c => groupDriverIds.has(c.driverId));
+      
+      const legacyDriverLeverConnections: DriverLeverConnection[] = valueMapData.drivers.flatMap(d =>
+        (d.connectedLeverIds || []).map(leverId => ({ driverId: d.id, leverId }))
+      ).filter(c => groupDriverIds.has(c.driverId));
+
 
       setFilteredData({
           outcomes: groupOutcomes,
@@ -68,8 +85,8 @@ export default function DriverGroupPage() {
           levers: groupLevers,
           outcomeGroups: [], // Not needed for this focused view
           driverGroups: [], // Not needed for this focused view
-          outcomeDriverConnections: connectedOutcomeConnections,
-          driverLeverConnections: connectedLeverConnections,
+          outcomeDriverConnections: legacyOutcomeDriverConnections,
+          driverLeverConnections: legacyDriverLeverConnections,
       });
     }
   }, [valueMapData, groupId]);
