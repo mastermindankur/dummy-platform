@@ -37,7 +37,7 @@ export default function WhatsNewPage() {
             </CardHeader>
             <CardContent className="space-y-8">
               <div>
-                <h2 className="text-lg font-semibold border-b pb-2 mb-4 text-muted-foreground">
+                <h2 className="text-base font-semibold text-muted-foreground border-b pb-2 mb-4">
                     {currentDate}
                 </h2>
                 <div className="space-y-4">
@@ -49,7 +49,7 @@ export default function WhatsNewPage() {
               </div>
 
               <div className="pt-4">
-                <h2 className="text-lg font-semibold border-b pb-2 mb-4 text-muted-foreground">
+                <h2 className="text-base font-semibold text-muted-foreground border-b pb-2 mb-4">
                     August 2, 2024
                 </h2>
                 <div className="space-y-4">
