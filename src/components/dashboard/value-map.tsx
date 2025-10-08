@@ -375,33 +375,36 @@ export function ValueMap({
         
         return (
             <>
-                {groups.map((group, index) => (
-                    <GroupContainer 
-                        key={group.id} 
-                        group={group} 
-                        title={`${type} Group`} 
-                        index={index}
-                        onClick={() => handleItemClick(group.id, `${type}Group` as SelectedItem['type'])}
-                        isSelected={selectedItem?.id === group.id}
-                        type={type as 'driver' | 'outcome'}
-                    >
-                        {groupedItems
-                            .filter(item => item.groupId === group.id)
-                            .map(item => (
-                                <ItemCard 
-                                    key={item.id} 
-                                    item={item} 
-                                    type={type} 
-                                    onClick={() => handleItemClick(item.id, type)}
-                                    isHighlighted={isHighlighted(item.id, type)}
-                                    isSelected={selectedItem?.id === item.id}
-                                    selectedItem={selectedItem}
-                                    activeFilter={activeFilter}
-                                />
-                            ))
-                        }
-                    </GroupContainer>
-                ))}
+                {groups.map((group, index) => {
+                    const itemsInGroup = groupedItems.filter(item => item.groupId === group.id);
+                    if (itemsInGroup.length === 0) return null;
+                    return (
+                        <GroupContainer 
+                            key={group.id} 
+                            group={group} 
+                            title={`${type} Group`} 
+                            index={index}
+                            onClick={() => handleItemClick(group.id, `${type}Group` as SelectedItem['type'])}
+                            isSelected={selectedItem?.id === group.id}
+                            type={type as 'driver' | 'outcome'}
+                        >
+                            {itemsInGroup
+                                .map(item => (
+                                    <ItemCard 
+                                        key={item.id} 
+                                        item={item} 
+                                        type={type} 
+                                        onClick={() => handleItemClick(item.id, type)}
+                                        isHighlighted={isHighlighted(item.id, type)}
+                                        isSelected={selectedItem?.id === item.id}
+                                        selectedItem={selectedItem}
+                                        activeFilter={activeFilter}
+                                    />
+                                ))
+                            }
+                        </GroupContainer>
+                    )
+                })}
                 {ungroupedItems.map(item => (
                     <ItemCard 
                         key={item.id} 
@@ -518,5 +521,3 @@ export function ValueMap({
     </div>
   );
 }
-
-    
