@@ -2339,6 +2339,10 @@ body {
   color: hsl(var(--sidebar-accent-foreground));
 }
 
+.hover\:text-accent:hover {
+  color: hsl(var(--accent));
+}
+
 .hover\:underline:hover {
   text-decoration-line: underline;
 }

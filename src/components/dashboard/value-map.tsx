@@ -108,7 +108,7 @@ const GroupContainer = ({ group, children, title, index, onClick, isSelected, ty
           className={cn(
             "text-sm font-semibold text-muted-foreground absolute -top-2.5 left-3 bg-background px-2 transition-colors",
             isSelected && 'text-accent font-bold',
-            isDriverGroup ? 'cursor-default' : 'cursor-pointer'
+            isDriverGroup ? 'cursor-pointer hover:text-accent' : 'cursor-pointer'
           )}
         >
           {group.name}
