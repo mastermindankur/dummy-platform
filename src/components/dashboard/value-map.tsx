@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -9,6 +10,7 @@ import type { ValueMapItem, OutcomeDriverConnection, DriverLeverConnection, Valu
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
 
 type ValueMapProps = {
     outcomes: ValueMapOutcome[];
@@ -102,22 +104,31 @@ const GroupContainer = ({ group, children, title, index, onClick, isSelected, ty
     const colorClass = groupColorClasses[index % groupColorClasses.length];
     
     const TitleComponent = () => (
-        <h3 
-          onClick={onClick}
-          className={cn(
-            "text-sm font-semibold text-muted-foreground absolute -top-2.5 left-3 bg-background px-2 transition-colors cursor-pointer",
-            isSelected ? 'text-accent font-bold' : 'hover:text-accent'
-          )}
-        >
-          {group.name}
-        </h3>
+        <div className="flex justify-between items-center absolute -top-3 left-3 right-3">
+             <h3 
+              onClick={onClick}
+              className={cn(
+                "text-sm font-semibold text-muted-foreground bg-background px-2 transition-colors cursor-pointer",
+                isSelected ? 'text-accent font-bold' : 'hover:text-accent'
+              )}
+            >
+              {group.name}
+            </h3>
+            {type === 'driver' && (
+                 <Button asChild variant="outline" size="sm" className="h-6 px-2 text-xs">
+                    <Link href={`/executive/driver-group/${group.id}`}>
+                        Focus <ArrowRight className="ml-1 h-3 w-3" />
+                    </Link>
+                </Button>
+            )}
+        </div>
     );
 
 
     return (
-        <div id={`group-${group.id}`} className={cn("border rounded-lg p-3 relative", colorClass)}>
+        <div id={`group-${group.id}`} className={cn("border rounded-lg p-3 pt-6 relative", colorClass)}>
             <TitleComponent/>
-            <div className="space-y-2 pt-2">
+            <div className="space-y-2">
                 {children}
             </div>
         </div>
