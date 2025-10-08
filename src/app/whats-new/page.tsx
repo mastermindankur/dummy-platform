@@ -50,7 +50,7 @@ export default function WhatsNewPage() {
 
               <div className="pt-4">
                 <h2 className="text-sm font-semibold text-muted-foreground/80 border-b pb-2 mb-4">
-                    October 2, 2024
+                    October 2, 2025
                 </h2>
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold text-foreground">Value Map Enhancements</h3>
