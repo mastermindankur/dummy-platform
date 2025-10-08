@@ -115,7 +115,7 @@ const GroupContainer = ({ group, children, title, index, onClick, isSelected, ty
               {group.name}
             </h3>
             {type === 'driver' && (
-                 <Button asChild variant="outline" size="sm" className="h-6 px-2 text-xs">
+                 <Button asChild variant="ghost" size="sm" className="h-6 px-2 text-xs text-muted-foreground">
                     <Link href={`/executive/driver-group/${group.id}`}>
                         Focus <ArrowRight className="ml-1 h-3 w-3" />
                     </Link>
