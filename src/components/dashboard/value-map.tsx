@@ -8,6 +8,7 @@ import { StatusIndicator } from '@/components/dashboard/status-indicator';
 import type { ValueMapItem, OutcomeDriverConnection, DriverLeverConnection, ValueMapDriver, ValueMapOutcome, ValueMapLever, ValueMapGroup } from '@/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 type ValueMapProps = {
     outcomes: ValueMapOutcome[];
@@ -87,29 +88,43 @@ const groupColorClasses = [
     'bg-sky-900/10 border-sky-700/40',
 ];
 
-const GroupContainer = ({ group, children, title, index, onClick, isSelected }: { 
+const GroupContainer = ({ group, children, title, index, onClick, isSelected, type }: { 
     group?: ValueMapGroup, 
     children: React.ReactNode, 
     title: string, 
     index: number,
     onClick: () => void,
-    isSelected: boolean
+    isSelected: boolean,
+    type: 'driver' | 'outcome'
 }) => {
     if (!group) return <>{children}</>;
     
     const colorClass = groupColorClasses[index % groupColorClasses.length];
+    const isDriverGroup = type === 'driver';
+
+    const TitleComponent = () => (
+        <h3 
+          onClick={!isDriverGroup ? onClick : undefined}
+          className={cn(
+            "text-sm font-semibold text-muted-foreground absolute -top-2.5 left-3 bg-background px-2 transition-colors",
+            isSelected && 'text-accent font-bold',
+            isDriverGroup ? 'cursor-default' : 'cursor-pointer'
+          )}
+        >
+          {group.name}
+        </h3>
+    );
+
 
     return (
         <div id={`group-${group.id}`} className={cn("border rounded-lg p-3 relative", colorClass)}>
-            <h3 
-              onClick={onClick}
-              className={cn(
-                "text-sm font-semibold text-muted-foreground absolute -top-2.5 left-3 bg-background px-2 cursor-pointer transition-colors",
-                isSelected && 'text-accent font-bold'
-              )}
-            >
-                {group.name}
-            </h3>
+            {isDriverGroup ? (
+                <Link href={`/executive/driver-group/${group.id}`} className="cursor-pointer">
+                    <TitleComponent/>
+                </Link>
+            ) : (
+                <TitleComponent/>
+            )}
             <div className="space-y-2 pt-2">
                 {children}
             </div>
@@ -368,6 +383,7 @@ export function ValueMap({
                         index={index}
                         onClick={() => handleItemClick(group.id, `${type}Group` as SelectedItem['type'])}
                         isSelected={selectedItem?.id === group.id}
+                        type={type as 'driver' | 'outcome'}
                     >
                         {groupedItems
                             .filter(item => item.groupId === group.id)
