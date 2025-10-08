@@ -1972,6 +1972,10 @@ body {
   color: rgb(161 98 7 / var(--tw-text-opacity, 1));
 }
 
+.text-muted-foreground\/80 {
+  color: hsl(var(--muted-foreground) / .8);
+}
+
 .line-through {
   text-decoration-line: line-through;
 }
