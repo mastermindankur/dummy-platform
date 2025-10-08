@@ -85,7 +85,7 @@ export default function ExecutivePage() {
                   {lastUpdated && (
                       <Badge variant="outline" className="font-normal whitespace-nowrap">
                           <CalendarClock className="mr-2 h-4 w-4" />
-                          Last updated: {new Date(lastUpdated).toLocaleString()}
+                          Last updated: {new Date(lastUpdated).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' })}
                       </Badge>
                   )}
                   <Dialog>
