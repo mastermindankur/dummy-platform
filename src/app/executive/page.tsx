@@ -29,29 +29,40 @@ export default function ExecutivePage() {
   const [isLoading, setIsLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function fetchData() {
+  async function fetchData() {
+    // Set loading to true only if there's no data yet, to avoid flashes on re-focus
+    if (!valueMapData) {
       setIsLoading(true);
-      try {
-        const [res, metaRes] = await Promise.all([
-          fetch('/api/data?key=value-map'),
-          fetch('/api/data?key=value-map&meta=true')
-        ]);
-        const data = await res.json();
-        setValueMapData(data);
-        if (metaRes.ok) {
-          const { lastUpdated: metaLastUpdated } = await metaRes.json();
-          setLastUpdated(metaLastUpdated);
-        }
-
-      } catch (error) {
-        console.error("Failed to fetch value map data", error);
-      } finally {
-        setIsLoading(false);
-      }
     }
+    try {
+      const [res, metaRes] = await Promise.all([
+        fetch('/api/data?key=value-map'),
+        fetch('/api/data?key=value-map&meta=true')
+      ]);
+      const data = await res.json();
+      setValueMapData(data);
+      if (metaRes.ok) {
+        const { lastUpdated: metaLastUpdated } = await metaRes.json();
+        setLastUpdated(metaLastUpdated);
+      }
+    } catch (error) {
+      console.error("Failed to fetch value map data", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  useEffect(() => {
     fetchData();
-  }, []);
+
+    // Add event listener to refetch data when the window/tab gets focus
+    window.addEventListener('focus', fetchData);
+
+    // Cleanup listener on component unmount
+    return () => {
+      window.removeEventListener('focus', fetchData);
+    };
+  }, []); // Empty array ensures this only runs on mount and unmount
 
   const outcomes = valueMapData?.outcomes || [];
   const drivers = valueMapData?.drivers || [];
