@@ -100,15 +100,13 @@ const GroupContainer = ({ group, children, title, index, onClick, isSelected, ty
     if (!group) return <>{children}</>;
     
     const colorClass = groupColorClasses[index % groupColorClasses.length];
-    const isDriverGroup = type === 'driver';
-
+    
     const TitleComponent = () => (
         <h3 
-          onClick={!isDriverGroup ? onClick : undefined}
+          onClick={onClick}
           className={cn(
-            "text-sm font-semibold text-muted-foreground absolute -top-2.5 left-3 bg-background px-2 transition-colors",
-            isSelected && 'text-accent font-bold',
-            isDriverGroup ? 'cursor-pointer hover:text-accent' : 'cursor-pointer'
+            "text-sm font-semibold text-muted-foreground absolute -top-2.5 left-3 bg-background px-2 transition-colors cursor-pointer",
+            isSelected ? 'text-accent font-bold' : 'hover:text-accent'
           )}
         >
           {group.name}
@@ -118,13 +116,7 @@ const GroupContainer = ({ group, children, title, index, onClick, isSelected, ty
 
     return (
         <div id={`group-${group.id}`} className={cn("border rounded-lg p-3 relative", colorClass)}>
-            {isDriverGroup ? (
-                <Link href={`/executive/driver-group/${group.id}`} className="cursor-pointer">
-                    <TitleComponent/>
-                </Link>
-            ) : (
-                <TitleComponent/>
-            )}
+            <TitleComponent/>
             <div className="space-y-2 pt-2">
                 {children}
             </div>
