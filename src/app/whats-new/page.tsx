@@ -41,6 +41,18 @@ export default function WhatsNewPage() {
                     {currentDate}
                 </h2>
                 <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-foreground">Focused Driver Group Pages</h3>
+                  <ol className="list-decimal list-inside space-y-2 pl-4 text-muted-foreground">
+                    <li><span className="text-foreground">Focused Views:</span> Focused pages for all driver groups have been created to provide a dedicated view of their specific value map.</li>
+                  </ol>
+                </div>
+              </div>
+
+              <div className="pt-4">
+                <h2 className="text-xl font-bold border-b pb-2 mb-4">
+                    August 2, 2024
+                </h2>
+                <div className="space-y-4">
                   <h3 className="text-lg font-semibold text-foreground">Value Map Enhancements</h3>
                   <ol className="list-decimal list-inside space-y-2 pl-4 text-muted-foreground">
                     <li><span className="text-foreground">Interactive Filtering:</span> The legend on the Executive Value Map is now clickable. You can filter the view to instantly highlight all items marked as <span className="text-foreground">"New"</span>, <span className="text-foreground">"Retired"</span>, or part of the <span className="text-foreground">"Book of Work 25"</span>.</li>
