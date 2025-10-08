@@ -44,12 +44,12 @@ export default function DriverGroupPage() {
 
   useEffect(() => {
     if (valueMapData && groupId) {
-      const group = valueMapData.driverGroups?.find(g => g.id === groupId);
-      if (!group) {
+      const currentDriverGroup = valueMapData.driverGroups?.find(g => g.id === groupId);
+      if (!currentDriverGroup) {
         // Or handle as a 'not found' case
         return;
       }
-      setGroupName(group.name);
+      setGroupName(currentDriverGroup.name);
 
       const groupDrivers = valueMapData.drivers.filter(d => d.groupId === groupId);
       const groupDriverIds = new Set(groupDrivers.map(d => d.id));
@@ -70,12 +70,15 @@ export default function DriverGroupPage() {
       const connectedOutcomeIds = new Set(filteredOutcomeDriverConnections.map(c => c.outcomeId));
       const groupOutcomes = valueMapData.outcomes.filter(o => connectedOutcomeIds.has(o.id));
       
+      const groupOutcomeGroupIds = new Set(groupOutcomes.map(o => o.groupId).filter(Boolean));
+      const relevantOutcomeGroups = (valueMapData.outcomeGroups || []).filter(g => groupOutcomeGroupIds.has(g.id));
+
       setFilteredData({
           outcomes: groupOutcomes,
           drivers: groupDrivers,
           levers: groupLevers,
-          outcomeGroups: [], // Not needed for this focused view
-          driverGroups: [], // Not needed for this focused view
+          outcomeGroups: relevantOutcomeGroups, 
+          driverGroups: [currentDriverGroup],
           outcomeDriverConnections: filteredOutcomeDriverConnections,
           driverLeverConnections: filteredDriverLeverConnections,
       });
@@ -127,8 +130,8 @@ export default function DriverGroupPage() {
               outcomes={filteredData.outcomes}
               drivers={filteredData.drivers}
               levers={filteredData.levers}
-              outcomeGroups={[]}
-              driverGroups={[]}
+              outcomeGroups={filteredData.outcomeGroups || []}
+              driverGroups={filteredData.driverGroups || []}
               outcomeDriverConnections={filteredData.outcomeDriverConnections || []}
               driverLeverConnections={filteredData.driverLeverConnections || []}
             />
