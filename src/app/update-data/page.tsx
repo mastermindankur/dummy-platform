@@ -83,6 +83,7 @@ function WhatsNewManager({
     onEntriesChange: (entries: WhatsNewEntry[]) => void;
 }) {
     const [entries, setEntries] = useState(initialEntries);
+    const [editingEntry, setEditingEntry] = useState<WhatsNewEntry | null>(null);
 
     const [newTitle, setNewTitle] = useState('');
     const [newDate, setNewDate] = useState<Date | undefined>();
@@ -132,41 +133,188 @@ function WhatsNewManager({
         setEntries(prev => prev.filter(entry => entry.id !== id));
         toast({ title: 'Entry Removed', description: 'Remember to save all changes.' });
     };
+    
+    const handleUpdateEntry = (updatedEntry: WhatsNewEntry) => {
+        const updatedEntries = entries.map(entry => entry.id === updatedEntry.id ? updatedEntry : entry)
+                                      .sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        setEntries(updatedEntries);
+        setEditingEntry(null);
+        toast({ title: 'Entry Updated', description: 'Remember to save all changes.' });
+    };
+
 
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle>Manage "What's New" Page</CardTitle>
-                <CardDescription>Add or remove update entries for the What's New page.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-                <div className="p-4 border rounded-lg space-y-4">
-                    <h3 className="text-lg font-medium">Add New Entry</h3>
+        <>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Manage "What's New" Page</CardTitle>
+                    <CardDescription>Add, edit, or remove update entries for the What's New page.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                    <div className="p-4 border rounded-lg space-y-4">
+                        <h3 className="text-lg font-medium">Add New Entry</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <Label>Date</Label>
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button variant="outline" className={cn("w-full justify-start text-left font-normal", !newDate && "text-muted-foreground")}>
+                                            <CalendarIcon className="mr-2 h-4 w-4" />
+                                            {newDate ? format(newDate, "PPP") : <span>Pick a date</span>}
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={newDate} onSelect={setNewDate} initialFocus/></PopoverContent>
+                                </Popover>
+                            </div>
+                            <div>
+                                <Label>Title</Label>
+                                <Input value={newTitle} onChange={e => setNewTitle(e.target.value)} placeholder="e.g., Value Map Enhancements" />
+                            </div>
+                        </div>
+                        <div>
+                            <Label>Update Items</Label>
+                            <div className="space-y-2">
+                                {newItems.map((item, index) => (
+                                    <div key={index} className="flex items-center gap-2">
+                                        <p className="flex-1 p-2 text-sm bg-secondary rounded-md">{item}</p>
+                                        <Button size="icon" variant="ghost" className="text-destructive" onClick={() => handleRemoveNewItem(index)}><Trash2 className="h-4 w-4" /></Button>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="flex items-center gap-2 mt-2">
+                                <Input
+                                    value={newItemText}
+                                    onChange={e => setNewItemText(e.target.value)}
+                                    placeholder="Add a new feature or update item..."
+                                    onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), handleAddItem())}
+                                />
+                                <Button onClick={handleAddItem}><Plus className="mr-2 h-4 w-4" /> Add Item</Button>
+                            </div>
+                        </div>
+                        <Button onClick={handleAddEntry}>Add Entry to List</Button>
+                    </div>
+
+                    <div>
+                        <h3 className="text-lg font-medium">Current Entries</h3>
+                        <div className="border rounded-md mt-2">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Date</TableHead>
+                                        <TableHead>Title</TableHead>
+                                        <TableHead>Items</TableHead>
+                                        <TableHead className="text-right">Actions</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {entries.map(entry => (
+                                        <TableRow key={entry.id}>
+                                            <TableCell>{format(new Date(entry.date), 'PP')}</TableCell>
+                                            <TableCell className="font-medium">{entry.title}</TableCell>
+                                            <TableCell>
+                                                <ul className="list-disc list-inside text-xs">
+                                                    {entry.items.map((item, i) => <li key={i}>{item}</li>)}
+                                                </ul>
+                                            </TableCell>
+                                            <TableCell className="text-right">
+                                                <Button size="icon" variant="ghost" onClick={() => setEditingEntry(entry)}>
+                                                    <Edit className="h-4 w-4" />
+                                                </Button>
+                                                <Button size="icon" variant="ghost" className="text-destructive" onClick={() => handleRemoveEntry(entry.id)}>
+                                                    <Trash2 className="h-4 w-4" />
+                                                </Button>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                            {entries.length === 0 && <p className="text-center text-sm text-muted-foreground p-4">No entries yet.</p>}
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
+            {editingEntry && (
+                <EditWhatsNewEntryDialog
+                    entry={editingEntry}
+                    onUpdate={handleUpdateEntry}
+                    onOpenChange={(isOpen) => !isOpen && setEditingEntry(null)}
+                />
+            )}
+        </>
+    );
+}
+
+function EditWhatsNewEntryDialog({
+    entry,
+    onUpdate,
+    onOpenChange
+}: {
+    entry: WhatsNewEntry;
+    onUpdate: (entry: WhatsNewEntry) => void;
+    onOpenChange: (isOpen: boolean) => void;
+}) {
+    const [title, setTitle] = useState(entry.title);
+    const [date, setDate] = useState<Date | undefined>(new Date(entry.date));
+    const [items, setItems] = useState(entry.items);
+    const [newItemText, setNewItemText] = useState('');
+
+    const handleAddItem = () => {
+        if (newItemText.trim()) {
+            setItems(prev => [...prev, newItemText.trim()]);
+            setNewItemText('');
+        }
+    };
+    
+    const handleRemoveItem = (index: number) => {
+        setItems(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const handleSaveChanges = () => {
+        if (!title || !date || items.length === 0) {
+            toast({ title: 'Missing Information', description: 'Please provide a date, title, and at least one item.', variant: 'destructive' });
+            return;
+        }
+
+        onUpdate({
+            ...entry,
+            date: format(date, 'yyyy-MM-dd'),
+            title,
+            items,
+        });
+    };
+    
+    return (
+        <Dialog open={true} onOpenChange={onOpenChange}>
+            <DialogContent className="sm:max-w-[625px]">
+                 <DialogHeader>
+                    <DialogTitle>Edit Entry</DialogTitle>
+                </DialogHeader>
+                <div className="py-4 space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <Label>Date</Label>
                             <Popover>
                                 <PopoverTrigger asChild>
-                                    <Button variant="outline" className={cn("w-full justify-start text-left font-normal", !newDate && "text-muted-foreground")}>
+                                    <Button variant="outline" className={cn("w-full justify-start text-left font-normal", !date && "text-muted-foreground")}>
                                         <CalendarIcon className="mr-2 h-4 w-4" />
-                                        {newDate ? format(newDate, "PPP") : <span>Pick a date</span>}
+                                        {date ? format(date, "PPP") : <span>Pick a date</span>}
                                     </Button>
                                 </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={newDate} onSelect={setNewDate} initialFocus/></PopoverContent>
+                                <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={date} onSelect={setDate} initialFocus/></PopoverContent>
                             </Popover>
                         </div>
                         <div>
                             <Label>Title</Label>
-                            <Input value={newTitle} onChange={e => setNewTitle(e.target.value)} placeholder="e.g., Value Map Enhancements" />
+                            <Input value={title} onChange={e => setTitle(e.target.value)} placeholder="e.g., Value Map Enhancements" />
                         </div>
                     </div>
                     <div>
                         <Label>Update Items</Label>
                         <div className="space-y-2">
-                             {newItems.map((item, index) => (
+                             {items.map((item, index) => (
                                 <div key={index} className="flex items-center gap-2">
                                     <p className="flex-1 p-2 text-sm bg-secondary rounded-md">{item}</p>
-                                    <Button size="icon" variant="ghost" className="text-destructive" onClick={() => handleRemoveNewItem(index)}><Trash2 className="h-4 w-4" /></Button>
+                                    <Button size="icon" variant="ghost" className="text-destructive" onClick={() => handleRemoveItem(index)}><Trash2 className="h-4 w-4" /></Button>
                                 </div>
                              ))}
                         </div>
@@ -180,46 +328,14 @@ function WhatsNewManager({
                             <Button onClick={handleAddItem}><Plus className="mr-2 h-4 w-4" /> Add Item</Button>
                         </div>
                     </div>
-                    <Button onClick={handleAddEntry}>Add Entry to List</Button>
                 </div>
-
-                <div>
-                    <h3 className="text-lg font-medium">Current Entries</h3>
-                     <div className="border rounded-md mt-2">
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Date</TableHead>
-                                    <TableHead>Title</TableHead>
-                                    <TableHead>Items</TableHead>
-                                    <TableHead className="text-right">Actions</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {entries.map(entry => (
-                                    <TableRow key={entry.id}>
-                                        <TableCell>{format(new Date(entry.date), 'PP')}</TableCell>
-                                        <TableCell className="font-medium">{entry.title}</TableCell>
-                                        <TableCell>
-                                            <ul className="list-disc list-inside text-xs">
-                                                {entry.items.map((item, i) => <li key={i}>{item}</li>)}
-                                            </ul>
-                                        </TableCell>
-                                        <TableCell className="text-right">
-                                            <Button size="icon" variant="ghost" className="text-destructive" onClick={() => handleRemoveEntry(entry.id)}>
-                                                <Trash2 className="h-4 w-4" />
-                                            </Button>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                         {entries.length === 0 && <p className="text-center text-sm text-muted-foreground p-4">No entries yet.</p>}
-                    </div>
-                </div>
-            </CardContent>
-        </Card>
-    );
+                <DialogFooter>
+                    <Button variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>
+                    <Button onClick={handleSaveChanges}>Save Changes</Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    )
 }
 
 // ## IMPACT INITIATIVES DATA MANAGEMENT ##
@@ -2407,3 +2523,4 @@ export default function UpdateDataPage() {
     </div>
   );
 }
+
