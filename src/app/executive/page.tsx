@@ -36,6 +36,7 @@ export default function ExecutivePage() {
   const [valueMapData, setValueMapData] = useState<ValueMapData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [versions, setVersions] = useState<string[]>([]);
+  const [formattedVersionName, setFormattedVersionName] = useState<string>('Loading latest...');
   
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -81,6 +82,22 @@ export default function ExecutivePage() {
     fetchData();
   }, [selectedVersion, router, pathname, searchParams]);
 
+  useEffect(() => {
+    if (selectedVersion && selectedVersion !== 'latest') {
+        const date = new Date(selectedVersion.replace('.json', ''));
+        setFormattedVersionName(format(date, "MMM d, yyyy h:mm a"));
+    } else if (versions.length > 0) {
+        const latestVersion = versions[0];
+        if (latestVersion) {
+            const date = new Date(latestVersion.replace('.json', ''));
+            setFormattedVersionName(format(date, "MMM d, yyyy h:mm a"));
+        }
+    } else {
+        setFormattedVersionName('Loading latest...');
+    }
+}, [selectedVersion, versions]);
+
+
   const outcomes = valueMapData?.outcomes || [];
   const drivers = valueMapData?.drivers || [];
   const levers = valueMapData?.levers || [];
@@ -102,7 +119,7 @@ export default function ExecutivePage() {
       router.push(`${pathname}?${newSearchParams.toString()}`);
   };
 
-  const formatVersionName = (version: string) => {
+  const formatVersionLabel = (version: string) => {
     return format(new Date(version.replace('.json', '')), "MMM d, yyyy h:mm a");
   };
 
@@ -123,14 +140,14 @@ export default function ExecutivePage() {
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="outline" className="w-[280px] justify-between">
-                          <span>{selectedVersion === 'latest' ? 'Loading latest...' : `Version: ${formatVersionName(selectedVersion)}`}</span>
+                          <span>{`Version: ${formattedVersionName}`}</span>
                           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent className="w-[280px]">
                         {versions.map(v => (
                           <DropdownMenuItem key={v} onSelect={() => handleVersionChange(v)}>
-                            {formatVersionName(v)}
+                            {formatVersionLabel(v)}
                           </DropdownMenuItem>
                         ))}
                       </DropdownMenuContent>
