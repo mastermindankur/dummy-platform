@@ -89,7 +89,11 @@ export default function DriverGroupPage() {
       });
     }
      if (version) {
-        setFormattedVersionName(format(new Date(version.replace('.json', '')), "MMM d, yyyy h:mm a"));
+        try {
+            setFormattedVersionName(format(new Date(version.replace('.json', '')), "MMM d, yyyy h:mm a"));
+        } catch (e) {
+            setFormattedVersionName(version);
+        }
     }
   }, [valueMapData, groupId, version]);
 
@@ -131,12 +135,18 @@ export default function DriverGroupPage() {
         </div>
         <Card>
           <CardHeader>
-            <CardTitle className="text-3xl">Executive Value Map: {groupName}</CardTitle>
-            {version && (
-                <CardDescription>
-                    Version: {formattedVersionName}
-                </CardDescription>
-            )}
+            <div className="flex flex-wrap items-start justify-between gap-4">
+                <div>
+                    <CardTitle className="text-3xl">Executive Value Map: {groupName}</CardTitle>
+                </div>
+                {version && (
+                    <div className="text-right">
+                        <CardDescription>
+                            Version: {formattedVersionName}
+                        </CardDescription>
+                    </div>
+                )}
+            </div>
           </CardHeader>
           <CardContent>
             <ValueMap 
