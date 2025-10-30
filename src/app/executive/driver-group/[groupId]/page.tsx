@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from "react";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams, useSearchParams, useRouter, usePathname } from "next/navigation";
 import { Header } from "@/components/layout/header";
 import { ValueMap } from "@/components/dashboard/value-map";
 import {
@@ -16,8 +16,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 import type { ValueMapData, DriverLeverConnection, OutcomeDriverConnection, ValueMapDriver, ValueMapOutcome, ValueMapLever } from "@/types";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ChevronsUpDown } from "lucide-react";
 import { format } from "date-fns";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function DriverGroupPage() {
   const [valueMapData, setValueMapData] = useState<ValueMapData | null>(null);
@@ -25,19 +31,41 @@ export default function DriverGroupPage() {
   const [filteredData, setFilteredData] = useState<ValueMapData | null>(null);
   const [groupName, setGroupName] = useState<string>('');
   const [formattedVersionName, setFormattedVersionName] = useState<string>('');
+  const [versions, setVersions] = useState<string[]>([]);
 
   const params = useParams();
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
   const groupId = params.groupId as string;
-  const version = searchParams.get('version');
+  const version = searchParams.get('version') || 'latest';
 
   useEffect(() => {
     async function fetchData() {
       setIsLoading(true);
       try {
-        const res = await fetch(`/api/data?key=value-map&version=${version || 'latest'}`);
-        const data = await res.json();
-        setValueMapData(data);
+        const [res, versionsRes] = await Promise.all([
+          fetch(`/api/data?key=value-map&version=${version}`),
+          fetch('/api/data?key=value-map-versions')
+        ]);
+        
+        if (res.ok) {
+            const data = await res.json();
+            setValueMapData(data);
+        } else {
+             setValueMapData(null);
+        }
+        
+        if (versionsRes.ok) {
+            const versionsData = await versionsRes.json();
+            setVersions(versionsData.versions);
+            if (version === 'latest' && versionsData.latest) {
+                const newSearchParams = new URLSearchParams(searchParams);
+                newSearchParams.set('version', versionsData.latest);
+                router.replace(`${pathname}?${newSearchParams.toString()}`, { scroll: false });
+            }
+        }
+
       } catch (error) {
         console.error("Failed to fetch value map data", error);
       } finally {
@@ -45,7 +73,7 @@ export default function DriverGroupPage() {
       }
     }
     fetchData();
-  }, [version]);
+  }, [version, router, pathname, searchParams]);
 
   useEffect(() => {
     if (valueMapData && groupId) {
@@ -88,14 +116,38 @@ export default function DriverGroupPage() {
           driverLeverConnections: filteredDriverLeverConnections,
       });
     }
-     if (version) {
+     if (version && version !== 'latest') {
         try {
             setFormattedVersionName(format(new Date(version.replace('.json', '')), "MMM d, yyyy h:mm a"));
         } catch (e) {
             setFormattedVersionName(version);
         }
+    } else if (versions.length > 0) {
+        const latestVersion = versions[0];
+        if (latestVersion) {
+            try {
+                setFormattedVersionName(format(new Date(latestVersion.replace('.json', '')), "MMM d, yyyy h:mm a"));
+            } catch (e) {
+                setFormattedVersionName(latestVersion);
+            }
+        }
     }
-  }, [valueMapData, groupId, version]);
+  }, [valueMapData, groupId, version, versions]);
+  
+  const handleVersionChange = (newVersion: string) => {
+      const newSearchParams = new URLSearchParams(searchParams);
+      newSearchParams.set('version', newVersion);
+      router.push(`${pathname}?${newSearchParams.toString()}`);
+  };
+
+  const formatVersionLabel = (v: string) => {
+    try {
+      return format(new Date(v.replace('.json', '')), "MMM d, yyyy h:mm a");
+    } catch(e) {
+      return v;
+    }
+  };
+
 
   if (isLoading) {
     return (
@@ -139,13 +191,23 @@ export default function DriverGroupPage() {
                 <div>
                     <CardTitle className="text-3xl">Driver: {groupName}</CardTitle>
                 </div>
-                {version && (
-                    <div className="text-right">
-                        <CardDescription>
-                            Version: {formattedVersionName}
-                        </CardDescription>
-                    </div>
-                )}
+                <div className="flex items-center gap-2">
+                   <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" className="w-[280px] justify-between">
+                          <span>{`Version: ${formattedVersionName}`}</span>
+                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent className="w-[280px]">
+                        {versions.map(v => (
+                          <DropdownMenuItem key={v} onSelect={() => handleVersionChange(v)}>
+                            {formatVersionLabel(v)}
+                          </DropdownMenuItem>
+                        ))}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
             </div>
           </CardHeader>
           <CardContent>
