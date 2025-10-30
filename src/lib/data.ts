@@ -393,10 +393,21 @@ export async function getValueMapData(version?: string | null): Promise<ValueMap
         if (!versionToFetch || versionToFetch === 'latest') {
             const { latest } = await getValueMapVersions();
             if (!latest) {
-                 // If no versions exist, create a default one
-                const defaultData: ValueMapData = { outcomes: [], drivers: [], levers: [], outcomeGroups: [], driverGroups: [] };
-                await writeValueMapData(defaultData, true); // Save as new version
-                return defaultData;
+                // If no versions exist, try to migrate from old value-map.json
+                try {
+                    const oldDataContent = await fs.readFile(dataFilePath('value-map.json'), 'utf-8');
+                    const oldData = JSON.parse(oldDataContent);
+                    const newVersionName = `${new Date().toISOString()}.json`;
+                    const newVersionPath = path.join(dirPath, newVersionName);
+                    await fs.writeFile(newVersionPath, JSON.stringify(oldData, null, 2), 'utf-8');
+                    await fs.unlink(dataFilePath('value-map.json')); // remove old file after migration
+                    return oldData;
+                } catch (migrationError) {
+                    // If migration fails (e.g. old file doesn't exist), create a default version
+                    const defaultData: ValueMapData = { outcomes: [], drivers: [], levers: [], outcomeGroups: [], driverGroups: [] };
+                    await writeValueMapData(defaultData, true); // Save as new version
+                    return defaultData;
+                }
             }
             versionToFetch = latest;
         }
