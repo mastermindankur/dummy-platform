@@ -3,6 +3,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { StatusIndicator } from '@/components/dashboard/status-indicator';
@@ -99,6 +100,9 @@ const GroupContainer = ({ group, children, title, index, onClick, isSelected, ty
     isSelected: boolean,
     type: 'driver' | 'outcome'
 }) => {
+    const searchParams = useSearchParams();
+    const version = searchParams.get('version');
+    
     if (!group) return <>{children}</>;
     
     const colorClass = groupColorClasses[index % groupColorClasses.length];
@@ -116,7 +120,7 @@ const GroupContainer = ({ group, children, title, index, onClick, isSelected, ty
             </h3>
             {type === 'driver' && (
                  <Button asChild variant="ghost" size="sm" className="h-6 px-2 text-xs text-muted-foreground">
-                    <Link href={`/executive/driver-group/${group.id}`}>
+                    <Link href={`/executive/driver-group/${group.id}${version ? `?version=${version}`: ''}`}>
                         Focus <ArrowRight className="ml-1 h-3 w-3" />
                     </Link>
                 </Button>
@@ -524,5 +528,3 @@ export function ValueMap({
     </div>
   );
 }
-
-    

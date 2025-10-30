@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from "react";
-import { useParams, notFound } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { Header } from "@/components/layout/header";
 import { ValueMap } from "@/components/dashboard/value-map";
 import {
@@ -10,27 +10,32 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
+  CardDescription,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { ValueMapData, DriverLeverConnection, OutcomeDriverConnection, ValueMapDriver, ValueMapOutcome, ValueMapLever } from "@/types";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { format } from "date-fns";
 
 export default function DriverGroupPage() {
   const [valueMapData, setValueMapData] = useState<ValueMapData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [filteredData, setFilteredData] = useState<ValueMapData | null>(null);
   const [groupName, setGroupName] = useState<string>('');
+  const [formattedVersionName, setFormattedVersionName] = useState<string>('');
 
   const params = useParams();
+  const searchParams = useSearchParams();
   const groupId = params.groupId as string;
+  const version = searchParams.get('version');
 
   useEffect(() => {
     async function fetchData() {
       setIsLoading(true);
       try {
-        const res = await fetch('/api/data?key=value-map');
+        const res = await fetch(`/api/data?key=value-map&version=${version || 'latest'}`);
         const data = await res.json();
         setValueMapData(data);
       } catch (error) {
@@ -40,7 +45,7 @@ export default function DriverGroupPage() {
       }
     }
     fetchData();
-  }, []);
+  }, [version]);
 
   useEffect(() => {
     if (valueMapData && groupId) {
@@ -83,7 +88,10 @@ export default function DriverGroupPage() {
           driverLeverConnections: filteredDriverLeverConnections,
       });
     }
-  }, [valueMapData, groupId]);
+     if (version) {
+        setFormattedVersionName(format(new Date(version.replace('.json', '')), "MMM d, yyyy h:mm a"));
+    }
+  }, [valueMapData, groupId, version]);
 
   if (isLoading) {
     return (
@@ -115,7 +123,7 @@ export default function DriverGroupPage() {
       <main className="flex-1 p-4 md:p-8">
         <div className="mb-4">
             <Button asChild variant="outline">
-                <Link href="/executive">
+                <Link href={`/executive${version ? `?version=${version}` : ''}`}>
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back to Full Value Map
                 </Link>
@@ -124,6 +132,11 @@ export default function DriverGroupPage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-3xl">Executive Value Map: {groupName}</CardTitle>
+            {version && (
+                <CardDescription>
+                    Version: {formattedVersionName}
+                </CardDescription>
+            )}
           </CardHeader>
           <CardContent>
             <ValueMap 
