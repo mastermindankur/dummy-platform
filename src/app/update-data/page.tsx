@@ -24,7 +24,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/use-toast';
-import type { Pillar, SubItem, Status, ExcelData, ValueMapData, ValueMapItem, ValueMapLever, ValueMapDriver, ValueMapOutcome, ValueMapGroup, User, ActionItem, MeetingEvent, MappingRule, ExcelRow, ImpactInitiative, ImpactCategory, WhatsNewEntry } from '@/types';
+import type { Pillar, SubItem, Status, ExcelData, ValueMapData, ValueMapItem, ValueMapLever, ValueMapDriver, ValueMapOutcome, ValueMapGroup, User, ActionItem, MeetingEvent, MappingRule, ExcelRow, ImpactInitiative, ImpactCategory, WhatsNewEntry, WhatsNewSectionContent } from '@/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Loader2, Plus, Trash2, Upload, ArrowRight, ChevronsUpDown, Filter, X, Edit, GripVertical, Settings2, Users, CalendarIcon, Briefcase, Check, RotateCcw, Zap, ShieldCheck } from 'lucide-react';
@@ -78,21 +78,33 @@ type FilterState = {
 function WhatsNewManager({
     initialEntries,
     onEntriesChange,
+    initialSections,
+    onSectionsChange,
 }: {
     initialEntries: WhatsNewEntry[];
     onEntriesChange: (entries: WhatsNewEntry[]) => void;
+    initialSections: WhatsNewSectionContent;
+    onSectionsChange: (sections: WhatsNewSectionContent) => void;
 }) {
     const [entries, setEntries] = useState(initialEntries);
     const [editingEntry, setEditingEntry] = useState<WhatsNewEntry | null>(null);
+
+    const [sections, setSections] = useState(initialSections);
 
     const [newTitle, setNewTitle] = useState('');
     const [newDate, setNewDate] = useState<Date | undefined>();
     const [newItemText, setNewItemText] = useState('');
     const [newItems, setNewItems] = useState<string[]>([]);
+    
+    const [newComingSoonItem, setNewComingSoonItem] = useState('');
 
     useEffect(() => {
         onEntriesChange(entries);
     }, [entries, onEntriesChange]);
+    
+    useEffect(() => {
+        onSectionsChange(sections);
+    }, [sections, onSectionsChange]);
 
     const handleAddItem = () => {
         if (newItemText.trim()) {
@@ -141,10 +153,34 @@ function WhatsNewManager({
         setEditingEntry(null);
         toast({ title: 'Entry Updated', description: 'Remember to save all changes.' });
     };
+    
+    // Handlers for "Coming Soon" section
+    const handleAddComingSoonItem = () => {
+        if (newComingSoonItem.trim()) {
+            setSections(prev => ({...prev, comingSoonItems: [...prev.comingSoonItems, newComingSoonItem.trim()]}));
+            setNewComingSoonItem('');
+        }
+    };
+    
+    const handleRemoveComingSoonItem = (index: number) => {
+        setSections(prev => ({...prev, comingSoonItems: prev.comingSoonItems.filter((_, i) => i !== index)}));
+    };
+    
+    const handleUpdateComingSoonItem = (index: number, text: string) => {
+        const newItems = [...sections.comingSoonItems];
+        newItems[index] = text;
+        setSections(prev => ({...prev, comingSoonItems: newItems}));
+    };
+
+    // Handler for "Join Team" section
+    const handleJoinTeamChange = (text: string) => {
+        // Split by newline to create paragraphs
+        setSections(prev => ({...prev, joinTeamParagraphs: text.split('\n')}));
+    };
 
 
     return (
-        <>
+        <div className="space-y-6">
             <Card>
                 <CardHeader>
                     <CardTitle>Manage "What's New" Page</CardTitle>
@@ -152,7 +188,7 @@ function WhatsNewManager({
                 </CardHeader>
                 <CardContent className="space-y-6">
                     <div className="p-4 border rounded-lg space-y-4">
-                        <h3 className="text-lg font-medium">Add New Entry</h3>
+                        <h3 className="text-lg font-medium">Add New Update Entry</h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <Label>Date</Label>
@@ -233,6 +269,45 @@ function WhatsNewManager({
                     </div>
                 </CardContent>
             </Card>
+
+             <Card>
+                <CardHeader>
+                    <CardTitle>Manage Page Sections</CardTitle>
+                    <CardDescription>Edit the content for the 'Coming Soon' and 'Join Our Team' sections.</CardDescription>
+                </CardHeader>
+                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                        <h3 className="font-medium">What's Coming Soon</h3>
+                        <div className="space-y-2">
+                            {sections.comingSoonItems.map((item, index) => (
+                                <div key={index} className="flex items-center gap-2">
+                                    <Input value={item} onChange={e => handleUpdateComingSoonItem(index, e.target.value)} />
+                                    <Button size="icon" variant="ghost" className="text-destructive" onClick={() => handleRemoveComingSoonItem(index)}><Trash2 className="h-4 w-4" /></Button>
+                                </div>
+                            ))}
+                        </div>
+                         <div className="flex items-center gap-2">
+                            <Input
+                                value={newComingSoonItem}
+                                onChange={e => setNewComingSoonItem(e.target.value)}
+                                placeholder="Add a new coming soon item..."
+                                onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), handleAddComingSoonItem())}
+                            />
+                            <Button onClick={handleAddComingSoonItem}><Plus className="mr-2 h-4 w-4" /> Add</Button>
+                        </div>
+                    </div>
+                     <div className="space-y-4">
+                        <h3 className="font-medium">Join Our Team</h3>
+                        <Textarea
+                            value={sections.joinTeamParagraphs.join('\n')}
+                            onChange={e => handleJoinTeamChange(e.target.value)}
+                            placeholder="Enter text for the 'Join Our Team' section. Each new line will be a new paragraph."
+                            rows={8}
+                        />
+                    </div>
+                </CardContent>
+            </Card>
+
             {editingEntry && (
                 <EditWhatsNewEntryDialog
                     entry={editingEntry}
@@ -240,7 +315,7 @@ function WhatsNewManager({
                     onOpenChange={(isOpen) => !isOpen && setEditingEntry(null)}
                 />
             )}
-        </>
+        </div>
     );
 }
 
@@ -1983,6 +2058,8 @@ export default function UpdateDataPage() {
   const [actionItems, setActionItems] = useState<ActionItem[]>([]);
   const [impactInitiatives, setImpactInitiatives] = useState<ImpactInitiative[]>([]);
   const [whatsNewEntries, setWhatsNewEntries] = useState<WhatsNewEntry[]>([]);
+  const [whatsNewSectionContent, setWhatsNewSectionContent] = useState<WhatsNewSectionContent>({ comingSoonItems: [], joinTeamParagraphs: [] });
+
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState<string | undefined>('whats-new');
@@ -1990,13 +2067,14 @@ export default function UpdateDataPage() {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      const [pillarRes, usersRes, actionItemsRes, eventsRes, impactRes, whatsNewRes] = await Promise.all([
+      const [pillarRes, usersRes, actionItemsRes, eventsRes, impactRes, whatsNewRes, whatsNewSectionsRes] = await Promise.all([
           fetch('/api/data'),
           fetch('/api/data?key=users'),
           fetch('/api/data?key=action-items'),
           fetch('/api/data?key=events'),
           fetch('/api/data?key=impact-initiatives'),
           fetch('/api/data?key=whats-new'),
+          fetch('/api/data?key=whats-new-sections'),
       ]);
 
       if (!pillarRes.ok) throw new Error('Failed to fetch pillar data');
@@ -2008,6 +2086,7 @@ export default function UpdateDataPage() {
       if (eventsRes.ok) setEvents(await eventsRes.json());
       if (impactRes.ok) setImpactInitiatives(await impactRes.json());
       if (whatsNewRes.ok) setWhatsNewEntries(await whatsNewRes.json());
+      if (whatsNewSectionsRes.ok) setWhatsNewSectionContent(await whatsNewSectionsRes.json());
 
     } catch (error) {
       console.error(error);
@@ -2103,19 +2182,13 @@ export default function UpdateDataPage() {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      const payload: {
-        pillars: Pillar[] | null;
-        actionItems: ActionItem[];
-        events: MeetingEvent[];
-        impactInitiatives: ImpactInitiative[];
-        whatsNewEntries: WhatsNewEntry[];
-        excelData: Record<string, any>;
-      } = {
+      const payload = {
         pillars: data,
         actionItems: actionItems,
         events: events,
         impactInitiatives: impactInitiatives,
         whatsNewEntries: whatsNewEntries,
+        whatsNewSectionContent: whatsNewSectionContent,
         excelData: {
             ...excelData,
             users: {
@@ -2189,6 +2262,8 @@ export default function UpdateDataPage() {
                         <WhatsNewManager
                             initialEntries={whatsNewEntries}
                             onEntriesChange={setWhatsNewEntries}
+                            initialSections={whatsNewSectionContent}
+                            onSectionsChange={setWhatsNewSectionContent}
                         />
                     </TabsContent>
 

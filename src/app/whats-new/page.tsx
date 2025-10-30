@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { Header } from "@/components/layout/header";
@@ -11,35 +12,40 @@ import {
 } from "@/components/ui/card";
 import { UserPlus, Loader2 } from "lucide-react";
 import { useState, useEffect } from 'react';
-import type { WhatsNewEntry } from "@/types";
+import type { WhatsNewEntry, WhatsNewSectionContent } from "@/types";
 import { toast } from "@/hooks/use-toast";
 
-async function fetchWhatsNewData(): Promise<WhatsNewEntry[]> {
+async function fetchWhatsNewData(): Promise<{ entries: WhatsNewEntry[], sections: WhatsNewSectionContent }> {
     try {
-        const res = await fetch(`/api/data?key=whats-new`);
-        if (!res.ok) {
-            toast({ title: 'Failed to fetch What\'s New data', variant: 'destructive' });
-            return [];
-        }
-        return res.json();
+        const [entriesRes, sectionsRes] = await Promise.all([
+            fetch(`/api/data?key=whats-new`),
+            fetch(`/api/data?key=whats-new-sections`),
+        ]);
+
+        const entries = entriesRes.ok ? await entriesRes.json() : [];
+        const sections = sectionsRes.ok ? await sectionsRes.json() : { comingSoonItems: [], joinTeamParagraphs: [] };
+
+        return { entries, sections };
     } catch (error) {
         console.error(`Failed to fetch What's New data`, error);
-        toast({ title: 'Error loading What\'s New data', variant: 'destructive' });
-        return [];
+        toast({ title: "Error loading What's New data", variant: 'destructive' });
+        return { entries: [], sections: { comingSoonItems: [], joinTeamParagraphs: [] } };
     }
 }
 
 export default function WhatsNewPage() {
   const [entries, setEntries] = useState<WhatsNewEntry[]>([]);
+  const [sections, setSections] = useState<WhatsNewSectionContent>({ comingSoonItems: [], joinTeamParagraphs: [] });
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function loadData() {
       setIsLoading(true);
-      const data = await fetchWhatsNewData();
+      const { entries: fetchedEntries, sections: fetchedSections } = await fetchWhatsNewData();
       // Sort by date descending
-      data.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-      setEntries(data);
+      fetchedEntries.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      setEntries(fetchedEntries);
+      setSections(fetchedSections);
       setIsLoading(false);
     }
     loadData();
@@ -92,16 +98,21 @@ export default function WhatsNewPage() {
               <CardDescription>A look at the features and improvements on our roadmap.</CardDescription>
             </CardHeader>
             <CardContent>
-                <ol className="list-decimal list-inside space-y-2 pl-4 text-muted-foreground">
-                  <li><span className="text-foreground">Productivity Dashboard Completion:</span> The "Improving Productivity" dashboard will be finalized and rolled out.</li>
-                  <li><span className="text-foreground">WCCG Dashboard Enhancements:</span> The "World Class Corporate Governance" dashboard will be enhanced to include awards and other relevant metrics.</li>
-                  <li><span className="text-foreground">Integrated View:</span> Create a direct inter-relationship between the "Value Map" and the "WCE YTD Progress" dashboards for seamless navigation.</li>
-                  <li><span className="text-foreground">Expanded Impact Metrics:</span> The "Impact Showcase" will support a wider variety of units of measurement for more flexible quantification of success.</li>
-                  <li><span className="text-foreground">Linked-Up Impact:</span> Initiatives on the "Impact Showcase" will be linkable back to the "Value Map" and "WCE YTD Progress" to show direct connections.</li>
-                  <li><span className="text-foreground">Personalized Action View:</span> A "person-wide" view will be added to the "Action Items & Status" page, allowing individuals to see all tasks assigned to them.</li>
-                  <li><span className="text-foreground">LOBT-Specific Dashboards:</span> A new "LOBT-wide" view will allow different Lines of Business Technology to see a dashboard tailored to their specific data.</li>
-                  <li><span className="text-foreground">Time-Based Progress Tracking:</span> Implement a time-series comparison feature to visualize how progress is made over different time scales.</li>
-                </ol>
+                {isLoading ? (
+                     <div className="space-y-2">
+                        <div className="h-4 bg-muted rounded w-3/4"></div>
+                        <div className="h-4 bg-muted rounded w-1/2"></div>
+                        <div className="h-4 bg-muted rounded w-2/3"></div>
+                    </div>
+                ) : sections.comingSoonItems.length > 0 ? (
+                    <ol className="list-decimal list-inside space-y-2 pl-4 text-muted-foreground">
+                        {sections.comingSoonItems.map((item, index) => (
+                           <li key={index}><span className="text-foreground">{item}</span></li>
+                        ))}
+                    </ol>
+                ) : (
+                    <p className="text-sm text-muted-foreground">No upcoming features have been announced yet.</p>
+                )}
             </CardContent>
           </Card>
 
@@ -114,8 +125,19 @@ export default function WhatsNewPage() {
                 </div>
             </CardHeader>
             <CardContent className="space-y-4">
-                <p className="text-muted-foreground">We are looking for passionate individuals to help build this dashboard further. The application is built with a modern tech stack, including Next.js (App Router), React (Server Components), TypeScript, ShadCN for UI components, and Tailwind CSS for styling. If you have skills in these areas and are interested in contributing, please reach out to the project lead.</p>
-                <p className="text-muted-foreground">We are also looking for a <span className="text-foreground">Product person</span> to help enhance the user experience and understand the needs of our different users. If you have a knack for product management and a passion for creating great user-centric tools, we'd love to have you on board.</p>
+                 {isLoading ? (
+                    <div className="space-y-2">
+                        <div className="h-4 bg-muted rounded w-full"></div>
+                        <div className="h-4 bg-muted rounded w-full"></div>
+                        <div className="h-4 bg-muted rounded w-5/6"></div>
+                    </div>
+                 ) : sections.joinTeamParagraphs.length > 0 ? (
+                    sections.joinTeamParagraphs.map((paragraph, index) => (
+                        <p key={index} className="text-muted-foreground">{paragraph}</p>
+                    ))
+                 ) : (
+                    <p className="text-sm text-muted-foreground">Information about joining the team is not available at the moment.</p>
+                 )}
             </CardContent>
           </Card>
         </div>

@@ -7,7 +7,7 @@ import {
   Cpu,
   Landmark,
 } from "lucide-react";
-import type { Pillar, SubItem, ExcelData, MonthlyExcelData, ValueMapData, User, ActionItem, MeetingEvent, ExcelMetadata, ImpactInitiative, WhatsNewEntry } from "@/types";
+import type { Pillar, SubItem, ExcelData, MonthlyExcelData, ValueMapData, User, ActionItem, MeetingEvent, ExcelMetadata, ImpactInitiative, WhatsNewEntry, WhatsNewSectionContent } from "@/types";
 import { promises as fs } from 'fs';
 import path from 'path';
 
@@ -436,6 +436,9 @@ export const writeImpactInitiatives = (data: ImpactInitiative[]) => writeJsonFil
 
 export const getWhatsNewEntries = () => readJsonFile<WhatsNewEntry[]>('whats-new.json', []);
 export const writeWhatsNewEntries = (data: WhatsNewEntry[]) => writeJsonFile('whats-new.json', data);
+
+export const getWhatsNewSectionContent = () => readJsonFile<WhatsNewSectionContent>('whats-new-sections.json', { comingSoonItems: [], joinTeamParagraphs: [] });
+export const writeWhatsNewSectionContent = (data: WhatsNewSectionContent) => writeJsonFile('whats-new-sections.json', data);
 
 
 // Metadata for Excel files

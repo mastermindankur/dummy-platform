@@ -21,6 +21,8 @@ import {
     writeImpactInitiatives,
     getWhatsNewEntries,
     writeWhatsNewEntries,
+    getWhatsNewSectionContent,
+    writeWhatsNewSectionContent,
 } from '@/lib/data';
 import type { Pillar } from '@/types';
 
@@ -75,6 +77,14 @@ export async function GET(request: Request) {
   if (fileKey === 'whats-new') {
     try {
         const data = await getWhatsNewEntries();
+        return NextResponse.json(data);
+    } catch (error) {
+        return new NextResponse('Internal Server Error', { status: 500 });
+    }
+  }
+  if (fileKey === 'whats-new-sections') {
+    try {
+        const data = await getWhatsNewSectionContent();
         return NextResponse.json(data);
     } catch (error) {
         return new NextResponse('Internal Server Error', { status: 500 });
@@ -172,6 +182,9 @@ export async function POST(request: Request) {
     }
     if (body.whatsNewEntries) {
         await writeWhatsNewEntries(body.whatsNewEntries);
+    }
+    if (body.whatsNewSectionContent) {
+        await writeWhatsNewSectionContent(body.whatsNewSectionContent);
     }
     if (body.excelData) {
         const metadata = await getExcelMetadata();

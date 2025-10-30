@@ -176,3 +176,8 @@ export type WhatsNewEntry = {
     title: string;
     items: string[];
 };
+
+export type WhatsNewSectionContent = {
+    comingSoonItems: string[];
+    joinTeamParagraphs: string[];
+};
