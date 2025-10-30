@@ -22,6 +22,7 @@ const pillarIcons: { [key: string]: Pillar['icon'] } = {
 
 const dataFilePath = (filename: string) => path.join(process.cwd(), 'src', 'lib', filename);
 const monthlyDataDirectoryPath = (dir: string) => path.join(process.cwd(), 'src', 'lib', dir);
+const valueMapVersionsPath = () => path.join(process.cwd(), 'src', 'lib', 'value-map-versions');
 
 
 async function readData(): Promise<Pillar[]> {
@@ -363,35 +364,75 @@ export async function writeMonthlyData(dir: string, month: string, data: ExcelDa
     }
 }
 
-// Value Map Data Functions
-export async function getValueMapData(): Promise<ValueMapData> {
-    const filePath = dataFilePath('value-map.json');
+// ## VALUE MAP DATA FUNCTIONS ##
+
+// Get all available versions
+export async function getValueMapVersions(): Promise<{ versions: string[], latest: string | null }> {
+    const dirPath = valueMapVersionsPath();
     try {
+        await fs.mkdir(dirPath, { recursive: true });
+        const files = await fs.readdir(dirPath);
+        const versions = files
+            .filter(file => file.endsWith('.json'))
+            .sort((a, b) => new Date(b.replace('.json','')).getTime() - new Date(a.replace('.json','')).getTime());
+        
+        return { versions, latest: versions[0] || null };
+    } catch (error) {
+        console.error("Could not read value map versions:", error);
+        return { versions: [], latest: null };
+    }
+}
+
+// Get data for a specific version, or the latest
+export async function getValueMapData(version?: string | null): Promise<ValueMapData> {
+    const dirPath = valueMapVersionsPath();
+    try {
+        await fs.mkdir(dirPath, { recursive: true });
+        let versionToFetch = version;
+
+        if (!versionToFetch || versionToFetch === 'latest') {
+            const { latest } = await getValueMapVersions();
+            if (!latest) {
+                 // If no versions exist, create a default one
+                const defaultData: ValueMapData = { outcomes: [], drivers: [], levers: [], outcomeGroups: [], driverGroups: [] };
+                await writeValueMapData(defaultData, true); // Save as new version
+                return defaultData;
+            }
+            versionToFetch = latest;
+        }
+        
+        if (!versionToFetch) {
+            throw new Error("No version specified and no latest version found.");
+        }
+
+        const filePath = path.join(dirPath, versionToFetch);
         const fileContent = await fs.readFile(filePath, 'utf-8');
         return JSON.parse(fileContent) as ValueMapData;
     } catch (error) {
-        if (error instanceof Error && (error as NodeJS.ErrnoException).code === 'ENOENT') {
-            const defaultData: ValueMapData = {
-                outcomes: [],
-                drivers: [],
-                levers: [],
-                outcomeGroups: [],
-                driverGroups: [],
-            };
-            await writeValueMapData(defaultData);
-            return defaultData;
-        }
-        console.error("Could not read or parse value-map.json:", error);
+        console.error(`Could not read value map version ${version}:`, error);
         throw new Error("Failed to read Value Map data.");
     }
 }
 
-export async function writeValueMapData(data: ValueMapData) {
+// Write data, either as a new version or updating the current one
+export async function writeValueMapData(data: ValueMapData, asNewVersion: boolean) {
+    const dirPath = valueMapVersionsPath();
     try {
-        const filePath = dataFilePath('value-map.json');
+        await fs.mkdir(dirPath, { recursive: true });
+        let versionToSave: string;
+
+        if (asNewVersion) {
+            versionToSave = `${new Date().toISOString()}.json`;
+        } else {
+            const { latest } = await getValueMapVersions();
+            versionToSave = latest || `${new Date().toISOString()}.json`;
+        }
+
+        const filePath = path.join(dirPath, versionToSave);
         await fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf-8');
+        
     } catch (error) {
-        console.error("Could not write to value-map.json:", error);
+        console.error("Could not write to value-map-versions:", error);
         throw new Error("Failed to save Value Map data.");
     }
 }

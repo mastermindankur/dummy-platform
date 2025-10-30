@@ -84,6 +84,7 @@ __turbopack_context__.s({
     "getUsers": (()=>getUsers),
     "getValueMapData": (()=>getValueMapData),
     "getWhatsNewEntries": (()=>getWhatsNewEntries),
+    "getWhatsNewSectionContent": (()=>getWhatsNewSectionContent),
     "readExcelData": (()=>readExcelData),
     "readMonthlyData": (()=>readMonthlyData),
     "writeActionItems": (()=>writeActionItems),
@@ -95,7 +96,8 @@ __turbopack_context__.s({
     "writeMonthlyData": (()=>writeMonthlyData),
     "writeUsers": (()=>writeUsers),
     "writeValueMapData": (()=>writeValueMapData),
-    "writeWhatsNewEntries": (()=>writeWhatsNewEntries)
+    "writeWhatsNewEntries": (()=>writeWhatsNewEntries),
+    "writeWhatsNewSectionContent": (()=>writeWhatsNewSectionContent)
 });
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$trending$2d$up$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__$3c$export__default__as__TrendingUp$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/trending-up.js [app-route] (ecmascript) <export default as TrendingUp>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$shield$2d$check$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__$3c$export__default__as__ShieldCheck$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/shield-check.js [app-route] (ecmascript) <export default as ShieldCheck>");
@@ -519,6 +521,11 @@ const getImpactInitiatives = ()=>readJsonFile('impact-initiatives.json', []);
 const writeImpactInitiatives = (data)=>writeJsonFile('impact-initiatives.json', data);
 const getWhatsNewEntries = ()=>readJsonFile('whats-new.json', []);
 const writeWhatsNewEntries = (data)=>writeJsonFile('whats-new.json', data);
+const getWhatsNewSectionContent = ()=>readJsonFile('whats-new-sections.json', {
+        comingSoonItems: [],
+        joinTeamParagraphs: []
+    });
+const writeWhatsNewSectionContent = (data)=>writeJsonFile('whats-new-sections.json', data);
 const getExcelMetadata = ()=>readJsonFile('excel-metadata.json', {});
 const writeExcelMetadata = (data)=>writeJsonFile('excel-metadata.json', data);
 }}),
@@ -595,6 +602,16 @@ async function GET(request) {
     if (fileKey === 'whats-new') {
         try {
             const data = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["getWhatsNewEntries"])();
+            return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json(data);
+        } catch (error) {
+            return new __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"]('Internal Server Error', {
+                status: 500
+            });
+        }
+    }
+    if (fileKey === 'whats-new-sections') {
+        try {
+            const data = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["getWhatsNewSectionContent"])();
             return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json(data);
         } catch (error) {
             return new __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"]('Internal Server Error', {
@@ -698,6 +715,9 @@ async function POST(request) {
         }
         if (body.whatsNewEntries) {
             await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["writeWhatsNewEntries"])(body.whatsNewEntries);
+        }
+        if (body.whatsNewSectionContent) {
+            await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["writeWhatsNewSectionContent"])(body.whatsNewSectionContent);
         }
         if (body.excelData) {
             const metadata = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["getExcelMetadata"])();

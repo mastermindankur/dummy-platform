@@ -1,4 +1,5 @@
 
+
 import { NextResponse } from 'next/server';
 import { 
     getPillars, 
@@ -9,6 +10,7 @@ import {
     writeMonthlyData,
     getValueMapData,
     writeValueMapData,
+    getValueMapVersions,
     getUsers,
     writeUsers,
     getActionItems,
@@ -31,6 +33,29 @@ export async function GET(request: Request) {
   const fileKey = searchParams.get('key');
   const month = searchParams.get('month'); // e.g., '2024-08'
   const includeMetadata = searchParams.get('meta');
+  const version = searchParams.get('version');
+
+
+  if (fileKey === 'value-map-versions') {
+      try {
+        const { versions, latest } = await getValueMapVersions();
+        return NextResponse.json({ versions, latest });
+      } catch (error) {
+        console.error("Failed to get value map versions", error);
+        return new NextResponse('Internal Server Error', { status: 500 });
+      }
+  }
+
+  if (fileKey === 'value-map') {
+      try {
+          const data = await getValueMapData(version);
+          return NextResponse.json(data);
+      } catch (error) {
+          console.error("Failed to fetch value map data", error);
+          return new NextResponse('Internal Server Error', { status: 500 });
+      }
+  }
+
 
   if (includeMetadata && fileKey) {
       try {
@@ -91,15 +116,6 @@ export async function GET(request: Request) {
     }
   }
 
-
-  if (fileKey === 'value-map') {
-      try {
-          const data = await getValueMapData();
-          return NextResponse.json(data);
-      } catch (error) {
-          return new NextResponse('Internal Server Error', { status: 500 });
-      }
-  }
 
   if (fileKey === 'jira-assistant-adoption') {
       try {
@@ -165,11 +181,8 @@ export async function POST(request: Request) {
         await writeData(body.pillars);
     }
     if (body.valueMap) {
-        await writeValueMapData(body.valueMap);
-        const metadata = await getExcelMetadata();
-        metadata['value-map'] = new Date().toISOString();
-        await writeExcelMetadata(metadata);
-        excelMetadataUpdated = true;
+        const asNewVersion = body.saveAsNewVersion || false;
+        await writeValueMapData(body.valueMap, asNewVersion);
     }
     if (body.actionItems) {
         await writeActionItems(body.actionItems);

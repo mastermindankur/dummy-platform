@@ -27,7 +27,7 @@ import { toast } from '@/hooks/use-toast';
 import type { Pillar, SubItem, Status, ExcelData, ValueMapData, ValueMapItem, ValueMapLever, ValueMapDriver, ValueMapOutcome, ValueMapGroup, User, ActionItem, MeetingEvent, MappingRule, ExcelRow, ImpactInitiative, ImpactCategory, WhatsNewEntry, WhatsNewSectionContent } from '@/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Loader2, Plus, Trash2, Upload, ArrowRight, ChevronsUpDown, Filter, X, Edit, GripVertical, Settings2, Users, CalendarIcon, Briefcase, Check, RotateCcw, Zap, ShieldCheck } from 'lucide-react';
+import { Loader2, Plus, Trash2, Upload, ArrowRight, ChevronsUpDown, Filter, X, Edit, GripVertical, Settings2, Users, CalendarIcon, Briefcase, Check, RotateCcw, Zap, ShieldCheck, Save } from 'lucide-react';
 import { processExcelFile, getExcelSheetNames } from '@/lib/excel-utils';
 import Link from 'next/link';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -388,7 +388,11 @@ function EditWhatsNewEntryDialog({
                         <div className="space-y-2">
                              {items.map((item, index) => (
                                 <div key={index} className="flex items-center gap-2">
-                                    <p className="flex-1 p-2 text-sm bg-secondary rounded-md">{item}</p>
+                                    <Input value={item} onChange={(e) => {
+                                        const newItems = [...items];
+                                        newItems[index] = e.target.value;
+                                        setItems(newItems);
+                                    }} />
                                     <Button size="icon" variant="ghost" className="text-destructive" onClick={() => handleRemoveItem(index)}><Trash2 className="h-4 w-4" /></Button>
                                 </div>
                              ))}
@@ -1146,6 +1150,7 @@ function ValueMapManager() {
     const [valueMapData, setValueMapData] = useState<ValueMapData>({ outcomes: [], drivers: [], levers: [], outcomeGroups: [], driverGroups: [] });
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
+    const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
     const [isGroupEditorOpen, setIsGroupEditorOpen] = useState(false);
     const dragItem = React.useRef<number | null>(null);
     const dragOverItem = React.useRef<number | null>(null);
@@ -1154,7 +1159,8 @@ function ValueMapManager() {
         const fetchData = async () => {
             setIsLoading(true);
             try {
-                const res = await fetch('/api/data?key=value-map');
+                // Fetch the latest version by default
+                const res = await fetch('/api/data?key=value-map&version=latest');
                 const data = await res.json();
                 setValueMapData(prev => ({...prev, ...data}));
             } catch (e) {
@@ -1166,13 +1172,17 @@ function ValueMapManager() {
         fetchData();
     }, []);
 
-    const handleSave = async () => {
+    const handleSave = async (asNewVersion: boolean) => {
         setIsSaving(true);
+        setIsSaveDialogOpen(false);
         try {
             const res = await fetch('/api/data', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ valueMap: valueMapData }),
+                body: JSON.stringify({ 
+                    valueMap: valueMapData,
+                    saveAsNewVersion: asNewVersion,
+                }),
             });
             if (!res.ok) throw new Error('Failed to save');
             toast({ title: 'Value Map Saved!' });
@@ -1263,10 +1273,26 @@ function ValueMapManager() {
                         onClose={() => setIsGroupEditorOpen(false)}
                     />
                 </Dialog>
-                <Button onClick={handleSave} disabled={isSaving}>
-                    {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Save Value Map Changes
-                </Button>
+                <Dialog open={isSaveDialogOpen} onOpenChange={setIsSaveDialogOpen}>
+                    <DialogTrigger asChild>
+                         <Button disabled={isSaving}>
+                            {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                            Save Value Map
+                        </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Save Value Map</DialogTitle>
+                            <DialogDescription>
+                                You can update the current version of the value map or save your changes as a new version.
+                            </DialogDescription>
+                        </DialogHeader>
+                        <DialogFooter className="sm:justify-center pt-4">
+                            <Button variant="outline" onClick={() => handleSave(false)}>Update Current Version</Button>
+                            <Button onClick={() => handleSave(true)}>Save as New Version</Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
                 <ValueMapColumn
@@ -2598,4 +2624,5 @@ export default function UpdateDataPage() {
     </div>
   );
 }
+
 

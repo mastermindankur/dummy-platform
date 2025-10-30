@@ -1,6 +1,7 @@
 
 'use client';
 import { useState, useEffect } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { Header } from "@/components/layout/header";
 import { ValueMap } from "@/components/dashboard/value-map";
 import {
@@ -13,7 +14,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import type { ValueMapData, DriverLeverConnection, OutcomeDriverConnection } from "@/types";
 import { Button } from "@/components/ui/button";
-import { HelpCircle, CalendarClock } from "lucide-react";
+import { HelpCircle, CalendarClock, ChevronsUpDown } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -22,47 +23,63 @@ import {
   DialogTrigger,
   DialogDescription,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
+import { format } from "date-fns";
 
 export default function ExecutivePage() {
   const [valueMapData, setValueMapData] = useState<ValueMapData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
+  const [versions, setVersions] = useState<string[]>([]);
+  
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const selectedVersion = searchParams.get('version') || 'latest';
 
-  async function fetchData() {
-    // Set loading to true only if there's no data yet, to avoid flashes on re-focus
-    if (!valueMapData) {
-      setIsLoading(true);
-    }
-    try {
-      const [res, metaRes] = await Promise.all([
-        fetch('/api/data?key=value-map'),
-        fetch('/api/data?key=value-map&meta=true')
-      ]);
-      const data = await res.json();
-      setValueMapData(data);
-      if (metaRes.ok) {
-        const { lastUpdated: metaLastUpdated } = await metaRes.json();
-        setLastUpdated(metaLastUpdated);
-      }
-    } catch (error) {
-      console.error("Failed to fetch value map data", error);
-    } finally {
-      setIsLoading(false);
-    }
-  }
 
   useEffect(() => {
+    async function fetchData() {
+      setIsLoading(true);
+      try {
+        const [res, versionsRes] = await Promise.all([
+          fetch(`/api/data?key=value-map&version=${selectedVersion}`),
+          fetch('/api/data?key=value-map-versions')
+        ]);
+        
+        if (res.ok) {
+            const data = await res.json();
+            setValueMapData(data);
+        } else {
+            console.error("Failed to fetch value map data", await res.text());
+            setValueMapData(null);
+        }
+
+        if (versionsRes.ok) {
+            const versionsData = await versionsRes.json();
+            setVersions(versionsData.versions);
+             if (selectedVersion === 'latest' && versionsData.latest) {
+                // To display the actual date of the latest version
+                const newSearchParams = new URLSearchParams(searchParams);
+                newSearchParams.set('version', versionsData.latest);
+                // Using replace to not add to history
+                router.replace(`${pathname}?${newSearchParams.toString()}`, { scroll: false });
+            }
+        }
+
+      } catch (error) {
+        console.error("Failed to fetch value map data", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
     fetchData();
-
-    // Add event listener to refetch data when the window/tab gets focus
-    window.addEventListener('focus', fetchData);
-
-    // Cleanup listener on component unmount
-    return () => {
-      window.removeEventListener('focus', fetchData);
-    };
-  }, []); // Empty array ensures this only runs on mount and unmount
+  }, [selectedVersion, router, pathname, searchParams]);
 
   const outcomes = valueMapData?.outcomes || [];
   const drivers = valueMapData?.drivers || [];
@@ -78,6 +95,16 @@ export default function ExecutivePage() {
   const driverLeverConnections: DriverLeverConnection[] = drivers.flatMap(d =>
     (d.connectedLeverIds || []).map(leverId => ({ driverId: d.id, leverId }))
   );
+  
+  const handleVersionChange = (version: string) => {
+      const newSearchParams = new URLSearchParams(searchParams);
+      newSearchParams.set('version', version);
+      router.push(`${pathname}?${newSearchParams.toString()}`);
+  };
+
+  const formatVersionName = (version: string) => {
+    return format(new Date(version.replace('.json', '')), "MMM d, yyyy h:mm a");
+  };
 
   return (
     <div className="flex min-h-screen w-full flex-col">
@@ -85,20 +112,30 @@ export default function ExecutivePage() {
       <main className="flex-1 p-4 md:p-8">
         <Card>
           <CardHeader>
-            <div className="flex items-start justify-between">
+            <div className="flex flex-wrap items-start justify-between gap-4">
                 <div className="space-y-2">
                     <CardTitle className="text-3xl">Executive Value Map</CardTitle>
                     <CardDescription>
                       Connecting strategic outcomes to the drivers and levers that enable them.
                     </CardDescription>
                 </div>
-                 <div className="flex items-center gap-2">
-                  {lastUpdated && (
-                      <Badge variant="outline" className="font-normal whitespace-nowrap">
-                          <CalendarClock className="mr-2 h-4 w-4" />
-                          Last updated: {new Date(lastUpdated).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' })}
-                      </Badge>
-                  )}
+                 <div className="flex flex-wrap items-center gap-2">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" className="w-[280px] justify-between">
+                          <span>{selectedVersion === 'latest' ? 'Loading latest...' : `Version: ${formatVersionName(selectedVersion)}`}</span>
+                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent className="w-[280px]">
+                        {versions.map(v => (
+                          <DropdownMenuItem key={v} onSelect={() => handleVersionChange(v)}>
+                            {formatVersionName(v)}
+                          </DropdownMenuItem>
+                        ))}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+
                   <Dialog>
                       <DialogTrigger asChild>
                           <Button variant="outline" size="icon">
@@ -134,7 +171,7 @@ export default function ExecutivePage() {
                     <Skeleton className="h-24 w-full" />
                     <Skeleton className="h-24 w-full" />
                 </div>
-            ) : (
+            ) : valueMapData ? (
                 <div className="space-y-6">
                     <ValueMap 
                       outcomes={outcomes}
@@ -145,6 +182,10 @@ export default function ExecutivePage() {
                       outcomeDriverConnections={outcomeDriverConnections}
                       driverLeverConnections={driverLeverConnections}
                     />
+                </div>
+            ) : (
+                 <div className="text-center text-muted-foreground p-8 border-dashed border-2 rounded-md">
+                    <p>Could not load Value Map data for the selected version.</p>
                 </div>
             )}
           </CardContent>
