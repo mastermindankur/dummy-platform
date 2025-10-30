@@ -83,6 +83,7 @@ __turbopack_context__.s({
     "getPillars": (()=>getPillars),
     "getUsers": (()=>getUsers),
     "getValueMapData": (()=>getValueMapData),
+    "getValueMapVersions": (()=>getValueMapVersions),
     "getWhatsNewEntries": (()=>getWhatsNewEntries),
     "getWhatsNewSectionContent": (()=>getWhatsNewSectionContent),
     "readExcelData": (()=>readExcelData),
@@ -119,6 +120,7 @@ const pillarIcons = {
 };
 const dataFilePath = (filename)=>__TURBOPACK__imported__module__$5b$externals$5d2f$path__$5b$external$5d$__$28$path$2c$__cjs$29$__["default"].join(process.cwd(), 'src', 'lib', filename);
 const monthlyDataDirectoryPath = (dir)=>__TURBOPACK__imported__module__$5b$externals$5d2f$path__$5b$external$5d$__$28$path$2c$__cjs$29$__["default"].join(process.cwd(), 'src', 'lib', dir);
+const valueMapVersionsPath = ()=>__TURBOPACK__imported__module__$5b$externals$5d2f$path__$5b$external$5d$__$28$path$2c$__cjs$29$__["default"].join(process.cwd(), 'src', 'lib', 'value-map-versions');
 async function readData() {
     try {
         const fileContent = await __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["promises"].readFile(dataFilePath('data.json'), 'utf-8');
@@ -457,33 +459,77 @@ async function writeMonthlyData(dir, month, data) {
         throw new Error(`Failed to save ${dir} data for ${month}.`);
     }
 }
-async function getValueMapData() {
-    const filePath = dataFilePath('value-map.json');
+async function getValueMapVersions() {
+    const dirPath = valueMapVersionsPath();
     try {
+        await __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["promises"].mkdir(dirPath, {
+            recursive: true
+        });
+        const files = await __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["promises"].readdir(dirPath);
+        const versions = files.filter((file)=>file.endsWith('.json')).sort((a, b)=>new Date(b.replace('.json', '')).getTime() - new Date(a.replace('.json', '')).getTime());
+        return {
+            versions,
+            latest: versions[0] || null
+        };
+    } catch (error) {
+        console.error("Could not read value map versions:", error);
+        return {
+            versions: [],
+            latest: null
+        };
+    }
+}
+async function getValueMapData(version) {
+    const dirPath = valueMapVersionsPath();
+    try {
+        await __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["promises"].mkdir(dirPath, {
+            recursive: true
+        });
+        let versionToFetch = version;
+        if (!versionToFetch || versionToFetch === 'latest') {
+            const { latest } = await getValueMapVersions();
+            if (!latest) {
+                // If no versions exist, create a default one
+                const defaultData = {
+                    outcomes: [],
+                    drivers: [],
+                    levers: [],
+                    outcomeGroups: [],
+                    driverGroups: []
+                };
+                await writeValueMapData(defaultData, true); // Save as new version
+                return defaultData;
+            }
+            versionToFetch = latest;
+        }
+        if (!versionToFetch) {
+            throw new Error("No version specified and no latest version found.");
+        }
+        const filePath = __TURBOPACK__imported__module__$5b$externals$5d2f$path__$5b$external$5d$__$28$path$2c$__cjs$29$__["default"].join(dirPath, versionToFetch);
         const fileContent = await __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["promises"].readFile(filePath, 'utf-8');
         return JSON.parse(fileContent);
     } catch (error) {
-        if (error instanceof Error && error.code === 'ENOENT') {
-            const defaultData = {
-                outcomes: [],
-                drivers: [],
-                levers: [],
-                outcomeGroups: [],
-                driverGroups: []
-            };
-            await writeValueMapData(defaultData);
-            return defaultData;
-        }
-        console.error("Could not read or parse value-map.json:", error);
+        console.error(`Could not read value map version ${version}:`, error);
         throw new Error("Failed to read Value Map data.");
     }
 }
-async function writeValueMapData(data) {
+async function writeValueMapData(data, asNewVersion) {
+    const dirPath = valueMapVersionsPath();
     try {
-        const filePath = dataFilePath('value-map.json');
+        await __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["promises"].mkdir(dirPath, {
+            recursive: true
+        });
+        let versionToSave;
+        if (asNewVersion) {
+            versionToSave = `${new Date().toISOString()}.json`;
+        } else {
+            const { latest } = await getValueMapVersions();
+            versionToSave = latest || `${new Date().toISOString()}.json`;
+        }
+        const filePath = __TURBOPACK__imported__module__$5b$externals$5d2f$path__$5b$external$5d$__$28$path$2c$__cjs$29$__["default"].join(dirPath, versionToSave);
         await __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["promises"].writeFile(filePath, JSON.stringify(data, null, 2), 'utf-8');
     } catch (error) {
-        console.error("Could not write to value-map.json:", error);
+        console.error("Could not write to value-map-versions:", error);
         throw new Error("Failed to save Value Map data.");
     }
 }
@@ -547,6 +593,32 @@ async function GET(request) {
     const fileKey = searchParams.get('key');
     const month = searchParams.get('month'); // e.g., '2024-08'
     const includeMetadata = searchParams.get('meta');
+    const version = searchParams.get('version');
+    if (fileKey === 'value-map-versions') {
+        try {
+            const { versions, latest } = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["getValueMapVersions"])();
+            return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+                versions,
+                latest
+            });
+        } catch (error) {
+            console.error("Failed to get value map versions", error);
+            return new __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"]('Internal Server Error', {
+                status: 500
+            });
+        }
+    }
+    if (fileKey === 'value-map') {
+        try {
+            const data = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["getValueMapData"])(version);
+            return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json(data);
+        } catch (error) {
+            console.error("Failed to fetch value map data", error);
+            return new __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"]('Internal Server Error', {
+                status: 500
+            });
+        }
+    }
     if (includeMetadata && fileKey) {
         try {
             const metadata = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["getExcelMetadata"])();
@@ -612,16 +684,6 @@ async function GET(request) {
     if (fileKey === 'whats-new-sections') {
         try {
             const data = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["getWhatsNewSectionContent"])();
-            return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json(data);
-        } catch (error) {
-            return new __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"]('Internal Server Error', {
-                status: 500
-            });
-        }
-    }
-    if (fileKey === 'value-map') {
-        try {
-            const data = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["getValueMapData"])();
             return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json(data);
         } catch (error) {
             return new __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"]('Internal Server Error', {
@@ -698,11 +760,8 @@ async function POST(request) {
             await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["writeData"])(body.pillars);
         }
         if (body.valueMap) {
-            await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["writeValueMapData"])(body.valueMap);
-            const metadata = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["getExcelMetadata"])();
-            metadata['value-map'] = new Date().toISOString();
-            await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["writeExcelMetadata"])(metadata);
-            excelMetadataUpdated = true;
+            const asNewVersion = body.saveAsNewVersion || false;
+            await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["writeValueMapData"])(body.valueMap, asNewVersion);
         }
         if (body.actionItems) {
             await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["writeActionItems"])(body.actionItems);
