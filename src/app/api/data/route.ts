@@ -18,7 +18,9 @@ import {
     getExcelMetadata,
     writeExcelMetadata,
     getImpactInitiatives,
-    writeImpactInitiatives
+    writeImpactInitiatives,
+    getWhatsNewEntries,
+    writeWhatsNewEntries,
 } from '@/lib/data';
 import type { Pillar } from '@/types';
 
@@ -65,6 +67,14 @@ export async function GET(request: Request) {
   if (fileKey === 'impact-initiatives') {
     try {
         const data = await getImpactInitiatives();
+        return NextResponse.json(data);
+    } catch (error) {
+        return new NextResponse('Internal Server Error', { status: 500 });
+    }
+  }
+  if (fileKey === 'whats-new') {
+    try {
+        const data = await getWhatsNewEntries();
         return NextResponse.json(data);
     } catch (error) {
         return new NextResponse('Internal Server Error', { status: 500 });
@@ -159,6 +169,9 @@ export async function POST(request: Request) {
     }
     if (body.impactInitiatives) {
         await writeImpactInitiatives(body.impactInitiatives);
+    }
+    if (body.whatsNewEntries) {
+        await writeWhatsNewEntries(body.whatsNewEntries);
     }
     if (body.excelData) {
         const metadata = await getExcelMetadata();

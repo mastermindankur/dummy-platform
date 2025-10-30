@@ -668,6 +668,10 @@ async function POST(request) {
         }
         if (body.valueMap) {
             await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["writeValueMapData"])(body.valueMap);
+            const metadata = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["getExcelMetadata"])();
+            metadata['value-map'] = new Date().toISOString();
+            await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["writeExcelMetadata"])(metadata);
+            excelMetadataUpdated = true;
         }
         if (body.actionItems) {
             await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["writeActionItems"])(body.actionItems);

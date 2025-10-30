@@ -9,25 +9,47 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { UserPlus } from "lucide-react";
+import { UserPlus, Loader2 } from "lucide-react";
 import { useState, useEffect } from 'react';
+import type { WhatsNewEntry } from "@/types";
+import { toast } from "@/hooks/use-toast";
+
+async function fetchWhatsNewData(): Promise<WhatsNewEntry[]> {
+    try {
+        const res = await fetch(`/api/data?key=whats-new`);
+        if (!res.ok) {
+            toast({ title: 'Failed to fetch What\'s New data', variant: 'destructive' });
+            return [];
+        }
+        return res.json();
+    } catch (error) {
+        console.error(`Failed to fetch What's New data`, error);
+        toast({ title: 'Error loading What\'s New data', variant: 'destructive' });
+        return [];
+    }
+}
 
 export default function WhatsNewPage() {
-  const [currentDate, setCurrentDate] = useState('');
+  const [entries, setEntries] = useState<WhatsNewEntry[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    setCurrentDate(new Date().toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    }));
+    async function loadData() {
+      setIsLoading(true);
+      const data = await fetchWhatsNewData();
+      // Sort by date descending
+      data.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      setEntries(data);
+      setIsLoading(false);
+    }
+    loadData();
   }, []);
 
   return (
     <div className="flex min-h-screen w-full flex-col">
       <Header />
       <main className="flex-1 p-4 md:p-8">
-        <div className="mx-auto w-full space-y-8">
+        <div className="mx-auto w-full max-w-4xl space-y-8">
           <Card>
             <CardHeader className="text-center">
               <CardTitle className="text-3xl font-bold">What's New in the Dashboard</CardTitle>
@@ -36,46 +58,31 @@ export default function WhatsNewPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-8">
-              <div>
-                <h2 className="text-base font-semibold text-muted-foreground border-b pb-2 mb-4">
-                    {currentDate}
-                </h2>
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-foreground">Focused Driver Group Pages</h3>
-                  <ol className="list-decimal list-inside space-y-2 pl-4 text-muted-foreground">
-                    <li><span className="text-foreground">Focused Views:</span> Focused pages for all driver groups have been created to provide a dedicated view of their specific value map.</li>
-                  </ol>
-                </div>
-              </div>
-
-              <div className="pt-4">
-                <h2 className="text-sm font-semibold text-muted-foreground/80 border-b pb-2 mb-4">
-                    October 2, 2025
-                </h2>
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-foreground">Value Map Enhancements</h3>
-                  <ol className="list-decimal list-inside space-y-2 pl-4 text-muted-foreground">
-                    <li><span className="text-foreground">Interactive Filtering:</span> The legend on the Executive Value Map is now clickable. You can filter the view to instantly highlight all items marked as <span className="text-foreground">"New"</span>, <span className="text-foreground">"Retired"</span>, or part of the <span className="text-foreground">"Book of Work 25"</span>.</li>
-                    <li><span className="text-foreground">Traceability:</span> Selecting any item on the Value Map now highlights its entire <span className="text-foreground">upstream and downstream chain</span>, making it easy to trace connections from Levers to Outcomes.</li>
-                    <li><span className="text-foreground">Last Updated Timestamp:</span> The Executive Value Map page now displays a <span className="text-foreground">"Last Updated"</span> timestamp, so you always know how current the data is.</li>
-                    <li><span className="text-foreground">Help Dialog:</span> A new help icon provides a quick guide on how to read and interpret the value map, explaining the <span className="text-foreground">right-to-left flow</span> from Outcomes to Levers.</li>
-                  </ol>
-                </div>
-                <div className="space-y-4 pt-6">
-                  <h3 className="text-lg font-semibold text-foreground">Impact Showcase Section</h3>
-                  <ol className="list-decimal list-inside space-y-2 pl-4 text-muted-foreground">
-                    <li><span className="text-foreground">Impact Showcase Page:</span> A new <span className="text-foreground">"Impact Showcase"</span> page has been added to quantify and display the business value delivered by our key engineering initiatives.</li>
-                    <li><span className="text-foreground">Categorized Initiatives:</span> Impact metrics are now grouped into three distinct categories: <span className="text-foreground">"Productivity & Efficiency Gains,"</span> <span className="text-foreground">"Quality & Reliability Improvement,"</span> and <span className="text-foreground">"Developer Engagement & Skill Uplift."</span></li>
-                    <li><span className="text-foreground">Dynamic Data Management:</span> The "Update Data" page now includes a dedicated section to manage the initiatives displayed on the Impact Showcase, allowing for <span className="text-foreground">real-time additions and edits</span>.</li>
-                  </ol>
-                </div>
-                <div className="space-y-4 pt-6">
-                  <h3 className="text-lg font-semibold text-foreground">Miscellaneous</h3>
-                  <ol className="list-decimal list-inside space-y-2 pl-4 text-muted-foreground">
-                    <li><span className="text-foreground">What's New Page:</span> This very page was created to provide a central place for you to see all the latest updates and improvements to the dashboard.</li>
-                  </ol>
-                </div>
-              </div>
+                {isLoading ? (
+                    <div className="flex justify-center items-center h-64">
+                        <Loader2 className="h-8 w-8 animate-spin" />
+                    </div>
+                ) : entries.length > 0 ? (
+                    entries.map(entry => (
+                        <div key={entry.id}>
+                            <h2 className="text-base font-semibold text-muted-foreground border-b pb-2 mb-4">
+                                {new Date(entry.date).toLocaleDateString('en-US', { timeZone: 'UTC', year: 'numeric', month: 'long', day: 'numeric' })}
+                            </h2>
+                            <div className="space-y-4">
+                                <h3 className="text-lg font-semibold text-foreground">{entry.title}</h3>
+                                <ol className="list-decimal list-inside space-y-2 pl-4 text-muted-foreground">
+                                    {entry.items.map((item, index) => (
+                                        <li key={index}><span className="text-foreground">{item}</span></li>
+                                    ))}
+                                </ol>
+                            </div>
+                        </div>
+                    ))
+                ) : (
+                    <div className="text-center text-muted-foreground p-8 border-dashed border-2 rounded-md mt-8">
+                        <p>No updates have been posted yet. Check back soon!</p>
+                    </div>
+                )}
             </CardContent>
           </Card>
 

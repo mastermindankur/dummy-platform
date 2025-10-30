@@ -1,10 +1,6 @@
 {
-  "/action-items/page": "app/action-items/page.js",
   "/api/data/route": "app/api/data/route.js",
-  "/executive/driver-group/[groupId]/page": "app/executive/driver-group/[groupId]/page.js",
-  "/executive/page": "app/executive/page.js",
-  "/impact-showcase/page": "app/impact-showcase/page.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
   "/page": "app/page.js",
-  "/update-data/page": "app/update-data/page.js",
-  "/whats-new/page": "app/whats-new/page.js"
+  "/update-data/page": "app/update-data/page.js"
 }

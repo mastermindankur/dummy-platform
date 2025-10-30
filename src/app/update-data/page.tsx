@@ -24,7 +24,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/use-toast';
-import type { Pillar, SubItem, Status, ExcelData, ValueMapData, ValueMapItem, ValueMapLever, ValueMapDriver, ValueMapOutcome, ValueMapGroup, User, ActionItem, MeetingEvent, MappingRule, ExcelRow, ImpactInitiative, ImpactCategory } from '@/types';
+import type { Pillar, SubItem, Status, ExcelData, ValueMapData, ValueMapItem, ValueMapLever, ValueMapDriver, ValueMapOutcome, ValueMapGroup, User, ActionItem, MeetingEvent, MappingRule, ExcelRow, ImpactInitiative, ImpactCategory, WhatsNewEntry } from '@/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Loader2, Plus, Trash2, Upload, ArrowRight, ChevronsUpDown, Filter, X, Edit, GripVertical, Settings2, Users, CalendarIcon, Briefcase, Check, RotateCcw, Zap, ShieldCheck } from 'lucide-react';
@@ -72,6 +72,155 @@ type FilterState = {
     column: string;
     value: string;
 };
+
+
+// ## WHAT'S NEW DATA MANAGEMENT ##
+function WhatsNewManager({
+    initialEntries,
+    onEntriesChange,
+}: {
+    initialEntries: WhatsNewEntry[];
+    onEntriesChange: (entries: WhatsNewEntry[]) => void;
+}) {
+    const [entries, setEntries] = useState(initialEntries);
+
+    const [newTitle, setNewTitle] = useState('');
+    const [newDate, setNewDate] = useState<Date | undefined>();
+    const [newItemText, setNewItemText] = useState('');
+    const [newItems, setNewItems] = useState<string[]>([]);
+
+    useEffect(() => {
+        onEntriesChange(entries);
+    }, [entries, onEntriesChange]);
+
+    const handleAddItem = () => {
+        if (newItemText.trim()) {
+            setNewItems(prev => [...prev, newItemText.trim()]);
+            setNewItemText('');
+        }
+    };
+    
+    const handleRemoveNewItem = (index: number) => {
+        setNewItems(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const handleAddEntry = () => {
+        if (!newTitle || !newDate || newItems.length === 0) {
+            toast({ title: 'Missing Information', description: 'Please provide a date, title, and at least one item.', variant: 'destructive' });
+            return;
+        }
+
+        const newEntry: WhatsNewEntry = {
+            id: `wn-${Date.now()}`,
+            date: format(newDate, 'yyyy-MM-dd'),
+            title: newTitle,
+            items: newItems,
+        };
+
+        const updatedEntries = [...entries, newEntry].sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        setEntries(updatedEntries);
+        
+        // Reset form
+        setNewTitle('');
+        setNewDate(undefined);
+        setNewItems([]);
+        setNewItemText('');
+        toast({ title: 'Entry Added', description: 'The new entry has been added. Remember to save all changes.' });
+    };
+
+    const handleRemoveEntry = (id: string) => {
+        setEntries(prev => prev.filter(entry => entry.id !== id));
+        toast({ title: 'Entry Removed', description: 'Remember to save all changes.' });
+    };
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Manage "What's New" Page</CardTitle>
+                <CardDescription>Add or remove update entries for the What's New page.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+                <div className="p-4 border rounded-lg space-y-4">
+                    <h3 className="text-lg font-medium">Add New Entry</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <Label>Date</Label>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button variant="outline" className={cn("w-full justify-start text-left font-normal", !newDate && "text-muted-foreground")}>
+                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                        {newDate ? format(newDate, "PPP") : <span>Pick a date</span>}
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={newDate} onSelect={setNewDate} initialFocus/></PopoverContent>
+                            </Popover>
+                        </div>
+                        <div>
+                            <Label>Title</Label>
+                            <Input value={newTitle} onChange={e => setNewTitle(e.target.value)} placeholder="e.g., Value Map Enhancements" />
+                        </div>
+                    </div>
+                    <div>
+                        <Label>Update Items</Label>
+                        <div className="space-y-2">
+                             {newItems.map((item, index) => (
+                                <div key={index} className="flex items-center gap-2">
+                                    <p className="flex-1 p-2 text-sm bg-secondary rounded-md">{item}</p>
+                                    <Button size="icon" variant="ghost" className="text-destructive" onClick={() => handleRemoveNewItem(index)}><Trash2 className="h-4 w-4" /></Button>
+                                </div>
+                             ))}
+                        </div>
+                        <div className="flex items-center gap-2 mt-2">
+                            <Input
+                                value={newItemText}
+                                onChange={e => setNewItemText(e.target.value)}
+                                placeholder="Add a new feature or update item..."
+                                onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), handleAddItem())}
+                            />
+                            <Button onClick={handleAddItem}><Plus className="mr-2 h-4 w-4" /> Add Item</Button>
+                        </div>
+                    </div>
+                    <Button onClick={handleAddEntry}>Add Entry to List</Button>
+                </div>
+
+                <div>
+                    <h3 className="text-lg font-medium">Current Entries</h3>
+                     <div className="border rounded-md mt-2">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Date</TableHead>
+                                    <TableHead>Title</TableHead>
+                                    <TableHead>Items</TableHead>
+                                    <TableHead className="text-right">Actions</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {entries.map(entry => (
+                                    <TableRow key={entry.id}>
+                                        <TableCell>{format(new Date(entry.date), 'PP')}</TableCell>
+                                        <TableCell className="font-medium">{entry.title}</TableCell>
+                                        <TableCell>
+                                            <ul className="list-disc list-inside text-xs">
+                                                {entry.items.map((item, i) => <li key={i}>{item}</li>)}
+                                            </ul>
+                                        </TableCell>
+                                        <TableCell className="text-right">
+                                            <Button size="icon" variant="ghost" className="text-destructive" onClick={() => handleRemoveEntry(entry.id)}>
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                         {entries.length === 0 && <p className="text-center text-sm text-muted-foreground p-4">No entries yet.</p>}
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+    );
+}
 
 // ## IMPACT INITIATIVES DATA MANAGEMENT ##
 function ImpactInitiativesManager({
@@ -1717,19 +1866,21 @@ export default function UpdateDataPage() {
   const [events, setEvents] = useState<MeetingEvent[]>([]);
   const [actionItems, setActionItems] = useState<ActionItem[]>([]);
   const [impactInitiatives, setImpactInitiatives] = useState<ImpactInitiative[]>([]);
+  const [whatsNewEntries, setWhatsNewEntries] = useState<WhatsNewEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [activeTab, setActiveTab] = useState<string | undefined>('impact-initiatives');
+  const [activeTab, setActiveTab] = useState<string | undefined>('whats-new');
 
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      const [pillarRes, usersRes, actionItemsRes, eventsRes, impactRes] = await Promise.all([
+      const [pillarRes, usersRes, actionItemsRes, eventsRes, impactRes, whatsNewRes] = await Promise.all([
           fetch('/api/data'),
           fetch('/api/data?key=users'),
           fetch('/api/data?key=action-items'),
           fetch('/api/data?key=events'),
           fetch('/api/data?key=impact-initiatives'),
+          fetch('/api/data?key=whats-new'),
       ]);
 
       if (!pillarRes.ok) throw new Error('Failed to fetch pillar data');
@@ -1740,6 +1891,7 @@ export default function UpdateDataPage() {
       if (actionItemsRes.ok) setActionItems(await actionItemsRes.json());
       if (eventsRes.ok) setEvents(await eventsRes.json());
       if (impactRes.ok) setImpactInitiatives(await impactRes.json());
+      if (whatsNewRes.ok) setWhatsNewEntries(await whatsNewRes.json());
 
     } catch (error) {
       console.error(error);
@@ -1840,12 +1992,14 @@ export default function UpdateDataPage() {
         actionItems: ActionItem[];
         events: MeetingEvent[];
         impactInitiatives: ImpactInitiative[];
+        whatsNewEntries: WhatsNewEntry[];
         excelData: Record<string, any>;
       } = {
         pillars: data,
         actionItems: actionItems,
         events: events,
         impactInitiatives: impactInitiatives,
+        whatsNewEntries: whatsNewEntries,
         excelData: {
             ...excelData,
             users: {
@@ -1903,7 +2057,8 @@ export default function UpdateDataPage() {
               </div>
             ) : (
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                    <TabsList className="grid w-full grid-cols-4 md:grid-cols-8 h-auto mb-6">
+                    <TabsList className="grid w-full grid-cols-5 md:grid-cols-9 h-auto mb-6">
+                        <TabsTrigger value="whats-new">What's New</TabsTrigger>
                         <TabsTrigger value="impact-initiatives">Impact</TabsTrigger>
                         <TabsTrigger value="value-map">Value Map</TabsTrigger>
                         <TabsTrigger value="action-items">Action Items</TabsTrigger>
@@ -1913,6 +2068,13 @@ export default function UpdateDataPage() {
                             </TabsTrigger>
                         ))}
                     </TabsList>
+                    
+                    <TabsContent value="whats-new">
+                        <WhatsNewManager
+                            initialEntries={whatsNewEntries}
+                            onEntriesChange={setWhatsNewEntries}
+                        />
+                    </TabsContent>
 
                     <TabsContent value="impact-initiatives">
                         <ImpactInitiativesManager

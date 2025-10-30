@@ -7,7 +7,7 @@ import {
   Cpu,
   Landmark,
 } from "lucide-react";
-import type { Pillar, SubItem, ExcelData, MonthlyExcelData, ValueMapData, User, ActionItem, MeetingEvent, ExcelMetadata, ImpactInitiative } from "@/types";
+import type { Pillar, SubItem, ExcelData, MonthlyExcelData, ValueMapData, User, ActionItem, MeetingEvent, ExcelMetadata, ImpactInitiative, WhatsNewEntry } from "@/types";
 import { promises as fs } from 'fs';
 import path from 'path';
 
@@ -279,7 +279,7 @@ export async function readExcelData(fileKey: string): Promise<any> {
         if (error instanceof Error && (error as NodeJS.ErrnoException).code === 'ENOENT') {
             try {
                 let emptyContent: string;
-                if (fileKey === 'hackathons' || fileKey === 'industry-events' || fileKey === 'users' || fileKey === 'impact-initiatives') {
+                if (fileKey === 'hackathons' || fileKey === 'industry-events' || fileKey === 'users' || fileKey === 'impact-initiatives' || fileKey === 'whats-new') {
                     emptyContent = JSON.stringify([]);
                 }
                 else {
@@ -291,7 +291,7 @@ export async function readExcelData(fileKey: string): Promise<any> {
                 if (fileKey === 'users') {
                     return { headers: ['Name', 'Email', 'LOBT'], rows: [] };
                 }
-                if (fileKey === 'hackathons' || fileKey === 'industry-events' || fileKey === 'impact-initiatives') {
+                if (fileKey === 'hackathons' || fileKey === 'industry-events' || fileKey === 'impact-initiatives' || fileKey === 'whats-new') {
                     return [];
                 }
                 return { headers: [], rows: [] };
@@ -433,6 +433,9 @@ export const writeEvents = (data: MeetingEvent[]) => writeJsonFile('events.json'
 
 export const getImpactInitiatives = () => readJsonFile<ImpactInitiative[]>('impact-initiatives.json', []);
 export const writeImpactInitiatives = (data: ImpactInitiative[]) => writeJsonFile('impact-initiatives.json', data);
+
+export const getWhatsNewEntries = () => readJsonFile<WhatsNewEntry[]>('whats-new.json', []);
+export const writeWhatsNewEntries = (data: WhatsNewEntry[]) => writeJsonFile('whats-new.json', data);
 
 
 // Metadata for Excel files

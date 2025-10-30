@@ -168,3 +168,11 @@ export type ImpactInitiative = {
   metricUnit: string;
   icon: 'zap' | 'shieldCheck' | 'users';
 };
+
+// What's New
+export type WhatsNewEntry = {
+    id: string;
+    date: string;
+    title: string;
+    items: string[];
+};
