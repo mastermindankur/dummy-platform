@@ -496,19 +496,31 @@ async function getValueMapData(version) {
                     const newVersionName = `${new Date().toISOString()}.json`;
                     const newVersionPath = __TURBOPACK__imported__module__$5b$externals$5d2f$path__$5b$external$5d$__$28$path$2c$__cjs$29$__["default"].join(dirPath, newVersionName);
                     await __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["promises"].writeFile(newVersionPath, JSON.stringify(oldData, null, 2), 'utf-8');
-                    await __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["promises"].unlink(dataFilePath('value-map.json')); // remove old file after migration
+                    // Attempt to delete old file, but don't fail if it doesn't exist
+                    try {
+                        await __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["promises"].unlink(dataFilePath('value-map.json'));
+                    } catch (unlinkError) {
+                        if (unlinkError.code !== 'ENOENT') {
+                            console.warn("Could not delete old value-map.json:", unlinkError);
+                        }
+                    }
                     return oldData;
                 } catch (migrationError) {
-                    // If migration fails (e.g. old file doesn't exist), create a default version
-                    const defaultData = {
-                        outcomes: [],
-                        drivers: [],
-                        levers: [],
-                        outcomeGroups: [],
-                        driverGroups: []
-                    };
-                    await writeValueMapData(defaultData, true); // Save as new version
-                    return defaultData;
+                    if (migrationError.code === 'ENOENT') {
+                        // If old file doesn't exist, create a new default version.
+                        const defaultData = {
+                            outcomes: [],
+                            drivers: [],
+                            levers: [],
+                            outcomeGroups: [],
+                            driverGroups: []
+                        };
+                        await writeValueMapData(defaultData, true); // Save as new version
+                        return defaultData;
+                    } else {
+                        // For other migration errors, re-throw
+                        throw migrationError;
+                    }
                 }
             }
             versionToFetch = latest;
