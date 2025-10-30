@@ -49,7 +49,7 @@ export default function WhatsNewPage() {
     <div className="flex min-h-screen w-full flex-col">
       <Header />
       <main className="flex-1 p-4 md:p-8">
-        <div className="mx-auto w-full max-w-4xl space-y-8">
+        <div className="w-full space-y-8">
           <Card>
             <CardHeader className="text-center">
               <CardTitle className="text-3xl font-bold">What's New in the Dashboard</CardTitle>

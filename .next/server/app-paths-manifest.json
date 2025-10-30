@@ -2,5 +2,6 @@
   "/api/data/route": "app/api/data/route.js",
   "/favicon.ico/route": "app/favicon.ico/route.js",
   "/page": "app/page.js",
-  "/update-data/page": "app/update-data/page.js"
+  "/update-data/page": "app/update-data/page.js",
+  "/whats-new/page": "app/whats-new/page.js"
 }
