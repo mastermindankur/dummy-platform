@@ -400,13 +400,27 @@ export async function getValueMapData(version?: string | null): Promise<ValueMap
                     const newVersionName = `${new Date().toISOString()}.json`;
                     const newVersionPath = path.join(dirPath, newVersionName);
                     await fs.writeFile(newVersionPath, JSON.stringify(oldData, null, 2), 'utf-8');
-                    await fs.unlink(dataFilePath('value-map.json')); // remove old file after migration
+                    
+                    // Attempt to delete old file, but don't fail if it doesn't exist
+                    try {
+                        await fs.unlink(dataFilePath('value-map.json'));
+                    } catch (unlinkError: any) {
+                        if (unlinkError.code !== 'ENOENT') {
+                           console.warn("Could not delete old value-map.json:", unlinkError);
+                        }
+                    }
+
                     return oldData;
-                } catch (migrationError) {
-                    // If migration fails (e.g. old file doesn't exist), create a default version
-                    const defaultData: ValueMapData = { outcomes: [], drivers: [], levers: [], outcomeGroups: [], driverGroups: [] };
-                    await writeValueMapData(defaultData, true); // Save as new version
-                    return defaultData;
+                } catch (migrationError: any) {
+                    if (migrationError.code === 'ENOENT') {
+                        // If old file doesn't exist, create a new default version.
+                        const defaultData: ValueMapData = { outcomes: [], drivers: [], levers: [], outcomeGroups: [], driverGroups: [] };
+                        await writeValueMapData(defaultData, true); // Save as new version
+                        return defaultData;
+                    } else {
+                        // For other migration errors, re-throw
+                        throw migrationError;
+                    }
                 }
             }
             versionToFetch = latest;
