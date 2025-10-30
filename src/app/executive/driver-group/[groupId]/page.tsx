@@ -137,7 +137,7 @@ export default function DriverGroupPage() {
           <CardHeader>
             <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
-                    <CardTitle className="text-3xl">Executive Value Map: {groupName}</CardTitle>
+                    <CardTitle className="text-3xl">Driver: {groupName}</CardTitle>
                 </div>
                 {version && (
                     <div className="text-right">
