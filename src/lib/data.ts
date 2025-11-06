@@ -488,3 +488,4 @@ export const writeWhatsNewSectionContent = (data: WhatsNewSectionContent) => wri
 // Metadata for Excel files
 export const getExcelMetadata = () => readJsonFile<ExcelMetadata>('excel-metadata.json', {});
 export const writeExcelMetadata = (data: ExcelMetadata) => writeJsonFile('excel-metadata.json', data);
+    
