@@ -385,8 +385,8 @@ export async function getValueMapVersions(): Promise<{ versions: string[], lates
 
 // Get data for a specific version, or the latest
 export async function getValueMapData(version?: string | null): Promise<ValueMapData> {
-    const dirPath = valueMapVersionsPath();
     try {
+        const dirPath = valueMapVersionsPath();
         await fs.mkdir(dirPath, { recursive: true });
         let versionToFetch = version;
 
