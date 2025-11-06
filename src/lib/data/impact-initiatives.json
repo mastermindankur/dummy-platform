@@ -4,7 +4,7 @@
     "category": "productivity",
     "name": "Developer Hours Saved Through Automation",
     "description": "Calculated from regression testing automation and Jira Assistant usage.\n",
-    "metric": "15000",
+    "metric": "12000",
     "metricUnit": "hours",
     "icon": "zap"
   },

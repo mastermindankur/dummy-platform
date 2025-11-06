@@ -32,11 +32,34 @@ To run this application on your local machine, you'll need to have [Node.js](htt
 
 This will start the application, and you can view it in your browser at `http://localhost:9002`.
 
+## Running with Docker
+
+You can also build and run this application using Docker.
+
+1.  **Build the Docker Image:**
+    From the root directory of the project, run the following command to build the image:
+    ```bash
+    docker build -t wce-dashboard .
+    ```
+
+2.  **Run the Docker Container:**
+    Once the image is built, run the following command to start the container. This command maps port `9002` on your local machine to port `3000` inside the container and mounts the local `src/lib/data` directory to persist your application's data.
+
+    ```bash
+    docker run -d \
+      -p 9002:3000 \
+      -v "$(pwd)/src/lib/data:/app/src/lib/data" \
+      --name wce-dashboard \
+      wce-dashboard
+    ```
+    You can then access the application at `http://localhost:9002`.
+
 ## Data Management
 
-The application's data is stored in JSON files located in the `src/lib/` directory.
+The application's data is stored in JSON files located in the `src/lib/data/` directory.
 
 - `data.json`: Contains the core data for the dashboard pillars and their sub-items.
-- `dti-tech-blogs.json`, `explore-resiliency-program.json`, `tech-sphere-sessions.json`: These files store data imported from Excel sheets via the "Update Data" page.
+- Excel Data: Files like `dti-tech-blogs.json` store data imported from Excel sheets via the "Update Data" page.
+- `value-map-versions/`: This directory contains all versioned data for the Executive Value Map.
 
-These data files are intended for local use and are excluded from the Git repository via the `.gitignore` file.
+When running with Docker, this data directory is mounted as a volume to ensure data persistence across container restarts.

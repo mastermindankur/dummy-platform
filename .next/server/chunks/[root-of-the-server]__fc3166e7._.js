@@ -480,8 +480,8 @@ async function getValueMapVersions() {
     }
 }
 async function getValueMapData(version) {
-    const dirPath = valueMapVersionsPath();
     try {
+        const dirPath = valueMapVersionsPath();
         await __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["promises"].mkdir(dirPath, {
             recursive: true
         });
