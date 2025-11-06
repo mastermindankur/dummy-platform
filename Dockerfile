@@ -1,27 +1,23 @@
-FROM node:20-alpine AS base
+# Use an official Node.js runtime as a parent image
+FROM node:20
 
-# 1. Install dependencies
-FROM base AS deps
+# Set the working directory in the container
 WORKDIR /app
-COPY package.json package-lock.json ./
+
+# Copy package.json and package-lock.json to leverage Docker cache
+COPY package*.json ./
+
+# Install application dependencies
 RUN npm install
 
-# 2. Build the app
-FROM base AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
+# Copy the rest of your application's code
 COPY . .
-RUN npm run build
 
-# 3. Run the app
-FROM base AS runner
-WORKDIR /app
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./package.json
+# Build the Next.js application for production
+RUN npm run build
 
 # Expose the port the app runs on
 EXPOSE 3000
 
-# Start the app
+# The command to run the application
 CMD ["npm", "start"]
