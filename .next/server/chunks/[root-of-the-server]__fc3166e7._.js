@@ -118,9 +118,9 @@ const pillarIcons = {
     'adopting-emerging-technologies': __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$cpu$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__$3c$export__default__as__Cpu$3e$__["Cpu"],
     'world-class-corporate-governance': __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$landmark$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__$3c$export__default__as__Landmark$3e$__["Landmark"]
 };
-const dataFilePath = (filename)=>__TURBOPACK__imported__module__$5b$externals$5d2f$path__$5b$external$5d$__$28$path$2c$__cjs$29$__["default"].join(process.cwd(), 'src', 'lib', filename);
-const monthlyDataDirectoryPath = (dir)=>__TURBOPACK__imported__module__$5b$externals$5d2f$path__$5b$external$5d$__$28$path$2c$__cjs$29$__["default"].join(process.cwd(), 'src', 'lib', dir);
-const valueMapVersionsPath = ()=>__TURBOPACK__imported__module__$5b$externals$5d2f$path__$5b$external$5d$__$28$path$2c$__cjs$29$__["default"].join(process.cwd(), 'src', 'lib', 'value-map-versions');
+const dataFilePath = (filename)=>__TURBOPACK__imported__module__$5b$externals$5d2f$path__$5b$external$5d$__$28$path$2c$__cjs$29$__["default"].join(process.cwd(), 'src', 'lib', 'data', filename);
+const monthlyDataDirectoryPath = (dir)=>__TURBOPACK__imported__module__$5b$externals$5d2f$path__$5b$external$5d$__$28$path$2c$__cjs$29$__["default"].join(process.cwd(), 'src', 'lib', 'data', dir);
+const valueMapVersionsPath = ()=>__TURBOPACK__imported__module__$5b$externals$5d2f$path__$5b$external$5d$__$28$path$2c$__cjs$29$__["default"].join(process.cwd(), 'src', 'lib', 'data', 'value-map-versions');
 async function readData() {
     try {
         const fileContent = await __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["promises"].readFile(dataFilePath('data.json'), 'utf-8');
@@ -538,6 +538,9 @@ async function writeValueMapData(data, asNewVersion) {
 async function readJsonFile(fileName, defaultValue) {
     const filePath = dataFilePath(fileName);
     try {
+        await __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["promises"].mkdir(__TURBOPACK__imported__module__$5b$externals$5d2f$path__$5b$external$5d$__$28$path$2c$__cjs$29$__["default"].dirname(filePath), {
+            recursive: true
+        });
         const fileContent = await __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["promises"].readFile(filePath, 'utf-8');
         return JSON.parse(fileContent);
     } catch (error) {
@@ -552,6 +555,9 @@ async function readJsonFile(fileName, defaultValue) {
 async function writeJsonFile(fileName, data) {
     try {
         const filePath = dataFilePath(fileName);
+        await __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["promises"].mkdir(__TURBOPACK__imported__module__$5b$externals$5d2f$path__$5b$external$5d$__$28$path$2c$__cjs$29$__["default"].dirname(filePath), {
+            recursive: true
+        });
         await __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["promises"].writeFile(filePath, JSON.stringify(data, null, 2), 'utf-8');
     } catch (error) {
         console.error(`Could not write to ${fileName}:`, error);
