@@ -1,23 +1,23 @@
-# Use the official Node.js 20 image as a base
-FROM node:20
+# Use an official Node.js runtime as a parent image
+FROM node:20-alpine
 
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy package.json and package-lock.json to leverage Docker's caching
-COPY package.json package-lock.json ./
+# Copy package.json and package-lock.json
+COPY package*.json ./
 
-# Install dependencies
+# Install app dependencies
 RUN npm install
 
-# Copy the rest of the application's code
+# Copy the rest of the application code
 COPY . .
 
-# Build the Next.js application for production
+# Build the Next.js app for production
 RUN npm run build
 
-# Expose the port the app runs on
-EXPOSE 9002
+# Expose the port the app runs on (Next.js default is 3000)
+EXPOSE 3000
 
-# The command to start the app
+# Define the command to run the app
 CMD ["npm", "start"]
