@@ -2082,10 +2082,6 @@ body {
   --tw-ring-color: rgb(255 255 255 / var(--tw-ring-opacity, 1));
 }
 
-.ring-primary {
-  --tw-ring-color: hsl(var(--primary));
-}
-
 .ring-offset-background {
   --tw-ring-offset-color: hsl(var(--background));
 }
