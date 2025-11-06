@@ -1,23 +1,23 @@
 # Use an official Node.js runtime as a parent image
-FROM node:20-alpine
+FROM node:20
 
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy package.json and package-lock.json
+# Copy package.json and package-lock.json to the working directory
 COPY package*.json ./
 
-# Install app dependencies
+# Install any needed packages
 RUN npm install
 
-# Copy the rest of the application code
+# Copy the rest of your app's source code from your host to your image filesystem.
 COPY . .
 
-# Build the Next.js app for production
+# Build your app
 RUN npm run build
 
-# Expose the port the app runs on (Next.js default is 3000)
+# Your app binds to port 3000 so you'll use the EXPOSE instruction to have it mapped by the docker daemon
 EXPOSE 3000
 
-# Define the command to run the app
-CMD ["npm", "start"]
+# Define the command to run your app using CMD which defines your runtime
+CMD [ "npm", "start" ]

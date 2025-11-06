@@ -20,9 +20,9 @@ const pillarIcons: { [key: string]: Pillar['icon'] } = {
   'world-class-corporate-governance': Landmark,
 };
 
-const dataFilePath = (filename: string) => path.join(process.cwd(), 'src', 'lib', filename);
-const monthlyDataDirectoryPath = (dir: string) => path.join(process.cwd(), 'src', 'lib', dir);
-const valueMapVersionsPath = () => path.join(process.cwd(), 'src', 'lib', 'value-map-versions');
+const dataFilePath = (filename: string) => path.join(process.cwd(), 'src', 'lib', 'data', filename);
+const monthlyDataDirectoryPath = (dir: string) => path.join(process.cwd(), 'src', 'lib', 'data', dir);
+const valueMapVersionsPath = () => path.join(process.cwd(), 'src', 'lib', 'data', 'value-map-versions');
 
 
 async function readData(): Promise<Pillar[]> {
@@ -442,6 +442,7 @@ export async function writeValueMapData(data: ValueMapData, asNewVersion: boolea
 async function readJsonFile<T>(fileName: string, defaultValue: T): Promise<T> {
     const filePath = dataFilePath(fileName);
     try {
+        await fs.mkdir(path.dirname(filePath), { recursive: true });
         const fileContent = await fs.readFile(filePath, 'utf-8');
         return JSON.parse(fileContent);
     } catch (error) {
@@ -457,6 +458,7 @@ async function readJsonFile<T>(fileName: string, defaultValue: T): Promise<T> {
 async function writeJsonFile<T>(fileName: string, data: T) {
     try {
         const filePath = dataFilePath(fileName);
+        await fs.mkdir(path.dirname(filePath), { recursive: true });
         await fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf-8');
     } catch (error) {
         console.error(`Could not write to ${fileName}:`, error);
