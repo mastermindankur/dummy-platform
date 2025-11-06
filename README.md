@@ -45,6 +45,12 @@ You can also build and run this application using Docker.
 2.  **Run the Docker Container:**
     Once the image is built, run the following command to start the container. This command maps port `9002` on your local machine to port `3000` inside the container and mounts the local `src/lib/data` directory to persist your application's data.
 
+    To avoid naming conflicts, it's good practice to remove any old container with the same name first.
+    ```bash
+    docker rm -f wce-dashboard
+    ```
+
+    Then, run the new container:
     ```bash
     docker run -d \
       -p 9002:3000 \
