@@ -1,34 +1,27 @@
-# Dockerfile for a Next.js application
-
-# 1. Install dependencies
-FROM node:18-alpine AS deps
+# Stage 1: Install dependencies
+FROM node:20-alpine AS deps
 WORKDIR /app
-COPY package.json package-lock.json ./
+COPY package.json package-lock.json* ./
 RUN npm install
 
-# 2. Build the application
-FROM node:18-alpine AS builder
+# Stage 2: Build the application
+FROM node:20-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npm run build
 
-# 3. Production image
-FROM node:18-alpine AS runner
+# Stage 3: Production image
+FROM node:20-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
 
-# You can change this to a non-root user for security
-# USER nextjs
-
+# Copy the Next.js standalone output
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
 
-# Expose the port the app runs on
-EXPOSE 9002
+# The src/lib directory will be mounted as a volume, so it is NOT copied here.
 
-# The command to start the app
-CMD ["npm", "start"]
+CMD ["node", "server.js"]
