@@ -1,23 +1,27 @@
-# Use an official Node.js runtime as a parent image
-FROM node:20
+FROM node:20-alpine AS base
 
-# Set the working directory in the container
+# 1. Install dependencies
+FROM base AS deps
 WORKDIR /app
-
-# Copy package.json and package-lock.json to the working directory
-COPY package*.json ./
-
-# Install any needed packages
+COPY package.json package-lock.json ./
 RUN npm install
 
-# Copy the rest of your app's source code from your host to your image filesystem.
+# 2. Build the app
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-
-# Build your app
 RUN npm run build
 
-# Your app binds to port 3000 so you'll use the EXPOSE instruction to have it mapped by the docker daemon
+# 3. Run the app
+FROM base AS runner
+WORKDIR /app
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./package.json
+
+# Expose the port the app runs on
 EXPOSE 3000
 
-# Define the command to run your app using CMD which defines your runtime
-CMD [ "npm", "start" ]
+# Start the app
+CMD ["npm", "start"]
