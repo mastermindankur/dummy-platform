@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useParams, useSearchParams, useRouter, usePathname } from "next/navigation";
 import { Header } from "@/components/layout/header";
 import { ValueMap } from "@/components/dashboard/value-map";
@@ -25,7 +25,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-export default function DriverGroupPage() {
+function DriverGroupPageClient() {
   const [valueMapData, setValueMapData] = useState<ValueMapData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [filteredData, setFilteredData] = useState<ValueMapData | null>(null);
@@ -225,4 +225,19 @@ export default function DriverGroupPage() {
       </main>
     </div>
   );
+}
+
+export default function DriverGroupPage() {
+  return (
+    <Suspense fallback={
+        <div className="flex min-h-screen w-full flex-col">
+            <Header />
+            <main className="flex-1 p-4 md:p-8">
+                <Skeleton className="h-96 w-full" />
+            </main>
+        </div>
+    }>
+      <DriverGroupPageClient />
+    </Suspense>
+  )
 }

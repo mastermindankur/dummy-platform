@@ -1,6 +1,6 @@
 
 'use client';
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { Header } from "@/components/layout/header";
 import { ValueMap } from "@/components/dashboard/value-map";
@@ -32,7 +32,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 
-export default function ExecutivePage() {
+function ExecutivePageClient() {
   const [valueMapData, setValueMapData] = useState<ValueMapData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [versions, setVersions] = useState<string[]>([]);
@@ -210,4 +210,24 @@ export default function ExecutivePage() {
       </main>
     </div>
   );
+}
+
+export default function ExecutivePage() {
+  return (
+    <Suspense fallback={
+        <div className="flex min-h-screen w-full flex-col">
+            <Header />
+            <main className="flex-1 p-4 md:p-8">
+              <div className="space-y-4">
+                    <Skeleton className="h-48 w-full" />
+                    <Skeleton className="h-24 w-full" />
+                    <Skeleton className="h-24 w-full" />
+                    <Skeleton className="h-24 w-full" />
+                </div>
+            </main>
+        </div>
+    }>
+      <ExecutivePageClient />
+    </Suspense>
+  )
 }
