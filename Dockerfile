@@ -1,40 +1,43 @@
-# Dockerfile
 
-# 1. Install dependencies
-FROM node:20-slim AS deps
-# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
-RUN apt-get update && apt-get install -y libc6-compat
+# Stage 1: Builder
+# This stage installs dependencies and builds the Next.js app
+FROM node:20-alpine AS builder
+
 WORKDIR /app
 
+# Copy package.json and package-lock.json
 COPY package.json package-lock.json* ./
-RUN npm ci
 
-# 2. Build the app
-FROM node:20-slim AS builder
-WORKDIR /app
+# Install dependencies
+RUN npm install
 
-COPY --from=deps /app/node_modules ./node_modules
+# Copy the rest of the application source code
 COPY . .
 
-# Set NEXT_TELEMETRY_DISABLED to 1 to prevent Next.js from collecting telemetry data
-ENV NEXT_TELEMETRY_DISABLED 1
-
+# Build the Next.js app
 RUN npm run build
 
-# 3. Run the app
-FROM node:20-slim AS runner
+# Stage 2: Runner
+# This stage creates the final, lean image for production
+FROM node:20-alpine
+
+ENV NODE_ENV=production
+
 WORKDIR /app
 
-ENV NODE_ENV production
-ENV NEXT_TELEMETRY_DISABLED 1
+# Install libc6-compat which is required for Next.js on Alpine
+RUN apk add --no-cache libc6-compat
 
-# Copy the Next.js standalone output
+# Copy the Next.js standalone output from the builder stage
 COPY --from=builder /app/public ./public
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
 
+
+# The Next.js app in standalone mode runs on port 3000 by default.
+# We'll expose it and set the PORT environment variable.
 EXPOSE 9002
+ENV PORT=9002
 
-ENV PORT 9002
-
+# Start the app
 CMD ["node", "server.js"]
