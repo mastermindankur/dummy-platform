@@ -96,6 +96,10 @@ export type ValueMapItem = {
 
 export type ValueMapOutcome = ValueMapItem & {
     connectedDriverIds: string[];
+    metric?: string;
+    metricUnit?: string;
+    metricDescription?: string;
+    impactCategory?: ImpactCategory;
 };
 export type ValueMapDriver = ValueMapItem & {
     connectedLeverIds: string[];
@@ -157,7 +161,7 @@ export type ExcelMetadata = {
 };
 
 // Impact Initiatives
-export type ImpactCategory = 'productivity' | 'quality' | 'engagement';
+export type ImpactCategory = 'productivity' | 'quality' | 'engagement' | 'financial' | 'customer';
 
 export type ImpactInitiative = {
   id: string;
@@ -166,7 +170,7 @@ export type ImpactInitiative = {
   description: string;
   metric: string;
   metricUnit: string;
-  icon: 'zap' | 'shieldCheck' | 'users';
+  icon: 'zap' | 'shieldCheck' | 'users' | 'dollarSign' | 'smile';
 };
 
 // What's New

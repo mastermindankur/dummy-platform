@@ -101,7 +101,7 @@ const DialogDescription = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Description>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Description> & { asChild?: boolean }
 >(({ className, asChild = false, ...props }, ref) => {
-  const Comp = asChild ? 'div' : DialogPrimitive.Description;
+  const Comp = asChild ? "div" : DialogPrimitive.Description;
   return (
     <Comp
       ref={ref}

@@ -1,3 +1,4 @@
+
 [
   {
     "id": "impact-1759391341366",
@@ -24,7 +25,7 @@
     "description": "Percentage decrease in P0/P1 incidents for applications after SQUAD onboarding and adopting new quality standards.",
     "metric": "40",
     "metricUnit": "%",
-    "icon": "zap"
+    "icon": "shieldCheck"
   },
   {
     "id": "impact-1759393745982",
@@ -33,7 +34,7 @@
     "description": "Average time to resolve production incidents has been reduced through improved diagnostics and standardized maintenance procedures.",
     "metric": "55",
     "metricUnit": "% Improvement",
-    "icon": "zap"
+    "icon": "shieldCheck"
   },
   {
     "id": "impact-1759393823719",
@@ -42,7 +43,7 @@
     "description": "Percentage of codebase covered by automated tests, driven by JUnit adoption and new regression frameworks.",
     "metric": "85",
     "metricUnit": "%",
-    "icon": "zap"
+    "icon": "shieldCheck"
   },
   {
     "id": "impact-1759393932606",
@@ -51,7 +52,7 @@
     "description": "Total number of participants across all ARC Trainings and Tech Sphere Sessions, fostering a culture of continuous learning.",
     "metric": "1800+",
     "metricUnit": "Participants",
-    "icon": "zap"
+    "icon": "users"
   },
   {
     "id": "impact-1759393964212",
@@ -60,6 +61,6 @@
     "description": "Total number of developers participating in company-wide hackathons to solve business challenges and explore new tech.",
     "metric": "100+",
     "metricUnit": "Innovators",
-    "icon": "zap"
+    "icon": "users"
   }
 ]

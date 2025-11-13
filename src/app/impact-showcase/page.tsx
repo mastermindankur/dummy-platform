@@ -10,9 +10,9 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Loader2, Zap, ShieldCheck, Users, BrainCircuit } from 'lucide-react';
+import { Loader2, Zap, ShieldCheck, Users, BrainCircuit, DollarSign, Smile } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
-import type { ImpactInitiative, ImpactCategory } from '@/types';
+import type { ImpactInitiative, ImpactCategory, ValueMapData } from '@/types';
 
 async function fetchImpactData(): Promise<ImpactInitiative[]> {
     try {
@@ -29,21 +29,43 @@ async function fetchImpactData(): Promise<ImpactInitiative[]> {
     }
 }
 
+async function fetchValueMapData(): Promise<ValueMapData | null> {
+    try {
+        const res = await fetch(`/api/data?key=value-map&version=latest`);
+        if (!res.ok) {
+            toast({ title: 'Failed to fetch value map data', variant: 'destructive' });
+            return null;
+        }
+        return res.json();
+    } catch (error) {
+        console.error(`Failed to fetch value map data`, error);
+        toast({ title: 'Error loading value map data', variant: 'destructive' });
+        return null;
+    }
+}
+
 const categoryDetails: Record<ImpactCategory, { title: string, icon: React.ElementType }> = {
     productivity: { title: 'Productivity & Efficiency Gains', icon: Zap },
     quality: { title: 'Quality & Reliability Improvement', icon: ShieldCheck },
     engagement: { title: 'Developer Engagement & Skill Uplift', icon: Users },
+    financial: { title: 'Financial & Business Impact', icon: DollarSign },
+    customer: { title: 'Customer & Experience Impact', icon: Smile },
 };
 
 export default function ImpactShowcasePage() {
   const [initiatives, setInitiatives] = useState<ImpactInitiative[]>([]);
+  const [valueMapData, setValueMapData] = useState<ValueMapData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function loadMetrics() {
       setIsLoading(true);
-      const data = await fetchImpactData();
-      setInitiatives(data);
+      const [initiativesData, mapData] = await Promise.all([
+          fetchImpactData(),
+          fetchValueMapData()
+      ]);
+      setInitiatives(initiativesData);
+      setValueMapData(mapData);
       setIsLoading(false);
     }
     loadMetrics();
@@ -54,7 +76,14 @@ export default function ImpactShowcasePage() {
     return acc;
   }, {} as Record<ImpactCategory, ImpactInitiative[]>);
 
-  const orderedCategories: ImpactCategory[] = ['productivity', 'quality', 'engagement'];
+  const valueMapOutcomes = valueMapData?.outcomes.filter(o => o.metric && o.impactCategory) || [];
+  const groupedOutcomes = valueMapOutcomes.reduce((acc, outcome) => {
+    const category = outcome.impactCategory!;
+    (acc[category] = acc[category] || []).push(outcome);
+    return acc;
+  }, {} as Record<ImpactCategory, typeof valueMapOutcomes>);
+
+  const orderedCategories: ImpactCategory[] = ['financial', 'customer', 'productivity', 'quality', 'engagement'];
 
   return (
     <div className="flex min-h-screen w-full flex-col">
@@ -69,43 +98,82 @@ export default function ImpactShowcasePage() {
             <div className="flex justify-center items-center h-64">
                 <Loader2 className="h-8 w-8 animate-spin" />
             </div>
-        ) : initiatives.length > 0 ? (
-            <div className="space-y-10">
-                {orderedCategories.map(category => {
-                    const details = categoryDetails[category];
-                    const categoryInitiatives = groupedInitiatives[category];
+        ) : (initiatives.length > 0 || valueMapOutcomes.length > 0) ? (
+            <div className="space-y-12">
+                <div>
+                  <h2 className="text-2xl font-semibold mb-4 border-b pb-2">Value Map Outcome Impact</h2>
+                   <div className="space-y-10">
+                        {orderedCategories.map(category => {
+                            const details = categoryDetails[category];
+                            const categoryOutcomes = groupedOutcomes[category];
 
-                    if (!categoryInitiatives || categoryInitiatives.length === 0) {
-                        return null;
-                    }
+                            if (!categoryOutcomes || categoryOutcomes.length === 0) return null;
 
-                    return (
-                        <div key={category}>
-                            <div className="flex items-center gap-3 mb-4">
-                                <details.icon className="h-7 w-7 text-primary"/>
-                                <h2 className="text-2xl font-semibold">{details.title}</h2>
+                            return (
+                                <div key={`outcome-${category}`}>
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <details.icon className="h-7 w-7 text-primary"/>
+                                        <h3 className="text-xl font-semibold">{details.title}</h3>
+                                    </div>
+                                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                                        {categoryOutcomes.map(outcome => (
+                                            <Card key={outcome.id}>
+                                                <CardHeader>
+                                                    <CardTitle className="text-lg">{outcome.name}</CardTitle>
+                                                </CardHeader>
+                                                <CardContent>
+                                                    <div className="text-4xl font-bold">{outcome.metric}</div>
+                                                    <p className="text-sm text-muted-foreground">{outcome.metricUnit}</p>
+                                                    <p className="text-sm text-muted-foreground mt-2">{outcome.metricDescription || outcome.description}</p>
+                                                </CardContent>
+                                            </Card>
+                                        ))}
+                                    </div>
+                                </div>
+                            )
+                        })}
+                    </div>
+                </div>
+                 <div>
+                  <h2 className="text-2xl font-semibold mb-4 border-b pb-2">Standalone Impact Initiatives</h2>
+                   <div className="space-y-10">
+                    {orderedCategories.map(category => {
+                        const details = categoryDetails[category];
+                        const categoryInitiatives = groupedInitiatives[category];
+
+                        if (!categoryInitiatives || categoryInitiatives.length === 0) {
+                            return null;
+                        }
+
+                        return (
+                            <div key={`initiative-${category}`}>
+                                <div className="flex items-center gap-3 mb-4">
+                                    <details.icon className="h-7 w-7 text-primary"/>
+                                    <h3 className="text-xl font-semibold">{details.title}</h3>
+                                </div>
+                                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                                    {categoryInitiatives.map(initiative => (
+                                        <Card key={initiative.id}>
+                                            <CardHeader>
+                                                <CardTitle className="text-lg">{initiative.name}</CardTitle>
+                                            </CardHeader>
+                                            <CardContent>
+                                                <div className="text-4xl font-bold">{initiative.metric}</div>
+                                                <p className="text-sm text-muted-foreground">{initiative.metricUnit}</p>
+                                                <p className="text-sm text-muted-foreground mt-2">{initiative.description}</p>
+                                            </CardContent>
+                                        </Card>
+                                    ))}
+                                </div>
                             </div>
-                            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                                {categoryInitiatives.map(initiative => (
-                                    <Card key={initiative.id}>
-                                        <CardHeader>
-                                            <CardTitle className="text-lg">{initiative.name}</CardTitle>
-                                        </CardHeader>
-                                        <CardContent>
-                                            <div className="text-4xl font-bold">{initiative.metric}</div>
-                                            <p className="text-sm text-muted-foreground">{initiative.metricUnit}</p>
-                                            <p className="text-sm text-muted-foreground mt-2">{initiative.description}</p>
-                                        </CardContent>
-                                    </Card>
-                                ))}
-                            </div>
-                        </div>
-                    )
-                })}
+                        )
+                    })}
+                   </div>
+                </div>
             </div>
         ) : (
              <div className="text-center text-muted-foreground p-8 border-dashed border-2 rounded-md mt-8">
-                <p>No impact initiatives have been added yet. Go to the "Update Data" page to add them.</p>
+                <p>No impact metrics have been added yet. Go to the "Update Data" page to add them.</p>
             </div>
         )}
       </main>
