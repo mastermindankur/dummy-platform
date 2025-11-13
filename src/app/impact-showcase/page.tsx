@@ -127,7 +127,7 @@ export default function ImpactShowcasePage() {
                                     {categoryOutcomes.map(outcome => (
                                         <Card key={outcome.id} className={cn(
                                             'transition-all', 
-                                            highlightId === outcome.id && 'ring-2 ring-primary shadow-lg'
+                                            highlightId === outcome.id && 'ring-4 ring-accent shadow-lg'
                                         )}>
                                             <CardHeader>
                                                 <CardTitle className="text-lg">{outcome.name}</CardTitle>
