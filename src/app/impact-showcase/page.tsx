@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Header } from '@/components/layout/header';
 import {
@@ -76,6 +76,15 @@ export default function ImpactShowcasePage() {
     loadMetrics();
   }, []);
 
+  useEffect(() => {
+    if (!isLoading && highlightId) {
+        const element = document.getElementById(highlightId);
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+  }, [isLoading, highlightId]);
+
   const groupedInitiatives = initiatives.reduce((acc, initiative) => {
     (acc[initiative.category] = acc[initiative.category] || []).push(initiative);
     return acc;
@@ -125,7 +134,7 @@ export default function ImpactShowcasePage() {
                                 </div>
                                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                                     {categoryOutcomes.map(outcome => (
-                                        <Card key={outcome.id} className={cn(
+                                        <Card key={outcome.id} id={outcome.id} className={cn(
                                             'transition-all', 
                                             highlightId === outcome.id && 'ring-4 ring-accent shadow-lg'
                                         )}>
