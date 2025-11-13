@@ -81,7 +81,7 @@ const ItemCard = ({ item, type, onClick, isHighlighted, isSelected, selectedItem
                             <Badge variant={isHighlighted ? "default" : "secondary"} className={cn("bg-accent/80 text-accent-foreground", isHighlighted && "bg-background/20 text-foreground")}>New</Badge>
                         )}
                          {outcomeWithMetric && (
-                            <Link href="/impact-showcase" onClick={(e) => e.stopPropagation()} className="text-xs text-muted-foreground hover:text-foreground hover:underline flex items-center gap-1">
+                            <Link href={`/impact-showcase?highlight=${item.id}`} onClick={(e) => e.stopPropagation()} className="text-xs text-muted-foreground hover:text-foreground hover:underline flex items-center gap-1">
                                 <Target className="h-3 w-3" /> View Impact
                             </Link>
                         )}

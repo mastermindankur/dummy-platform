@@ -2,6 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Header } from '@/components/layout/header';
 import {
   Card,
@@ -13,6 +14,7 @@ import {
 import { Loader2, Zap, ShieldCheck, Users, BrainCircuit, DollarSign, Smile } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import type { ImpactInitiative, ImpactCategory, ValueMapData } from '@/types';
+import { cn } from '@/lib/utils';
 
 async function fetchImpactData(): Promise<ImpactInitiative[]> {
     try {
@@ -56,6 +58,9 @@ export default function ImpactShowcasePage() {
   const [initiatives, setInitiatives] = useState<ImpactInitiative[]>([]);
   const [valueMapData, setValueMapData] = useState<ValueMapData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  
+  const searchParams = useSearchParams();
+  const highlightId = searchParams.get('highlight');
 
   useEffect(() => {
     async function loadMetrics() {
@@ -120,7 +125,10 @@ export default function ImpactShowcasePage() {
                                 </div>
                                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                                     {categoryOutcomes.map(outcome => (
-                                        <Card key={outcome.id}>
+                                        <Card key={outcome.id} className={cn(
+                                            'transition-all', 
+                                            highlightId === outcome.id && 'ring-2 ring-primary shadow-lg'
+                                        )}>
                                             <CardHeader>
                                                 <CardTitle className="text-lg">{outcome.name}</CardTitle>
                                             </CardHeader>
