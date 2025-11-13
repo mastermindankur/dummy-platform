@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { Header } from '@/components/layout/header';
 import {
   Card,
@@ -11,10 +11,11 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Loader2, Zap, ShieldCheck, Users, BrainCircuit, DollarSign, Smile } from 'lucide-react';
+import { Loader2, Zap, ShieldCheck, Users, BrainCircuit, DollarSign, Smile, ArrowLeft } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import type { ImpactInitiative, ImpactCategory, ValueMapData } from '@/types';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 
 async function fetchImpactData(): Promise<ImpactInitiative[]> {
     try {
@@ -59,6 +60,7 @@ export default function ImpactShowcasePage() {
   const [valueMapData, setValueMapData] = useState<ValueMapData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   
+  const router = useRouter();
   const searchParams = useSearchParams();
   const highlightId = searchParams.get('highlight');
 
@@ -106,6 +108,13 @@ export default function ImpactShowcasePage() {
         <div className="mb-6">
             <h1 className="text-3xl font-bold">Impact Showcase</h1>
             <p className="text-muted-foreground">Quantifying the value and success of our engineering initiatives.</p>
+        </div>
+
+        <div className="mb-6">
+          <Button variant="outline" onClick={() => router.back()}>
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Previous Page
+          </Button>
         </div>
 
         {isLoading ? (
