@@ -30,7 +30,8 @@
       ],
       "metric": "10",
       "metricUnit": "FTE",
-      "metricDescription": "FTE Saving, getting done more with less."
+      "metricDescription": "FTE Saving, getting done more with less.",
+      "impactCategory": "quality"
     },
     {
       "id": "outcome-3",
@@ -60,9 +61,9 @@
         "driver-3"
       ],
       "groupId": "og2",
-      "metric": "100",
-      "metricUnit": "Hours",
-      "metricDescription": "Man Hour Saving",
+      "metric": "5000",
+      "metricUnit": "SGD per User",
+      "metricDescription": "Increase in Revenur per User",
       "impactCategory": "financial"
     }
   ],

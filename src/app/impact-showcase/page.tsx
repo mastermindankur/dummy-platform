@@ -99,44 +99,55 @@ export default function ImpactShowcasePage() {
                 <Loader2 className="h-8 w-8 animate-spin" />
             </div>
         ) : (initiatives.length > 0 || valueMapOutcomes.length > 0) ? (
-            <div className="space-y-12">
-                <div>
-                  <h2 className="text-2xl font-semibold mb-4 border-b pb-2">Value Map Outcome Impact</h2>
-                   <div className="space-y-10">
-                        {orderedCategories.map(category => {
-                            const details = categoryDetails[category];
-                            const categoryOutcomes = groupedOutcomes[category];
+            <div className="space-y-8">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-2xl">Value Map Outcome Impact</CardTitle>
+                    <CardDescription>These metrics are generated directly from the strategic outcomes defined in the Executive Value Map.</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-10">
+                    {orderedCategories.map(category => {
+                        const details = categoryDetails[category];
+                        const categoryOutcomes = groupedOutcomes[category];
 
-                            if (!categoryOutcomes || categoryOutcomes.length === 0) return null;
+                        if (!categoryOutcomes || categoryOutcomes.length === 0) return null;
 
-                            return (
-                                <div key={`outcome-${category}`}>
-                                    <div className="flex items-center gap-3 mb-4">
-                                        <details.icon className="h-7 w-7 text-primary"/>
-                                        <h3 className="text-xl font-semibold">{details.title}</h3>
-                                    </div>
-                                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                                        {categoryOutcomes.map(outcome => (
-                                            <Card key={outcome.id}>
-                                                <CardHeader>
-                                                    <CardTitle className="text-lg">{outcome.name}</CardTitle>
-                                                </CardHeader>
-                                                <CardContent>
-                                                    <div className="text-4xl font-bold">{outcome.metric}</div>
-                                                    <p className="text-sm text-muted-foreground">{outcome.metricUnit}</p>
-                                                    <p className="text-sm text-muted-foreground mt-2">{outcome.metricDescription || outcome.description}</p>
-                                                </CardContent>
-                                            </Card>
-                                        ))}
-                                    </div>
+                        return (
+                            <div key={`outcome-${category}`}>
+                                <div className="flex items-center gap-3 mb-4">
+                                    <details.icon className="h-7 w-7 text-primary"/>
+                                    <h3 className="text-xl font-semibold">{details.title}</h3>
                                 </div>
-                            )
-                        })}
-                    </div>
-                </div>
-                 <div>
-                  <h2 className="text-2xl font-semibold mb-4 border-b pb-2">Standalone Impact Initiatives</h2>
-                   <div className="space-y-10">
+                                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                                    {categoryOutcomes.map(outcome => (
+                                        <Card key={outcome.id}>
+                                            <CardHeader>
+                                                <CardTitle className="text-lg">{outcome.name}</CardTitle>
+                                            </CardHeader>
+                                            <CardContent>
+                                                <div className="text-4xl font-bold">{outcome.metric}</div>
+                                                <p className="text-sm text-muted-foreground">{outcome.metricUnit}</p>
+                                                <p className="text-sm text-muted-foreground mt-2">{outcome.metricDescription || outcome.description}</p>
+                                            </CardContent>
+                                        </Card>
+                                    ))}
+                                </div>
+                            </div>
+                        )
+                    })}
+                     {valueMapOutcomes.length === 0 && (
+                        <div className="text-center text-muted-foreground p-8 border-dashed border-2 rounded-md">
+                            <p>No impact metrics have been defined for Value Map outcomes yet. Go to the "Update Data" page to add them.</p>
+                        </div>
+                    )}
+                  </CardContent>
+                </Card>
+                <Card>
+                   <CardHeader>
+                    <CardTitle className="text-2xl">Standalone Impact Initiatives</CardTitle>
+                    <CardDescription>These are key metrics being tracked that are not directly tied to a Value Map outcome.</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-10">
                     {orderedCategories.map(category => {
                         const details = categoryDetails[category];
                         const categoryInitiatives = groupedInitiatives[category];
@@ -168,8 +179,13 @@ export default function ImpactShowcasePage() {
                             </div>
                         )
                     })}
-                   </div>
-                </div>
+                     {initiatives.length === 0 && (
+                        <div className="text-center text-muted-foreground p-8 border-dashed border-2 rounded-md">
+                            <p>No standalone impact initiatives have been added yet.</p>
+                        </div>
+                    )}
+                   </CardContent>
+                </Card>
             </div>
         ) : (
              <div className="text-center text-muted-foreground p-8 border-dashed border-2 rounded-md mt-8">
