@@ -11,7 +11,7 @@ import type { ValueMapItem, OutcomeDriverConnection, DriverLeverConnection, Valu
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Target } from 'lucide-react';
 
 type ValueMapProps = {
     outcomes: ValueMapOutcome[];
@@ -52,36 +52,48 @@ const ItemCard = ({ item, type, onClick, isHighlighted, isSelected, selectedItem
     isSelected: boolean;
     selectedItem: SelectedItem;
     activeFilter: ActiveFilter;
-}) => (
-    <Card 
-        id={`card-${item.id}`} 
-        onClick={onClick}
-        className={cn(
-            "transition-all duration-300 cursor-pointer",
-            isHighlighted ? selectedItemColorClasses[type] : itemColorClasses[type],
-            (selectedItem || activeFilter) ? (isHighlighted ? 'opacity-100 shadow-lg' : 'opacity-30') : 'opacity-100',
-            isSelected && 'ring-2 ring-white',
-            item.isRetired && 'opacity-60'
-        )}>
-        <CardHeader className="p-3">
-            <CardTitle className={cn("text-sm", item.isRetired && "line-through")}>{item.name}</CardTitle>
-            {item.status && <StatusIndicator status={item.status} className="text-xs" />}
-        </CardHeader>
-        {(item.description || item.isWceBookOfWork || item.isNew) && (
-            <CardContent className="p-3 pt-0 space-y-2 flex flex-wrap gap-2">
-                {item.description && (
-                    <CardDescription className={cn("text-xs w-full", isHighlighted ? 'text-inherit' : 'text-muted-foreground', item.isRetired && "line-through")}>{item.description}</CardDescription>
-                )}
-                {item.isWceBookOfWork && (
-                    <Badge variant={isHighlighted ? "default" : "secondary"} className={cn(isHighlighted && "bg-background/20 text-foreground")}>BOW25</Badge>
-                )}
-                {item.isNew && !item.isRetired && (
-                    <Badge variant={isHighlighted ? "default" : "secondary"} className={cn("bg-accent/80 text-accent-foreground", isHighlighted && "bg-background/20 text-foreground")}>New</Badge>
-                )}
-            </CardContent>
-        )}
-    </Card>
-);
+}) => {
+    const isOutcome = 'connectedDriverIds' in item;
+    const outcomeWithMetric = isOutcome && (item as ValueMapOutcome).metric;
+
+    return (
+        <Card 
+            id={`card-${item.id}`} 
+            onClick={onClick}
+            className={cn(
+                "transition-all duration-300 cursor-pointer",
+                isHighlighted ? selectedItemColorClasses[type] : itemColorClasses[type],
+                (selectedItem || activeFilter) ? (isHighlighted ? 'opacity-100 shadow-lg' : 'opacity-30') : 'opacity-100',
+                isSelected && 'ring-2 ring-white',
+                item.isRetired && 'opacity-60'
+            )}>
+            <CardHeader className="p-3">
+                <CardTitle className={cn("text-sm", item.isRetired && "line-through")}>{item.name}</CardTitle>
+                {item.status && <StatusIndicator status={item.status} className="text-xs" />}
+            </CardHeader>
+            {(item.description || item.isWceBookOfWork || item.isNew || outcomeWithMetric) && (
+                <CardContent className="p-3 pt-0 space-y-2">
+                    <div className="flex flex-wrap gap-2 items-center">
+                        {item.isWceBookOfWork && (
+                            <Badge variant={isHighlighted ? "default" : "secondary"} className={cn(isHighlighted && "bg-background/20 text-foreground")}>BOW25</Badge>
+                        )}
+                        {item.isNew && !item.isRetired && (
+                            <Badge variant={isHighlighted ? "default" : "secondary"} className={cn("bg-accent/80 text-accent-foreground", isHighlighted && "bg-background/20 text-foreground")}>New</Badge>
+                        )}
+                         {outcomeWithMetric && (
+                            <Link href="/impact-showcase" onClick={(e) => e.stopPropagation()} className="text-xs text-muted-foreground hover:text-foreground hover:underline flex items-center gap-1">
+                                <Target className="h-3 w-3" /> View Impact
+                            </Link>
+                        )}
+                    </div>
+                    {item.description && (
+                        <CardDescription className={cn("text-xs w-full", isHighlighted ? 'text-inherit' : 'text-muted-foreground', item.isRetired && "line-through")}>{item.description}</CardDescription>
+                    )}
+                </CardContent>
+            )}
+        </Card>
+    );
+};
 
 const groupColorClasses = [
     'bg-blue-900/10 border-blue-700/40',
