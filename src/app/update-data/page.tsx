@@ -27,7 +27,7 @@ import { toast } from '@/hooks/use-toast';
 import type { Pillar, SubItem, Status, ExcelData, ValueMapData, ValueMapItem, ValueMapLever, ValueMapDriver, ValueMapOutcome, ValueMapGroup, User, ActionItem, MeetingEvent, MappingRule, ExcelRow, ImpactInitiative, ImpactCategory, WhatsNewEntry, WhatsNewSectionContent } from '@/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Loader2, Plus, Trash2, Upload, ArrowRight, ChevronsUpDown, Filter, X, Edit, GripVertical, Settings2, Users, CalendarIcon, Briefcase, Check, RotateCcw, Zap, ShieldCheck, Save } from 'lucide-react';
+import { Loader2, Plus, Trash2, Upload, ArrowRight, ChevronsUpDown, Filter, X, Edit, GripVertical, Settings2, Users, CalendarIcon, Briefcase, Check, RotateCcw, Zap, ShieldCheck, Save, DollarSign, Smile } from 'lucide-react';
 import { processExcelFile, getExcelSheetNames } from '@/lib/excel-utils';
 import Link from 'next/link';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -461,6 +461,8 @@ function ImpactInitiativesManager({
         productivity: { title: 'Productivity & Efficiency Gains', icon: Zap },
         quality: { title: 'Quality & Reliability Improvement', icon: ShieldCheck },
         engagement: { title: 'Developer Engagement & Skill Uplift', icon: Users },
+        financial: { title: 'Financial & Business Impact', icon: DollarSign },
+        customer: { title: 'Customer & Experience Impact', icon: Smile },
     };
 
     return (
@@ -1485,6 +1487,15 @@ function ValueMapItemCard({ item, onUpdate, onDelete, levers, drivers, driverGro
 
     const isOutcome = 'connectedDriverIds' in item;
     const isDriver = 'connectedLeverIds' in item;
+    
+    const impactCategories: { value: ImpactCategory, label: string }[] = [
+        { value: 'productivity', label: 'Productivity & Efficiency' },
+        { value: 'quality', label: 'Quality & Reliability' },
+        { value: 'engagement', label: 'Developer Engagement' },
+        { value: 'financial', label: 'Financial & Business' },
+        { value: 'customer', label: 'Customer & Experience' },
+    ];
+
 
     const handleSave = () => {
         onUpdate(editedItem);
@@ -1527,12 +1538,12 @@ function ValueMapItemCard({ item, onUpdate, onDelete, levers, drivers, driverGro
                 </div>
             </Card>
 
-            <DialogContent>
+            <DialogContent className="sm:max-w-2xl">
                 <DialogHeader>
                     <DialogTitle>Edit {item.name}</DialogTitle>
                     <DialogDescription>Update the details and connections for this item.</DialogDescription>
                 </DialogHeader>
-                <div className="space-y-4 py-4">
+                <div className="space-y-4 py-4 max-h-[70vh] overflow-y-auto pr-4">
                     <div>
                         <Label>Name</Label>
                         <Input value={editedItem.name} onChange={e => setEditedItem({...editedItem, name: e.target.value })}/>
@@ -1610,6 +1621,53 @@ function ValueMapItemCard({ item, onUpdate, onDelete, levers, drivers, driverGro
                             </Select>
                         </div>
                     )}
+                    
+                    {isOutcome && (
+                        <div className="space-y-4 pt-4 border-t">
+                             <h4 className="font-medium text-lg">Impact Metrics</h4>
+                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <Label>Metric</Label>
+                                    <Input 
+                                        value={(editedItem as ValueMapOutcome).metric || ''}
+                                        onChange={e => setEditedItem({ ...editedItem, metric: e.target.value })}
+                                        placeholder="e.g. 40"
+                                    />
+                                </div>
+                                 <div>
+                                    <Label>Metric Unit</Label>
+                                    <Input 
+                                        value={(editedItem as ValueMapOutcome).metricUnit || ''}
+                                        onChange={e => setEditedItem({ ...editedItem, metricUnit: e.target.value })}
+                                        placeholder="e.g. % or hours"
+                                    />
+                                </div>
+                             </div>
+                             <div>
+                                <Label>Metric Description</Label>
+                                <Textarea 
+                                     value={(editedItem as ValueMapOutcome).metricDescription || ''}
+                                     onChange={e => setEditedItem({ ...editedItem, metricDescription: e.target.value })}
+                                     placeholder="Describe what this metric measures"
+                                />
+                             </div>
+                              <div>
+                                <Label>Impact Category</Label>
+                                <Select
+                                    value={(editedItem as ValueMapOutcome).impactCategory}
+                                    onValueChange={(value: ImpactCategory) => setEditedItem({ ...editedItem, impactCategory: value })}
+                                >
+                                    <SelectTrigger><SelectValue placeholder="Select a category..."/></SelectTrigger>
+                                    <SelectContent>
+                                        {impactCategories.map(c => (
+                                            <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+                    )}
+
 
                     {isDriver && levers && (
                         <div>
@@ -2624,5 +2682,6 @@ export default function UpdateDataPage() {
     </div>
   );
 }
+
 
 
