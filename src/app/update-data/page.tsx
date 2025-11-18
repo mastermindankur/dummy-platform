@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -1467,7 +1468,7 @@ function ValueMapColumn({ title, items, groups, onAdd, onDelete, onUpdate, drive
                          />
                     </div>
                 ))}
-                {items.length === 0 && <p className="text-sm text-muted-foreground text-center py-4">No {title.toLowerCase()} yet.</p>}
+                {items.length === 0 && <p className="text-sm text-muted-foreground text-center py-4">No ${title.toLowerCase()} yet.</p>}
             </CardContent>
         </Card>
     );
@@ -2147,10 +2148,7 @@ function UpdateDataPageContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState<string | undefined>('whats-new');
-  const { signOut } = useAuth();
-  const router = useRouter();
-
-
+  
   const fetchData = async () => {
     setIsLoading(true);
     try {
@@ -2303,20 +2301,9 @@ function UpdateDataPageContent() {
     }
   };
 
-  const handleLogout = () => {
-    signOut();
-    router.push('/login');
-    toast({ title: 'Logged Out' });
-  };
-
   return (
     <div className="flex min-h-screen w-full flex-col">
-      <Header>
-        <Button onClick={handleLogout} variant="ghost" size="sm">
-            <LogOut className="mr-2 h-4 w-4"/>
-            Log Out
-        </Button>
-      </Header>
+      <Header />
       <main className="flex-1 p-4 md:p-8">
         <Card>
           <CardHeader className="flex flex-row items-start sm:items-center justify-between">
