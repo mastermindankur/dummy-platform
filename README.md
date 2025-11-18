@@ -12,15 +12,6 @@ This project is built with the following technologies:
 - **Styling**: [Tailwind CSS](https://tailwindcss.com/)
 - **Icons**: [Lucide React](https://lucide.dev/)
 
-## Core Features
-
-- **Executive Value Map**: A dynamic, interactive visualization connecting strategic outcomes to the drivers and levers that enable them. It includes versioning and a comparison tool to track strategic evolution.
-- **YTD Progress Dashboard**: A high-level overview of the program's health, with status breakdowns for all key sub-items across different pillars.
-- **Detailed Pillar Views**: Drill-down pages for each strategic pillar, showing detailed metrics, charts, and progress against annual targets.
-- **Action Item Tracker**: A Kanban-style board for tracking key action items, their owners, due dates, and completion status.
-- **Impact Showcase**: A dedicated section to quantify and display the business impact of various engineering initiatives.
-- **Data Management Hub**: A centralized, password-protected area to update all dashboard data, including pillar details, value map content, and uploading data via Excel files.
-
 ## Running Locally
 
 To run this application on your local machine, you'll need to have [Node.js](https://nodejs.org/) installed, which includes `npm`.
