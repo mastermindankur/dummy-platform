@@ -154,32 +154,56 @@ function DiffTable<T extends ValueMapItem>({ title, diff, baseData, compareData 
                 </TableCell>
               </TableRow>
             ))}
-            {diff.modified.map(({ before, after, changes }) => (
-              <TableRow key={before.id} className="bg-yellow-950/30">
-                <TableCell><Badge variant="secondary" className="bg-yellow-500/20 text-yellow-300"><Pencil className="mr-1 h-3 w-3"/>Modified</Badge></TableCell>
-                <TableCell>{after.name}</TableCell>
-                <TableCell>
-                  <ul className="text-xs list-disc list-inside space-y-1">
-                    {changes.map(change => {
-                        const beforeValue = (before as any)[change] || 'none';
-                        const afterValue = (after as any)[change] || 'none';
+            {diff.modified.map(({ before, after, changes }) => {
+                const isOutcome = 'connectedDriverIds' in before;
+                const impactMetricFields = ['metric', 'metricUnit', 'metricDescription', 'impactCategory'];
+                const hasImpactChanges = isOutcome && changes.some(change => impactMetricFields.includes(change));
+                const nonImpactChanges = changes.filter(change => !impactMetricFields.includes(change));
 
-                        if (change === 'connections') {
-                             return <li key={change}><strong>Connections:</strong> 
-                                <span className="line-through">{getConnections(before).join(', ')}</span> {'->'} {getConnections(after).join(', ')}
-                             </li>
-                        }
-                         if (change === 'groupId') {
-                             return <li key={change}><strong>Group:</strong> 
-                                <span className="line-through">{getGroupName(before, baseData)}</span> {'->'} {getGroupName(after, compareData)}
-                             </li>
-                        }
-                        return <li key={change}><strong>{change}:</strong> <span className="line-through">{beforeValue}</span> {'->'} {afterValue}</li>
-                    })}
-                  </ul>
-                </TableCell>
-              </TableRow>
-            ))}
+                return (
+                  <TableRow key={before.id} className="bg-yellow-950/30">
+                    <TableCell><Badge variant="secondary" className="bg-yellow-500/20 text-yellow-300"><Pencil className="mr-1 h-3 w-3"/>Modified</Badge></TableCell>
+                    <TableCell>{after.name}</TableCell>
+                    <TableCell>
+                      <ul className="text-xs list-disc list-inside space-y-1">
+                        {nonImpactChanges.map(change => {
+                            const beforeValue = (before as any)[change] || 'none';
+                            const afterValue = (after as any)[change] || 'none';
+
+                            if (change === 'connections') {
+                                return <li key={change}><strong>Connections:</strong> 
+                                    <span className="line-through">{getConnections(before).join(', ')}</span> {'->'} {getConnections(after).join(', ')}
+                                </li>
+                            }
+                            if (change === 'groupId') {
+                                return <li key={change}><strong>Group:</strong> 
+                                    <span className="line-through">{getGroupName(before, baseData)}</span> {'->'} {getGroupName(after, compareData)}
+                                </li>
+                            }
+                            return <li key={change}><strong>{change}:</strong> <span className="line-through">{beforeValue}</span> {'->'} {afterValue}</li>
+                        })}
+                        {hasImpactChanges && (
+                            <li>
+                                <strong>Impact:</strong>
+                                <ul className="list-['-_'] list-inside pl-4">
+                                {impactMetricFields.map(field => {
+                                     const beforeValue = (before as ValueMapOutcome)[field as keyof ValueMapOutcome] || 'none';
+                                     const afterValue = (after as ValueMapOutcome)[field as keyof ValueMapOutcome] || 'none';
+                                     if (beforeValue !== afterValue) {
+                                         return (
+                                             <li key={field}><strong>{field}:</strong> <span className="line-through">{String(beforeValue)}</span> {'->'} {String(afterValue)}</li>
+                                         )
+                                     }
+                                     return null;
+                                })}
+                                </ul>
+                            </li>
+                        )}
+                      </ul>
+                    </TableCell>
+                  </TableRow>
+                )
+            })}
              {(diff.added.length + diff.removed.length + diff.modified.length) === 0 && (
                 <TableRow>
                     <TableCell colSpan={3} className="text-center text-muted-foreground">No changes in this category.</TableCell>
