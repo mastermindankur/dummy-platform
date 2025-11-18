@@ -1,6 +1,6 @@
-# WCE 2025 Program Dashboard
+# Dummy Platform
 
-This is a Next.js application that serves as a comprehensive dashboard for tracking the progress, value, and key actions related to the World Class Engineering (WCE) 2025 program.
+This is a dummy Next.js application that serves as a sample dashboard for tracking progress, value, and key actions for a fictional program.
 
 ## Tech Stack
 
