@@ -1,6 +1,6 @@
-# WCE Dashboard
+# Sample Dashboard
 
-This is a Next.js application that serves as a sample dashboard for tracking progress, value, and key actions for the World Class Engineering (WCE) program.
+This is a Next.js application that serves as a sample dashboard for tracking progress, value, and key actions for a fictional program.
 
 ## Tech Stack
 
@@ -67,7 +67,7 @@ You can also build and run this application using Docker.
 1.  **Build the Docker Image:**
     From the root directory of the project, run the following command to build the image:
     ```bash
-    docker build -t wce-dashboard .
+    docker build -t sample-dashboard .
     ```
 
 2.  **Run the Docker Container:**
@@ -75,7 +75,7 @@ You can also build and run this application using Docker.
 
     To avoid naming conflicts, it's good practice to remove any old container with the same name first.
     ```bash
-    docker rm -f wce-dashboard
+    docker rm -f sample-dashboard
     ```
 
     Then, run the new container:
@@ -83,8 +83,8 @@ You can also build and run this application using Docker.
     docker run -d \
       -p 9002:3000 \
       -v "$(pwd)/src/lib/data:/app/src/lib/data" \
-      --name wce-dashboard \
-      wce-dashboard
+      --name sample-dashboard \
+      sample-dashboard
     ```
 
     You can then access the application at `http://localhost:9002`.
