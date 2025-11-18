@@ -69,7 +69,7 @@ export default function LoginPage() {
                 <Label htmlFor="value">Value</Label>
                 <Input
                   id="value"
-                  type="password"
+                  type="text"
                   value={value}
                   onChange={(e) => setValue(e.target.value)}
                   required

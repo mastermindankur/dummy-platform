@@ -1,5 +1,6 @@
 {
   "/api/data/route": "app/api/data/route.js",
+  "/api/login/route": "app/api/login/route.js",
   "/executive/compare/page": "app/executive/compare/page.js",
   "/executive/page": "app/executive/page.js",
   "/login/page": "app/login/page.js",
