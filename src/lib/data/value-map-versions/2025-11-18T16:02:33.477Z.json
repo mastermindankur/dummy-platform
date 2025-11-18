@@ -86,7 +86,11 @@
       "isNew": true,
       "isRetired": false,
       "connectedDriverIds": [
-        "driver-1763481706546"
+        "driver-1763481706546",
+        "driver-4",
+        "driver-3",
+        "driver-2",
+        "driver-1"
       ],
       "groupId": "og2"
     }
