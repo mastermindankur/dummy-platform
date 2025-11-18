@@ -1,6 +1,6 @@
-# Dummy Platform
+# WCE Dashboard
 
-This is a dummy Next.js application that serves as a sample dashboard for tracking progress, value, and key actions for a fictional program.
+This is a Next.js application that serves as a sample dashboard for tracking progress, value, and key actions for the World Class Engineering (WCE) program.
 
 ## Tech Stack
 
