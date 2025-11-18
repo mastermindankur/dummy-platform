@@ -1,0 +1,39 @@
+{
+  "rows": [
+    {
+      "id": "event-1756823844509",
+      "name": "Gen AI Carnival",
+      "startDate": "2025-08-04",
+      "location": "DTI",
+      "description": "The GEN AI Carnival is an exclusive internal event designed to celebrate creativity, collaboration, and the transformative power of Generative AI across our organization.\n\nThis year’s edition brings together teams from every function to showcase real-world AI applications, breakthrough prototypes, and bold ideas that push the boundaries of what’s possible.",
+      "type": "internal"
+    },
+    {
+      "id": "event-1756823992965",
+      "name": "Zinnov Innovation Awards",
+      "startDate": "2025-07-23",
+      "endDate": "2025-08-02",
+      "location": "Bangalore",
+      "description": "xx",
+      "type": "external"
+    },
+    {
+      "id": "event-1758987162691",
+      "name": "xxxx",
+      "startDate": "2025-09-01",
+      "endDate": "2025-09-30",
+      "location": "spain",
+      "description": "xxx",
+      "type": "external"
+    },
+    {
+      "id": "event-1758989828311",
+      "name": "Aishwarya Conference",
+      "startDate": "2025-09-27",
+      "endDate": "2025-09-30",
+      "location": "Bilbao",
+      "description": "xx",
+      "type": "internal"
+    }
+  ]
+}

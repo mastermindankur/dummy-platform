@@ -15,7 +15,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ArrowLeft, GitCommit, Plus, Minus, Pencil } from 'lucide-react';
-import { ValueMapData, ValueMapItem } from '@/types';
+import { ValueMapData, ValueMapItem, ValueMapOutcome } from '@/types';
 import {
   Table,
   TableBody,
@@ -54,12 +54,22 @@ function diffItems<T extends ValueMapItem>(base: T[], compare: T[]): Diff<T> {
       const compareItem = compareMap.get(id)!;
       const changes: string[] = [];
 
-      // Only compare properties that are not objects/arrays initially
-      const keysToCompare = Object.keys(item).filter(key => typeof (item as any)[key] !== 'object');
+      const isOutcome = 'connectedDriverIds' in item;
+
+      // Define keys to compare, including impact metrics for outcomes
+      const keysToCompare: (keyof T)[] = ['name', 'description', 'groupId', 'isWceBookOfWork', 'isNew', 'isRetired'];
+      if (isOutcome) {
+          keysToCompare.push(
+              'metric' as keyof T,
+              'metricUnit' as keyof T,
+              'metricDescription' as keyof T,
+              'impactCategory' as keyof T
+          );
+      }
       
       for (const key of keysToCompare) {
         if ((item as any)[key] !== (compareItem as any)[key]) {
-          changes.push(key);
+          changes.push(key as string);
         }
       }
       
@@ -151,6 +161,9 @@ function DiffTable<T extends ValueMapItem>({ title, diff, baseData, compareData 
                 <TableCell>
                   <ul className="text-xs list-disc list-inside space-y-1">
                     {changes.map(change => {
+                        const beforeValue = (before as any)[change] || 'none';
+                        const afterValue = (after as any)[change] || 'none';
+
                         if (change === 'connections') {
                              return <li key={change}><strong>Connections:</strong> 
                                 <span className="line-through">{getConnections(before).join(', ')}</span> {'->'} {getConnections(after).join(', ')}
@@ -161,7 +174,7 @@ function DiffTable<T extends ValueMapItem>({ title, diff, baseData, compareData 
                                 <span className="line-through">{getGroupName(before, baseData)}</span> {'->'} {getGroupName(after, compareData)}
                              </li>
                         }
-                        return <li key={change}><strong>{change}:</strong> <span className="line-through">{(before as any)[change]}</span> {'->'} {(after as any)[change]}</li>
+                        return <li key={change}><strong>{change}:</strong> <span className="line-through">{beforeValue}</span> {'->'} {afterValue}</li>
                     })}
                   </ul>
                 </TableCell>

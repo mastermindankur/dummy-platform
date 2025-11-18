@@ -1,0 +1,283 @@
+{
+  "headers": [
+    "#",
+    "Agenda of Session",
+    "Target Audience",
+    "Speakers",
+    "Date",
+    "Target Audience Size",
+    "Participation"
+  ],
+  "rows": [
+    {
+      "#": 1,
+      "Agenda of Session": "Data Analytics for Growth",
+      "Target Audience": "Executives",
+      "Speakers": "Vinod Kumar, Kunal Jain",
+      "Date": "04-Oct-2025",
+      "Target Audience Size": 74,
+      "Participation": 109
+    },
+    {
+      "#": 2,
+      "Agenda of Session": "Digital Lending",
+      "Target Audience": "Students",
+      "Speakers": "Deepa Menon, Aditya Rao, Shruti Sharma",
+      "Date": "07-Oct-2025",
+      "Target Audience Size": 33,
+      "Participation": 55
+    },
+    {
+      "#": 3,
+      "Agenda of Session": "Open Banking APIs",
+      "Target Audience": "Executives",
+      "Speakers": "Uma Mahesh, Ajay Mehta, Manisha Gupta",
+      "Date": "10-Oct-2025",
+      "Target Audience Size": 56,
+      "Participation": 130
+    },
+    {
+      "#": 4,
+      "Agenda of Session": "Future of Payments",
+      "Target Audience": "Managers",
+      "Speakers": "Deepa Menon, Kunal Jain, Uma Mahesh",
+      "Date": "13-Oct-2025",
+      "Target Audience Size": 97,
+      "Participation": 24
+    },
+    {
+      "#": 5,
+      "Agenda of Session": "Cloud Transformation",
+      "Target Audience": "Business Analysts",
+      "Speakers": "Kunal Jain",
+      "Date": "16-Oct-2025",
+      "Target Audience Size": 200,
+      "Participation": 58
+    },
+    {
+      "#": 6,
+      "Agenda of Session": "ESG & Sustainable Finance",
+      "Target Audience": "Developers",
+      "Speakers": "Vinod Kumar",
+      "Date": "19-Oct-2025",
+      "Target Audience Size": 47,
+      "Participation": 91
+    },
+    {
+      "#": 7,
+      "Agenda of Session": "WealthTech Innovations",
+      "Target Audience": "Developers",
+      "Speakers": "Shruti Sharma, Kunal Jain",
+      "Date": "22-Oct-2025",
+      "Target Audience Size": 94,
+      "Participation": 62
+    },
+    {
+      "#": 8,
+      "Agenda of Session": "Open Banking APIs",
+      "Target Audience": "Business Analysts",
+      "Speakers": "Uma Mahesh, Manisha Gupta",
+      "Date": "25-Oct-2025",
+      "Target Audience Size": 139,
+      "Participation": 169
+    },
+    {
+      "#": 9,
+      "Agenda of Session": "Blockchain in Finance",
+      "Target Audience": "Students",
+      "Speakers": "Aditya Rao, Vinod Kumar, Deepa Menon",
+      "Date": "28-Oct-2025",
+      "Target Audience Size": 144,
+      "Participation": 40
+    },
+    {
+      "#": 10,
+      "Agenda of Session": "Blockchain in Finance",
+      "Target Audience": "Business Analysts",
+      "Speakers": "Kunal Jain",
+      "Date": "31-Oct-2025",
+      "Target Audience Size": 50,
+      "Participation": 126
+    },
+    {
+      "#": 11,
+      "Agenda of Session": "Digital Lending",
+      "Target Audience": "Managers",
+      "Speakers": "Ajay Mehta, Aditya Rao, Kunal Jain",
+      "Date": "03-Nov-2025",
+      "Target Audience Size": 30,
+      "Participation": 68
+    },
+    {
+      "#": 12,
+      "Agenda of Session": "Cybersecurity Essentials",
+      "Target Audience": "Students",
+      "Speakers": "Ajay Mehta, Manisha Gupta, Shruti Sharma",
+      "Date": "06-Nov-2025",
+      "Target Audience Size": 171,
+      "Participation": 127
+    },
+    {
+      "#": 13,
+      "Agenda of Session": "Data Analytics for Growth",
+      "Target Audience": "Developers",
+      "Speakers": "Ajay Mehta",
+      "Date": "09-Nov-2025",
+      "Target Audience Size": 181,
+      "Participation": 164
+    },
+    {
+      "#": 14,
+      "Agenda of Session": "Blockchain in Finance",
+      "Target Audience": "Students",
+      "Speakers": "Manisha Gupta, Uma Mahesh",
+      "Date": "12-Nov-2025",
+      "Target Audience Size": 44,
+      "Participation": 49
+    },
+    {
+      "#": 15,
+      "Agenda of Session": "Future of Payments",
+      "Target Audience": "Business Analysts",
+      "Speakers": "Deepa Menon, Aditya Rao, Uma Mahesh",
+      "Date": "15-Nov-2025",
+      "Target Audience Size": 37,
+      "Participation": 137
+    },
+    {
+      "#": 16,
+      "Agenda of Session": "Future of Payments",
+      "Target Audience": "Managers",
+      "Speakers": "Shruti Sharma, Aditya Rao",
+      "Date": "18-Nov-2025",
+      "Target Audience Size": 153,
+      "Participation": 37
+    },
+    {
+      "#": 17,
+      "Agenda of Session": "Future of Payments",
+      "Target Audience": "Developers",
+      "Speakers": "Uma Mahesh",
+      "Date": "21-Nov-2025",
+      "Target Audience Size": 63,
+      "Participation": 67
+    },
+    {
+      "#": 18,
+      "Agenda of Session": "Cybersecurity Essentials",
+      "Target Audience": "Students",
+      "Speakers": "Shruti Sharma, Aditya Rao, Manisha Gupta",
+      "Date": "24-Nov-2025",
+      "Target Audience Size": 199,
+      "Participation": 158
+    },
+    {
+      "#": 19,
+      "Agenda of Session": "Digital Lending",
+      "Target Audience": "Developers",
+      "Speakers": "Arun Reddy, Vinod Kumar",
+      "Date": "27-Nov-2025",
+      "Target Audience Size": 86,
+      "Participation": 154
+    },
+    {
+      "#": 20,
+      "Agenda of Session": "Future of Payments",
+      "Target Audience": "Architects",
+      "Speakers": "Kunal Jain, Deepa Menon",
+      "Date": "30-Nov-2025",
+      "Target Audience Size": 50,
+      "Participation": 168
+    },
+    {
+      "#": 21,
+      "Agenda of Session": "Data Analytics for Growth",
+      "Target Audience": "Architects",
+      "Speakers": "Vinod Kumar, Manisha Gupta, Ajay Mehta",
+      "Date": "03-Dec-2025",
+      "Target Audience Size": 57,
+      "Participation": 156
+    },
+    {
+      "#": 22,
+      "Agenda of Session": "Blockchain in Finance",
+      "Target Audience": "Architects",
+      "Speakers": "Ajay Mehta, Uma Mahesh, Aditya Rao",
+      "Date": "06-Dec-2025",
+      "Target Audience Size": 54,
+      "Participation": 85
+    },
+    {
+      "#": 23,
+      "Agenda of Session": "Open Banking APIs",
+      "Target Audience": "Managers",
+      "Speakers": "Uma Mahesh, Deepa Menon, Rajeev Nair",
+      "Date": "09-Dec-2025",
+      "Target Audience Size": 119,
+      "Participation": 175
+    },
+    {
+      "#": 24,
+      "Agenda of Session": "Cloud Transformation",
+      "Target Audience": "Executives",
+      "Speakers": "Arun Reddy, Ajay Mehta",
+      "Date": "12-Dec-2025",
+      "Target Audience Size": 41,
+      "Participation": 128
+    },
+    {
+      "#": 25,
+      "Agenda of Session": "Data Analytics for Growth",
+      "Target Audience": "Business Analysts",
+      "Speakers": "Uma Mahesh, Vinod Kumar",
+      "Date": "15-Dec-2025",
+      "Target Audience Size": 92,
+      "Participation": 59
+    },
+    {
+      "#": 26,
+      "Agenda of Session": "Data Analytics for Growth",
+      "Target Audience": "Students",
+      "Speakers": "Shruti Sharma, Rajeev Nair",
+      "Date": "18-Dec-2025",
+      "Target Audience Size": 100,
+      "Participation": 165
+    },
+    {
+      "#": 27,
+      "Agenda of Session": "Cybersecurity Essentials",
+      "Target Audience": "Students",
+      "Speakers": "Shruti Sharma, Vinod Kumar, Arun Reddy",
+      "Date": "21-Dec-2025",
+      "Target Audience Size": 74,
+      "Participation": 29
+    },
+    {
+      "#": 28,
+      "Agenda of Session": "Open Banking APIs",
+      "Target Audience": "Managers",
+      "Speakers": "Shruti Sharma, Kunal Jain, Vinod Kumar",
+      "Date": "24-Dec-2025",
+      "Target Audience Size": 111,
+      "Participation": 170
+    },
+    {
+      "#": 29,
+      "Agenda of Session": "WealthTech Innovations",
+      "Target Audience": "Executives",
+      "Speakers": "Kunal Jain, Arun Reddy",
+      "Date": "27-Dec-2025",
+      "Target Audience Size": 31,
+      "Participation": 179
+    },
+    {
+      "#": 30,
+      "Agenda of Session": "Future of Payments",
+      "Target Audience": "Business Analysts",
+      "Speakers": "Manisha Gupta, Uma Mahesh, Arun Reddy",
+      "Date": "30-Dec-2025",
+      "Target Audience Size": 71,
+      "Participation": 67
+    }
+  ]
+}
