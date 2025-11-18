@@ -14,7 +14,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import type { ValueMapData, DriverLeverConnection, OutcomeDriverConnection } from "@/types";
 import { Button } from "@/components/ui/button";
-import { HelpCircle, CalendarClock, ChevronsUpDown } from "lucide-react";
+import { HelpCircle, CalendarClock, ChevronsUpDown, GitCompareArrows } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -31,6 +31,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import Link from 'next/link';
 
 function ExecutivePageClient() {
   const [valueMapData, setValueMapData] = useState<ValueMapData | null>(null);
@@ -42,6 +45,8 @@ function ExecutivePageClient() {
   const router = useRouter();
   const pathname = usePathname();
   const selectedVersion = searchParams.get('version') || 'latest';
+  const [compareMode, setCompareMode] = useState(false);
+  const [compareVersion, setCompareVersion] = useState<string | null>(null);
 
 
   useEffect(() => {
@@ -71,6 +76,10 @@ function ExecutivePageClient() {
                 // Using replace to not add to history
                 router.replace(`${pathname}?${newSearchParams.toString()}`, { scroll: false });
             }
+             // Set default compare version
+            if (versionsData.versions.length > 1) {
+              setCompareVersion(versionsData.versions[1]);
+            }
         }
 
       } catch (error) {
@@ -84,13 +93,21 @@ function ExecutivePageClient() {
 
   useEffect(() => {
     if (selectedVersion && selectedVersion !== 'latest') {
-        const date = new Date(selectedVersion.replace('.json', ''));
-        setFormattedVersionName(format(date, "MMM d, yyyy h:mm a"));
+        try {
+            const date = new Date(selectedVersion.replace('.json', ''));
+            setFormattedVersionName(format(date, "MMM d, yyyy h:mm a"));
+        } catch(e) {
+            setFormattedVersionName(selectedVersion);
+        }
     } else if (versions.length > 0) {
         const latestVersion = versions[0];
         if (latestVersion) {
-            const date = new Date(latestVersion.replace('.json', ''));
-            setFormattedVersionName(format(date, "MMM d, yyyy h:mm a"));
+            try {
+                const date = new Date(latestVersion.replace('.json', ''));
+                setFormattedVersionName(format(date, "MMM d, yyyy h:mm a"));
+            } catch(e) {
+                setFormattedVersionName(latestVersion);
+            }
         }
     } else {
         setFormattedVersionName('Loading latest...');
@@ -120,7 +137,11 @@ function ExecutivePageClient() {
   };
 
   const formatVersionLabel = (version: string) => {
-    return format(new Date(version.replace('.json', '')), "MMM d, yyyy h:mm a");
+    try {
+        return format(new Date(version.replace('.json', '')), "MMM d, yyyy h:mm a");
+    } catch(e) {
+        return version;
+    }
   };
 
   return (
@@ -137,21 +158,65 @@ function ExecutivePageClient() {
                     </CardDescription>
                 </div>
                  <div className="flex flex-wrap items-center gap-2">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="outline" className="w-[280px] justify-between">
-                          <span>{`Version: ${formattedVersionName}`}</span>
-                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent className="w-[280px]">
-                        {versions.map(v => (
-                          <DropdownMenuItem key={v} onSelect={() => handleVersionChange(v)}>
-                            {formatVersionLabel(v)}
-                          </DropdownMenuItem>
-                        ))}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    {!compareMode ? (
+                        <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="outline" className="w-[280px] justify-between">
+                            <span>{`Version: ${formattedVersionName}`}</span>
+                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-[280px]">
+                            {versions.map(v => (
+                            <DropdownMenuItem key={v} onSelect={() => handleVersionChange(v)}>
+                                {formatVersionLabel(v)}
+                            </DropdownMenuItem>
+                            ))}
+                        </DropdownMenuContent>
+                        </DropdownMenu>
+                    ) : (
+                        <div className="flex items-center gap-4">
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="outline" className="w-[280px] justify-between">
+                                    <span>{`Compare: ${formattedVersionName}`}</span>
+                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent className="w-[280px]">
+                                    {versions.map(v => (
+                                    <DropdownMenuItem key={v} onSelect={() => handleVersionChange(v)}>
+                                        {formatVersionLabel(v)}
+                                    </DropdownMenuItem>
+                                    ))}
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="outline" className="w-[280px] justify-between">
+                                    <span>{`With: ${compareVersion ? formatVersionLabel(compareVersion) : 'Select version'}`}</span>
+                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent className="w-[280px]">
+                                    {versions.map(v => (
+                                    <DropdownMenuItem key={v} onSelect={() => setCompareVersion(v)} disabled={v === selectedVersion}>
+                                        {formatVersionLabel(v)}
+                                    </DropdownMenuItem>
+                                    ))}
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                            <Button asChild disabled={!compareVersion || !selectedVersion}>
+                                <Link href={`/executive/compare?base=${compareVersion}&compare=${selectedVersion}`}>
+                                    <GitCompareArrows className="mr-2 h-4 w-4" /> Compare
+                                </Link>
+                            </Button>
+                        </div>
+                    )}
+                    <div className="flex items-center space-x-2">
+                        <Switch id="compare-mode" checked={compareMode} onCheckedChange={setCompareMode} />
+                        <Label htmlFor="compare-mode">Compare</Label>
+                    </div>
 
                   <Dialog>
                       <DialogTrigger asChild>

@@ -736,6 +736,10 @@ body {
   height: 100svh;
 }
 
+.h-screen {
+  height: 100vh;
+}
+
 .max-h-96 {
   max-height: 24rem;
 }
@@ -760,12 +764,12 @@ body {
   max-height: 60vh;
 }
 
-.max-h-screen {
-  max-height: 100vh;
-}
-
 .max-h-\[70vh\] {
   max-height: 70vh;
+}
+
+.max-h-screen {
+  max-height: 100vh;
 }
 
 .min-h-0 {
@@ -1255,12 +1259,6 @@ body {
   margin-bottom: calc(2rem * var(--tw-space-y-reverse));
 }
 
-.space-y-12 > :not([hidden]) ~ :not([hidden]) {
-  --tw-space-y-reverse: 0;
-  margin-top: calc(3rem * calc(1 - var(--tw-space-y-reverse)));
-  margin-bottom: calc(3rem * var(--tw-space-y-reverse));
-}
-
 .self-end {
   align-self: flex-end;
 }
@@ -1595,6 +1593,22 @@ body {
 
 .bg-transparent {
   background-color: #0000;
+}
+
+.bg-green-500\/20 {
+  background-color: #22c55e33;
+}
+
+.bg-red-950\/30 {
+  background-color: #450a0a4d;
+}
+
+.bg-yellow-500\/20 {
+  background-color: #eab30833;
+}
+
+.bg-yellow-950\/30 {
+  background-color: #4220064d;
 }
 
 .fill-current {
@@ -1985,6 +1999,16 @@ body {
   color: rgb(161 98 7 / var(--tw-text-opacity, 1));
 }
 
+.text-green-300 {
+  --tw-text-opacity: 1;
+  color: rgb(134 239 172 / var(--tw-text-opacity, 1));
+}
+
+.text-yellow-300 {
+  --tw-text-opacity: 1;
+  color: rgb(253 224 71 / var(--tw-text-opacity, 1));
+}
+
 .line-through {
   text-decoration-line: line-through;
 }
@@ -2089,6 +2113,10 @@ body {
   box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
 }
 
+.ring-accent {
+  --tw-ring-color: hsl(var(--accent));
+}
+
 .ring-sidebar-ring {
   --tw-ring-color: hsl(var(--sidebar-ring));
 }
@@ -2096,14 +2124,6 @@ body {
 .ring-white {
   --tw-ring-opacity: 1;
   --tw-ring-color: rgb(255 255 255 / var(--tw-ring-opacity, 1));
-}
-
-.ring-primary {
-  --tw-ring-color: hsl(var(--primary));
-}
-
-.ring-accent {
-  --tw-ring-color: hsl(var(--accent));
 }
 
 .ring-offset-background {
@@ -3017,16 +3037,16 @@ body {
     width: auto;
   }
 
+  .sm\:max-w-2xl {
+    max-width: 42rem;
+  }
+
   .sm\:max-w-\[625px\] {
     max-width: 625px;
   }
 
   .sm\:max-w-sm {
     max-width: 24rem;
-  }
-
-  .sm\:max-w-2xl {
-    max-width: 42rem;
   }
 
   .sm\:grid-cols-2 {
