@@ -1,8 +1,7 @@
-
-
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { Header } from '@/components/layout/header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -27,7 +26,7 @@ import { toast } from '@/hooks/use-toast';
 import type { Pillar, SubItem, Status, ExcelData, ValueMapData, ValueMapItem, ValueMapLever, ValueMapDriver, ValueMapOutcome, ValueMapGroup, User, ActionItem, MeetingEvent, MappingRule, ExcelRow, ImpactInitiative, ImpactCategory, WhatsNewEntry, WhatsNewSectionContent } from '@/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Loader2, Plus, Trash2, Upload, ArrowRight, ChevronsUpDown, Filter, X, Edit, GripVertical, Settings2, Users, CalendarIcon, Briefcase, Check, RotateCcw, Zap, ShieldCheck, Save, DollarSign, Smile } from 'lucide-react';
+import { Loader2, Plus, Trash2, Upload, ArrowRight, ChevronsUpDown, Filter, X, Edit, GripVertical, Settings2, Users, CalendarIcon, Briefcase, Check, RotateCcw, Zap, ShieldCheck, Save, DollarSign, Smile, LogOut } from 'lucide-react';
 import { processExcelFile, getExcelSheetNames } from '@/lib/excel-utils';
 import Link from 'next/link';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -65,6 +64,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command"
+import { useAuth } from '@/context/AuthContext';
 
 
 type FilterState = {
@@ -2122,7 +2122,7 @@ function ExcelUploadSection({
   );
 }
 
-export default function UpdateDataPage() {
+function UpdateDataPageContent() {
   const [data, setData] = useState<Pillar[] | null>(null);
   const [excelData, setExcelData] = useState<Record<string, ExcelData | null>>({
       'explore-resiliency-program': null,
@@ -2147,6 +2147,9 @@ export default function UpdateDataPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState<string | undefined>('whats-new');
+  const { signOut } = useAuth();
+  const router = useRouter();
+
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -2248,13 +2251,8 @@ export default function UpdateDataPage() {
             lobt: row['LOBT'],
         })).filter(u => u.name && u.email && u.lobt);
         
-        // Create a Map to ensure uniqueness by email, letting newer entries override older ones.
         const userMap = new Map<string, User>();
-
-        // Add existing users to the map first
         users.forEach(user => userMap.set(user.email, user));
-
-        // Then add new users, overwriting any duplicates
         newUsers.forEach(user => userMap.set(user.email, user));
         
         setUsers(Array.from(userMap.values()));
@@ -2292,7 +2290,6 @@ export default function UpdateDataPage() {
         title: 'Success',
         description: 'Dashboard data has been updated.',
       });
-      // Refetch data to show the latest state, including auto-calculations
       await fetchData();
     } catch (error) {
       console.error(error);
@@ -2306,9 +2303,20 @@ export default function UpdateDataPage() {
     }
   };
 
+  const handleLogout = () => {
+    signOut();
+    router.push('/login');
+    toast({ title: 'Logged Out' });
+  };
+
   return (
     <div className="flex min-h-screen w-full flex-col">
-      <Header />
+      <Header>
+        <Button onClick={handleLogout} variant="ghost" size="sm">
+            <LogOut className="mr-2 h-4 w-4"/>
+            Log Out
+        </Button>
+      </Header>
       <main className="flex-1 p-4 md:p-8">
         <Card>
           <CardHeader className="flex flex-row items-start sm:items-center justify-between">
@@ -2683,5 +2691,24 @@ export default function UpdateDataPage() {
   );
 }
 
+export default function ProtectedUpdateDataPage() {
+    const { isAuthenticated } = useAuth();
+    const router = useRouter();
 
+    useEffect(() => {
+        if (isAuthenticated === false) { // check for false explicitly to avoid redirect during initial undefined state
+            router.push('/login');
+        }
+    }, [isAuthenticated, router]);
 
+    if (!isAuthenticated) {
+        return (
+            <div className="flex min-h-screen w-full flex-col items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin" />
+                <p className="text-muted-foreground mt-2">Redirecting to login...</p>
+            </div>
+        );
+    }
+
+    return <UpdateDataPageContent />;
+}
