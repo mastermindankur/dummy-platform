@@ -11,16 +11,16 @@ async function getCredentials() {
     } catch (error) {
         console.error("Could not read credentials file:", error);
         // Default credentials if file doesn't exist
-        return { login: 'admin', loginKey: 'admin' };
+        return { key: 'admin', value: 'admin' };
     }
 }
 
 export async function POST(request: Request) {
   try {
-    const { login, loginKey } = await request.json();
+    const { key, value } = await request.json();
     const credentials = await getCredentials();
 
-    if (login === credentials.login && loginKey === credentials.loginKey) {
+    if (key === credentials.key && value === credentials.value) {
       return new NextResponse('Login successful', { status: 200 });
     } else {
       return new NextResponse('Invalid credentials', { status: 401 });

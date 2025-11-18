@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 
 type AuthContextType = {
   isAuthenticated: boolean;
-  signIn: (login: string, loginKey: string) => Promise<boolean>;
+  signIn: (key: string, value: string) => Promise<boolean>;
   signOut: () => void;
 };
 
@@ -19,13 +19,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsAuthenticated(loggedIn);
   }, []);
 
-  const signIn = async (login: string, loginKey: string): Promise<boolean> => {
+  const signIn = async (key: string, value: string): Promise<boolean> => {
     // This is a client-side API route call to a serverless function.
     // In a real app, this should be a proper API call to a backend.
     const res = await fetch('/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ login, loginKey }),
+        body: JSON.stringify({ key, value }),
     });
 
     if (res.ok) {

@@ -1,4 +1,4 @@
 {
-  "login": "admin",
-  "loginKey": "admin123"
+  "key": "admin",
+  "value": "admin123"
 }

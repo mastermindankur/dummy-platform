@@ -12,8 +12,8 @@ import { useAuth } from '@/context/AuthContext';
 import { Loader2 } from 'lucide-react';
 
 export default function LoginPage() {
-  const [login, setLogin] = useState('');
-  const [loginKey, setLoginKey] = useState('');
+  const [key, setKey] = useState('');
+  const [value, setValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { signIn } = useAuth();
@@ -22,14 +22,14 @@ export default function LoginPage() {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const success = await signIn(login, loginKey);
+      const success = await signIn(key, value);
       if (success) {
         toast({ title: 'Login Successful' });
         router.push('/update-data');
       } else {
         toast({
           title: 'Login Failed',
-          description: 'Invalid login or login key.',
+          description: 'Invalid key or value.',
           variant: 'destructive',
         });
       }
@@ -57,21 +57,21 @@ export default function LoginPage() {
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="login">Login</Label>
+                <Label htmlFor="key">Key</Label>
                 <Input
-                  id="login"
-                  value={login}
-                  onChange={(e) => setLogin(e.target.value)}
+                  id="key"
+                  value={key}
+                  onChange={(e) => setKey(e.target.value)}
                   required
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="login-key">Login Key</Label>
+                <Label htmlFor="value">Value</Label>
                 <Input
-                  id="login-key"
+                  id="value"
                   type="password"
-                  value={loginKey}
-                  onChange={(e) => setLoginKey(e.target.value)}
+                  value={value}
+                  onChange={(e) => setValue(e.target.value)}
                   required
                 />
               </div>
