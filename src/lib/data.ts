@@ -455,23 +455,35 @@ export async function migrateValueMapFileNames(): Promise<{ migrated: number, er
     try {
         files = await fs.readdir(dirPath);
         for (const file of files) {
-            if (file.includes(':') || file.includes('T')) {
+            if (file.includes(':') || file.includes('T') || file.includes('-')) {
                 const oldPath = path.join(dirPath, file);
                 try {
-                    // Robustly parse the ISO-like string from the filename
                     const dateString = file.replace('.json', '');
-                    const date = new Date(dateString);
+                    const parsableDateString = dateString.replace(/T/g, ' ').replace(/-/g, ':');
+                    const date = new Date(parsableDateString);
 
                     if (isNaN(date.getTime())) {
-                        throw new Error(`Could not parse date from filename: ${file}`);
-                    }
-                    const timestamp = date.getTime();
-                    const newName = `${timestamp}.json`;
-                    const newPath = path.join(dirPath, newName);
-
-                    if (!files.includes(newName)) {
-                        await fs.rename(oldPath, newPath);
-                        migrated++;
+                       // Attempt another parsing for format like '2025-10-30T18-55-32.456Z'
+                        const isoLike = dateString.replace(/(\d{4}-\d{2}-\d{2}T\d{2})-(\d{2})-(\d{2}\.\d{3}Z)/, '$1:$2:$3');
+                        const secondAttemptDate = new Date(isoLike);
+                        if(isNaN(secondAttemptDate.getTime())) {
+                            throw new Error(`Could not parse date from filename: ${file}`);
+                        }
+                         const timestamp = secondAttemptDate.getTime();
+                         const newName = `${timestamp}.json`;
+                         const newPath = path.join(dirPath, newName);
+                         if (!files.includes(newName)) {
+                             await fs.rename(oldPath, newPath);
+                             migrated++;
+                         }
+                    } else {
+                        const timestamp = date.getTime();
+                        const newName = `${timestamp}.json`;
+                        const newPath = path.join(dirPath, newName);
+                        if (!files.includes(newName)) {
+                            await fs.rename(oldPath, newPath);
+                            migrated++;
+                        }
                     }
                 } catch (migrationError) {
                      console.error(`Failed to migrate ${file}:`, migrationError);

@@ -470,6 +470,10 @@ async function getValueMapVersions() {
         const versions = files.filter((file)=>file.endsWith('.json')).sort((a, b)=>{
             const numA = parseInt(a.replace('.json', ''), 10);
             const numB = parseInt(b.replace('.json', ''), 10);
+            if (isNaN(numA) || isNaN(numB)) {
+                // Fallback for non-numeric filenames if any exist
+                return b.localeCompare(a);
+            }
             return numB - numA;
         });
         return {
@@ -547,17 +551,18 @@ async function migrateValueMapFileNames() {
     try {
         files = await __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["promises"].readdir(dirPath);
         for (const file of files){
-            if (file.includes(':') || file.includes('-')) {
+            if (file.includes(':') || file.includes('T')) {
                 const oldPath = __TURBOPACK__imported__module__$5b$externals$5d2f$path__$5b$external$5d$__$28$path$2c$__cjs$29$__["default"].join(dirPath, file);
                 try {
-                    const parsableDateString = file.replace('.json', '').replace(/-/g, ':');
-                    const timestamp = new Date(parsableDateString).getTime();
-                    if (isNaN(timestamp)) {
+                    // Robustly parse the ISO-like string from the filename
+                    const dateString = file.replace('.json', '');
+                    const date = new Date(dateString);
+                    if (isNaN(date.getTime())) {
                         throw new Error(`Could not parse date from filename: ${file}`);
                     }
+                    const timestamp = date.getTime();
                     const newName = `${timestamp}.json`;
                     const newPath = __TURBOPACK__imported__module__$5b$externals$5d2f$path__$5b$external$5d$__$28$path$2c$__cjs$29$__["default"].join(dirPath, newName);
-                    // Check if a file with the new name already exists to avoid overwriting
                     if (!files.includes(newName)) {
                         await __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["promises"].rename(oldPath, newPath);
                         migrated++;
