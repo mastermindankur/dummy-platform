@@ -1091,16 +1091,16 @@ body {
   list-style-position: inside;
 }
 
+.list-\[\'-_\'\] {
+  list-style-type: "- ";
+}
+
 .list-decimal {
   list-style-type: decimal;
 }
 
 .list-disc {
   list-style-type: disc;
-}
-
-.list-\[\'-_\'\] {
-  list-style-type: "- ";
 }
 
 .grid-cols-1 {

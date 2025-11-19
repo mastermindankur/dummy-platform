@@ -94,10 +94,16 @@ function ExecutivePageClient() {
   const formatVersionLabel = (version: string) => {
     if (!version) return '';
     try {
-        const parsableDate = version.replace('.json', '').replace(/(\d{2})-(\d{2})-(\d{2}\.\d{3}Z)$/, ':$1:$2:$3');
-        return format(new Date(parsableDate), "MMM d, yyyy h:mm a");
+      // Handles both old and new formats
+      const numericTimestamp = parseInt(version.replace('.json', ''), 10);
+      if (!isNaN(numericTimestamp)) {
+        return format(new Date(numericTimestamp), "MMM d, yyyy h:mm a");
+      }
+      // Fallback for old ISO-like format
+      const parsableDate = version.replace('.json', '').replace(/-/g, ':');
+      return format(new Date(parsableDate), "MMM d, yyyy h:mm a");
     } catch(e) {
-        return version;
+      return version;
     }
   };
 

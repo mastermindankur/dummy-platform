@@ -86,6 +86,7 @@ __turbopack_context__.s({
     "getValueMapVersions": (()=>getValueMapVersions),
     "getWhatsNewEntries": (()=>getWhatsNewEntries),
     "getWhatsNewSectionContent": (()=>getWhatsNewSectionContent),
+    "migrateValueMapFileNames": (()=>migrateValueMapFileNames),
     "readExcelData": (()=>readExcelData),
     "readMonthlyData": (()=>readMonthlyData),
     "writeActionItems": (()=>writeActionItems),
@@ -291,7 +292,7 @@ async function readData() {
                     subItems: pillar.subItems.map((subItem)=>subItem.dataKey === 'jira-assistant-adoption' ? {
                             ...subItem,
                             percentageComplete: latestMonthAdoption,
-                            metricName: `Latest Month Test Case Adoption`
+                            metricName: 'Latest Month Test Case Adoption'
                         } : subItem)
                 }));
         }
@@ -466,7 +467,11 @@ async function getValueMapVersions() {
             recursive: true
         });
         const files = await __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["promises"].readdir(dirPath);
-        const versions = files.filter((file)=>file.endsWith('.json')).sort((a, b)=>new Date(b.replace('.json', '')).getTime() - new Date(a.replace('.json', '')).getTime());
+        const versions = files.filter((file)=>file.endsWith('.json')).sort((a, b)=>{
+            const dateA = new Date(a.replace('.json', '').replace(/-/g, ':')).getTime();
+            const dateB = new Date(b.replace('.json', '').replace(/-/g, ':')).getTime();
+            return dateB - dateA;
+        });
         return {
             versions,
             latest: versions[0] || null
@@ -521,17 +526,52 @@ async function writeValueMapData(data, asNewVersion) {
             recursive: true
         });
         let versionToSave;
+        const now = new Date();
+        const timestamp = now.toISOString().replace(/:/g, '-'); // Windows-compatible timestamp
         if (asNewVersion) {
-            versionToSave = `${new Date().toISOString()}.json`;
+            versionToSave = `${timestamp}.json`;
         } else {
             const { latest } = await getValueMapVersions();
-            versionToSave = latest || `${new Date().toISOString()}.json`;
+            versionToSave = latest || `${timestamp}.json`;
         }
         const filePath = __TURBOPACK__imported__module__$5b$externals$5d2f$path__$5b$external$5d$__$28$path$2c$__cjs$29$__["default"].join(dirPath, versionToSave);
         await __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["promises"].writeFile(filePath, JSON.stringify(data, null, 2), 'utf-8');
     } catch (error) {
         console.error("Could not write to value-map-versions:", error);
         throw new Error("Failed to save Value Map data.");
+    }
+}
+async function migrateValueMapFileNames() {
+    const dirPath = valueMapVersionsPath();
+    let migrated = 0;
+    let errors = 0;
+    let files = [];
+    try {
+        files = await __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["promises"].readdir(dirPath);
+        for (const file of files){
+            if (file.includes(':')) {
+                const oldPath = __TURBOPACK__imported__module__$5b$externals$5d2f$path__$5b$external$5d$__$28$path$2c$__cjs$29$__["default"].join(dirPath, file);
+                const newName = file.replace(/:/g, '-');
+                const newPath = __TURBOPACK__imported__module__$5b$externals$5d2f$path__$5b$external$5d$__$28$path$2c$__cjs$29$__["default"].join(dirPath, newName);
+                try {
+                    await __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["promises"].rename(oldPath, newPath);
+                    migrated++;
+                } catch (renameError) {
+                    console.error(`Failed to rename ${file}:`, renameError);
+                    errors++;
+                }
+            }
+        }
+        return {
+            migrated,
+            errors
+        };
+    } catch (error) {
+        console.error("Migration failed:", error);
+        return {
+            migrated: 0,
+            errors: files.length || 0
+        };
     }
 }
 // User and Action Item data functions
@@ -589,6 +629,7 @@ var { g: global, __dirname } = __turbopack_context__;
 {
 __turbopack_context__.s({
     "GET": (()=>GET),
+    "PATCH": (()=>PATCH),
     "POST": (()=>POST)
 });
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/server.js [app-route] (ecmascript)");
@@ -831,6 +872,23 @@ async function POST(request) {
         });
     } catch (error) {
         console.error('Save Error:', error);
+        return new __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"]('Internal Server Error', {
+            status: 500
+        });
+    }
+}
+async function PATCH(request) {
+    try {
+        const body = await request.json();
+        if (body.action === 'migrate-value-map-filenames') {
+            const result = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["migrateValueMapFileNames"])();
+            return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json(result);
+        }
+        return new __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"]('Invalid action', {
+            status: 400
+        });
+    } catch (error) {
+        console.error('PATCH Error:', error);
         return new __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"]('Internal Server Error', {
             status: 500
         });

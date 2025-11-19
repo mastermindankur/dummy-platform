@@ -375,9 +375,9 @@ export async function getValueMapVersions(): Promise<{ versions: string[], lates
         const versions = files
             .filter(file => file.endsWith('.json'))
             .sort((a, b) => {
-                const dateA = new Date(a.replace('.json', '').replace(/-/g, ':')).getTime();
-                const dateB = new Date(b.replace('.json', '').replace(/-/g, ':')).getTime();
-                return dateB - dateA;
+                const numA = parseInt(a.replace('.json', ''), 10);
+                const numB = parseInt(b.replace('.json', ''), 10);
+                return numB - numA;
             });
         
         return { versions, latest: versions[0] || null };
@@ -426,14 +426,11 @@ export async function writeValueMapData(data: ValueMapData, asNewVersion: boolea
         await fs.mkdir(dirPath, { recursive: true });
         let versionToSave: string;
 
-        const now = new Date();
-        const timestamp = now.toISOString().replace(/:/g, '-'); // Windows-compatible timestamp
-
         if (asNewVersion) {
-            versionToSave = `${timestamp}.json`;
+            versionToSave = `${Date.now()}.json`;
         } else {
             const { latest } = await getValueMapVersions();
-            versionToSave = latest || `${timestamp}.json`;
+            versionToSave = latest || `${Date.now()}.json`;
         }
 
         const filePath = path.join(dirPath, versionToSave);
@@ -454,23 +451,32 @@ export async function migrateValueMapFileNames(): Promise<{ migrated: number, er
     try {
         files = await fs.readdir(dirPath);
         for (const file of files) {
-            if (file.includes(':')) {
+            if (file.includes(':') || file.includes('-')) {
                 const oldPath = path.join(dirPath, file);
-                const newName = file.replace(/:/g, '-');
-                const newPath = path.join(dirPath, newName);
                 try {
-                    await fs.rename(oldPath, newPath);
-                    migrated++;
-                } catch (renameError) {
-                    console.error(`Failed to rename ${file}:`, renameError);
-                    errors++;
+                    const parsableDateString = file.replace('.json', '').replace(/-/g, ':');
+                    const timestamp = new Date(parsableDateString).getTime();
+                    if (isNaN(timestamp)) {
+                        throw new Error(`Could not parse date from filename: ${file}`);
+                    }
+                    const newName = `${timestamp}.json`;
+                    const newPath = path.join(dirPath, newName);
+
+                    // Check if a file with the new name already exists to avoid overwriting
+                    if (!files.includes(newName)) {
+                        await fs.rename(oldPath, newPath);
+                        migrated++;
+                    }
+                } catch (migrationError) {
+                     console.error(`Failed to migrate ${file}:`, migrationError);
+                     errors++;
                 }
             }
         }
         return { migrated, errors };
     } catch (error) {
         console.error("Migration failed:", error);
-        return { migrated: 0, errors: files.length || 0 };
+        return { migrated: 0, errors: files.length };
     }
 }
 
