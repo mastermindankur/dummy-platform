@@ -468,9 +468,9 @@ async function getValueMapVersions() {
         });
         const files = await __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["promises"].readdir(dirPath);
         const versions = files.filter((file)=>file.endsWith('.json')).sort((a, b)=>{
-            const dateA = new Date(a.replace('.json', '').replace(/-/g, ':')).getTime();
-            const dateB = new Date(b.replace('.json', '').replace(/-/g, ':')).getTime();
-            return dateB - dateA;
+            const numA = parseInt(a.replace('.json', ''), 10);
+            const numB = parseInt(b.replace('.json', ''), 10);
+            return numB - numA;
         });
         return {
             versions,
@@ -526,13 +526,11 @@ async function writeValueMapData(data, asNewVersion) {
             recursive: true
         });
         let versionToSave;
-        const now = new Date();
-        const timestamp = now.toISOString().replace(/:/g, '-'); // Windows-compatible timestamp
         if (asNewVersion) {
-            versionToSave = `${timestamp}.json`;
+            versionToSave = `${Date.now()}.json`;
         } else {
             const { latest } = await getValueMapVersions();
-            versionToSave = latest || `${timestamp}.json`;
+            versionToSave = latest || `${Date.now()}.json`;
         }
         const filePath = __TURBOPACK__imported__module__$5b$externals$5d2f$path__$5b$external$5d$__$28$path$2c$__cjs$29$__["default"].join(dirPath, versionToSave);
         await __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["promises"].writeFile(filePath, JSON.stringify(data, null, 2), 'utf-8');
@@ -549,15 +547,23 @@ async function migrateValueMapFileNames() {
     try {
         files = await __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["promises"].readdir(dirPath);
         for (const file of files){
-            if (file.includes(':')) {
+            if (file.includes(':') || file.includes('-')) {
                 const oldPath = __TURBOPACK__imported__module__$5b$externals$5d2f$path__$5b$external$5d$__$28$path$2c$__cjs$29$__["default"].join(dirPath, file);
-                const newName = file.replace(/:/g, '-');
-                const newPath = __TURBOPACK__imported__module__$5b$externals$5d2f$path__$5b$external$5d$__$28$path$2c$__cjs$29$__["default"].join(dirPath, newName);
                 try {
-                    await __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["promises"].rename(oldPath, newPath);
-                    migrated++;
-                } catch (renameError) {
-                    console.error(`Failed to rename ${file}:`, renameError);
+                    const parsableDateString = file.replace('.json', '').replace(/-/g, ':');
+                    const timestamp = new Date(parsableDateString).getTime();
+                    if (isNaN(timestamp)) {
+                        throw new Error(`Could not parse date from filename: ${file}`);
+                    }
+                    const newName = `${timestamp}.json`;
+                    const newPath = __TURBOPACK__imported__module__$5b$externals$5d2f$path__$5b$external$5d$__$28$path$2c$__cjs$29$__["default"].join(dirPath, newName);
+                    // Check if a file with the new name already exists to avoid overwriting
+                    if (!files.includes(newName)) {
+                        await __TURBOPACK__imported__module__$5b$externals$5d2f$fs__$5b$external$5d$__$28$fs$2c$__cjs$29$__["promises"].rename(oldPath, newPath);
+                        migrated++;
+                    }
+                } catch (migrationError) {
+                    console.error(`Failed to migrate ${file}:`, migrationError);
                     errors++;
                 }
             }
@@ -570,7 +576,7 @@ async function migrateValueMapFileNames() {
         console.error("Migration failed:", error);
         return {
             migrated: 0,
-            errors: files.length || 0
+            errors: files.length
         };
     }
 }
