@@ -210,7 +210,7 @@ async function readData(): Promise<Pillar[]> {
             ...pillar,
             subItems: pillar.subItems.map(subItem => 
                 subItem.dataKey === 'jira-assistant-adoption' 
-                ? { ...subItem, percentageComplete: latestMonthAdoption, metricName: `Latest Month Test Case Adoption` } 
+                ? { ...subItem, percentageComplete: latestMonthAdoption, metricName: 'Latest Month Test Case Adoption' } 
                 : subItem
             ),
         }));
