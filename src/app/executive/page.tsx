@@ -91,23 +91,23 @@ function ExecutivePageClient() {
     fetchData();
   }, [selectedVersion, router, pathname, searchParams]);
 
+  const formatVersionLabel = (version: string) => {
+    if (!version) return '';
+    try {
+        const parsableDate = version.replace('.json', '').replace(/(\d{2})-(\d{2})-(\d{2}\.\d{3}Z)$/, ':$1:$2:$3');
+        return format(new Date(parsableDate), "MMM d, yyyy h:mm a");
+    } catch(e) {
+        return version;
+    }
+  };
+
   useEffect(() => {
     if (selectedVersion && selectedVersion !== 'latest') {
-        try {
-            const date = new Date(selectedVersion.replace('.json', ''));
-            setFormattedVersionName(format(date, "MMM d, yyyy h:mm a"));
-        } catch(e) {
-            setFormattedVersionName(selectedVersion);
-        }
+        setFormattedVersionName(formatVersionLabel(selectedVersion));
     } else if (versions.length > 0) {
         const latestVersion = versions[0];
         if (latestVersion) {
-            try {
-                const date = new Date(latestVersion.replace('.json', ''));
-                setFormattedVersionName(format(date, "MMM d, yyyy h:mm a"));
-            } catch(e) {
-                setFormattedVersionName(latestVersion);
-            }
+            setFormattedVersionName(formatVersionLabel(latestVersion));
         }
     } else {
         setFormattedVersionName('Loading latest...');
@@ -134,14 +134,6 @@ function ExecutivePageClient() {
       const newSearchParams = new URLSearchParams(searchParams);
       newSearchParams.set('version', version);
       router.push(`${pathname}?${newSearchParams.toString()}`);
-  };
-
-  const formatVersionLabel = (version: string) => {
-    try {
-        return format(new Date(version.replace('.json', '')), "MMM d, yyyy h:mm a");
-    } catch(e) {
-        return version;
-    }
   };
 
   return (

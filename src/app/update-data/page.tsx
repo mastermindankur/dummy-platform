@@ -66,6 +66,7 @@ import {
   CommandList,
 } from "@/components/ui/command"
 import { useAuth } from '@/context/AuthContext';
+import { ValueMapMigration } from '@/components/dashboard/ValueMapMigration';
 
 
 type FilterState = {
@@ -1265,6 +1266,7 @@ function ValueMapManager() {
     return (
         <div className="space-y-6">
             <div className="flex justify-end gap-2">
+                <ValueMapMigration />
                 <Dialog open={isGroupEditorOpen} onOpenChange={setIsGroupEditorOpen}>
                     <DialogTrigger asChild>
                         <Button variant="outline"><Settings2 className="mr-2 h-4 w-4"/>Manage Groups</Button>

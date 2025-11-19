@@ -25,6 +25,7 @@ import {
     writeWhatsNewEntries,
     getWhatsNewSectionContent,
     writeWhatsNewSectionContent,
+    migrateValueMapFileNames,
 } from '@/lib/data';
 import type { Pillar } from '@/types';
 
@@ -248,4 +249,21 @@ export async function POST(request: Request) {
     console.error('Save Error:', error);
     return new NextResponse('Internal Server Error', { status: 500 });
   }
+}
+
+export async function PATCH(request: Request) {
+    try {
+        const body = await request.json();
+
+        if (body.action === 'migrate-value-map-filenames') {
+            const result = await migrateValueMapFileNames();
+            return NextResponse.json(result);
+        }
+
+        return new NextResponse('Invalid action', { status: 400 });
+
+    } catch (error) {
+        console.error('PATCH Error:', error);
+        return new NextResponse('Internal Server Error', { status: 500 });
+    }
 }

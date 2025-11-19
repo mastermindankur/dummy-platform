@@ -374,7 +374,11 @@ export async function getValueMapVersions(): Promise<{ versions: string[], lates
         const files = await fs.readdir(dirPath);
         const versions = files
             .filter(file => file.endsWith('.json'))
-            .sort((a, b) => new Date(b.replace('.json','')).getTime() - new Date(a.replace('.json','')).getTime());
+            .sort((a, b) => {
+                const dateA = new Date(a.replace('.json', '').replace(/-/g, ':')).getTime();
+                const dateB = new Date(b.replace('.json', '').replace(/-/g, ':')).getTime();
+                return dateB - dateA;
+            });
         
         return { versions, latest: versions[0] || null };
     } catch (error) {
@@ -422,11 +426,14 @@ export async function writeValueMapData(data: ValueMapData, asNewVersion: boolea
         await fs.mkdir(dirPath, { recursive: true });
         let versionToSave: string;
 
+        const now = new Date();
+        const timestamp = now.toISOString().replace(/:/g, '-'); // Windows-compatible timestamp
+
         if (asNewVersion) {
-            versionToSave = `${new Date().toISOString()}.json`;
+            versionToSave = `${timestamp}.json`;
         } else {
             const { latest } = await getValueMapVersions();
-            versionToSave = latest || `${new Date().toISOString()}.json`;
+            versionToSave = latest || `${timestamp}.json`;
         }
 
         const filePath = path.join(dirPath, versionToSave);
@@ -437,6 +444,36 @@ export async function writeValueMapData(data: ValueMapData, asNewVersion: boolea
         throw new Error("Failed to save Value Map data.");
     }
 }
+
+// Migration function to rename old files
+export async function migrateValueMapFileNames(): Promise<{ migrated: number, errors: number }> {
+    const dirPath = valueMapVersionsPath();
+    let migrated = 0;
+    let errors = 0;
+    let files: string[] = [];
+    try {
+        files = await fs.readdir(dirPath);
+        for (const file of files) {
+            if (file.includes(':')) {
+                const oldPath = path.join(dirPath, file);
+                const newName = file.replace(/:/g, '-');
+                const newPath = path.join(dirPath, newName);
+                try {
+                    await fs.rename(oldPath, newPath);
+                    migrated++;
+                } catch (renameError) {
+                    console.error(`Failed to rename ${file}:`, renameError);
+                    errors++;
+                }
+            }
+        }
+        return { migrated, errors };
+    } catch (error) {
+        console.error("Migration failed:", error);
+        return { migrated: 0, errors: files.length || 0 };
+    }
+}
+
 
 // User and Action Item data functions
 async function readJsonFile<T>(fileName: string, defaultValue: T): Promise<T> {

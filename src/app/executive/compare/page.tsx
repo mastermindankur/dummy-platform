@@ -225,6 +225,16 @@ function ComparePageClient() {
   const [compareData, setCompareData] = useState<ValueMapData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const formatVersionLabel = (version: string) => {
+    if (!version) return '';
+    try {
+        const parsableDate = version.replace('.json', '').replace(/(\d{2})-(\d{2})-(\d{2}\.\d{3}Z)$/, ':$1:$2:$3');
+        return format(new Date(parsableDate), "MMM d, yyyy h:mm a");
+    } catch(e) {
+        return version;
+    }
+  };
+
   useEffect(() => {
     if (!baseVersion || !compareVersion) return;
     async function fetchData() {
@@ -256,14 +266,6 @@ function ComparePageClient() {
   const outcomesDiff = diffItems(baseData.outcomes, compareData.outcomes);
   const driversDiff = diffItems(baseData.drivers, compareData.drivers);
   const leversDiff = diffItems(baseData.levers, compareData.levers);
-
-  const formatVersionLabel = (version: string) => {
-    try {
-        return format(new Date(version.replace('.json', '')), "MMM d, yyyy h:mm a");
-    } catch(e) {
-        return version;
-    }
-  };
 
   return (
     <div className="space-y-6">

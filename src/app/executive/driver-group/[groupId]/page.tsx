@@ -75,6 +75,16 @@ function DriverGroupPageClient() {
     fetchData();
   }, [version, router, pathname, searchParams]);
 
+  const formatVersionLabel = (v: string) => {
+    if (!v) return '';
+    try {
+      const parsableDate = v.replace('.json', '').replace(/(\d{2})-(\d{2})-(\d{2}\.\d{3}Z)$/, ':$1:$2:$3');
+      return format(new Date(parsableDate), "MMM d, yyyy h:mm a");
+    } catch(e) {
+      return v;
+    }
+  };
+
   useEffect(() => {
     if (valueMapData && groupId) {
       const currentDriverGroup = valueMapData.driverGroups?.find(g => g.id === groupId);
@@ -117,19 +127,11 @@ function DriverGroupPageClient() {
       });
     }
      if (version && version !== 'latest') {
-        try {
-            setFormattedVersionName(format(new Date(version.replace('.json', '')), "MMM d, yyyy h:mm a"));
-        } catch (e) {
-            setFormattedVersionName(version);
-        }
+        setFormattedVersionName(formatVersionLabel(version));
     } else if (versions.length > 0) {
         const latestVersion = versions[0];
         if (latestVersion) {
-            try {
-                setFormattedVersionName(format(new Date(latestVersion.replace('.json', '')), "MMM d, yyyy h:mm a"));
-            } catch (e) {
-                setFormattedVersionName(latestVersion);
-            }
+            setFormattedVersionName(formatVersionLabel(latestVersion));
         }
     }
   }, [valueMapData, groupId, version, versions]);
@@ -139,15 +141,6 @@ function DriverGroupPageClient() {
       newSearchParams.set('version', newVersion);
       router.push(`${pathname}?${newSearchParams.toString()}`);
   };
-
-  const formatVersionLabel = (v: string) => {
-    try {
-      return format(new Date(v.replace('.json', '')), "MMM d, yyyy h:mm a");
-    } catch(e) {
-      return v;
-    }
-  };
-
 
   if (isLoading) {
     return (
